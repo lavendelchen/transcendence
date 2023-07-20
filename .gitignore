@@ -69,3 +69,4 @@ dkms.conf
 # added
 .DS_Store
 .vscode/
+!Dockerfile
