@@ -14,6 +14,7 @@ services:
     restart: unless-stopped
     ports:
       - 4242:4242
+      - 80:80
     volumes:
       - vue-dev:/app
     env_file: ./.env
