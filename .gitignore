@@ -13,6 +13,9 @@
 # Unignore configure
 !configure
 
+# node modules
+node_modules
+
 # Prerequisites
 *.d
 
