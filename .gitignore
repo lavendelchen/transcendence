@@ -10,8 +10,9 @@
 # Unignore Makefile
 !Makefile
 
-# Unignore configure
+# Unignore configure and dockerfile
 !configure
+!Dockerfile
 
 # node modules
 node_modules
