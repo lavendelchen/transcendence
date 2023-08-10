@@ -10,8 +10,12 @@
 # Unignore Makefile
 !Makefile
 
-# Unignore configure
+# Unignore configure and dockerfile
 !configure
+!Dockerfile
+
+# node modules
+node_modules
 
 # Prerequisites
 *.d
@@ -58,7 +62,6 @@
 *.pdb
 
 # Kernel Module Compile Results
-*.mod*
 *.cmd
 .tmp_versions/
 modules.order

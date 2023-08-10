@@ -1,0 +1,23 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Channel {
+  id: Int!
+  name: String!
+}
+
+type Query {
+  getHello: String!
+  getChannel(id: Int!): Channel!
+  channels: [Channel!]!
+}
+
+type Mutation {
+  createChannel(createChannelInput: CreateChannelInput!): Channel!
+  deleteAllChannels: Int!
+}
+
+input CreateChannelInput {
+  name: String!
+}
