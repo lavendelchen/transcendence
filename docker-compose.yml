@@ -9,7 +9,7 @@ services:
       - 3000:3000
     env_file: .env
     volumes:
-      - vue-dev:/app
+      - ./back-end:/app
     depends_on: 
       - db-container
     networks:
@@ -27,7 +27,6 @@ services:
 
 volumes:
   db-data:
-  vue-dev: 
 
 networks:
   transcendence_net:
