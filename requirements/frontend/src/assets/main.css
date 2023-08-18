@@ -1,0 +1,22 @@
+@import './base.css';
+
+body {
+  text-transform: uppercase;
+}
+
+body::before {
+  display: none;
+}
+
+
+#app {
+  /* width: ;
+  margin: 0 auto;
+  padding: 2rem;
+
+  font-weight: normal; */
+}
+
+body {
+  height: 100vh;
+}
