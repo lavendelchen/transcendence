@@ -10,6 +10,7 @@ services:
     env_file: .env
     volumes:
       - ./back-end:/app
+      - /app/node_modules
     depends_on: 
       - db-container
     networks:
