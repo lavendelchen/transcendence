@@ -5,7 +5,7 @@ import { AppResolver } from './app.resolver';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatModule } from './chat/chat.module';
-import { FortyTwoModule } from './auth/forty-two.module';
+import { AuthModule } from './auth/auth.module';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -36,7 +36,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     inject: [ConfigService],
     }),
     ChatModule,
-    FortyTwoModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppResolver, AppService],

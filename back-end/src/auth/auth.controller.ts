@@ -1,7 +1,7 @@
  // src/forty-two.controller.ts
 
 import { Controller, Get } from '@nestjs/common';
-import { FortyTwoAuthService } from './forty-two-auth.service';
+import { FortyTwoAuthService } from './auth.service';
 
 @Controller('42')
 export class FortyTwoController {
