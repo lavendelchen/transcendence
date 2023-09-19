@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend-container:
+    build: ./back-end
+    ports:
+      - 80:80
+      - 443:443
+      - 3000:3000
+    env_file: .env
+    volumes:
+      - ./back-end:/app
+      - /app/node_modules
+    depends_on: 
+      - db-container
+    networks:
+      - transcendence_net
+
+  db-container:
+    build: ./database
+    ports:
+      - 5432-5433:5432-5433
+    env_file: .env
+    volumes:
+      - db-data:/var/lib/postgresql/data/
+    networks:
+      - transcendence_net
+
+volumes:
+  db-data:
+
+networks:
+  transcendence_net:
