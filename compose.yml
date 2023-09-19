@@ -1,16 +1,23 @@
-version: '3'
+version: '3.8'
 
 services:
-  backend:
-    build: ./requirements/backend
+  backend-container:
+    build: ./back-end
     restart: unless-stopped
     ports:
+      - 80:80
+      - 443:443
       - 3000:3000
     env_file: .env
-    depends_on: database
-  
-  frontend:
-    build: ./requirements/frontend
+    volumes:
+      - ./back-end:/app
+      - /app/node_modules
+    depends_on: 
+      - db-container
+    networks:
+      - transcendence_net
+  frontend-container:
+    build: ./frontend
     restart: unless-stopped
     ports:
       - 443:443
@@ -18,22 +25,21 @@ services:
     volumes:
       - vue-dev:/app
     env_file: .env
-    depends_on: database
+    depends_on: db-container
 
-  database:
-    image: postgres
-    environment:
-      - POSTGRES_USER=ping
-      - POSTGRES_PASSWORD=pong
-      - POSTGRES_DB=pong_db
+  db-container:
+    build: ./database
     ports:
-      - 5432:5432
+      - 5432-5433:5432-5433
     env_file: ./.env
-    volumes: 
-      - database:/var/lib/postgresql/data
+    volumes:
+      - db-data:/var/lib/postgresql/data/
+    networks:
+      - transcendence_net
 
 volumes:
-  database:
+  db-data:
   vue-dev:
 
-# questions: only one or two container? why vue_dev
+networks:
+  transcendence_net:
