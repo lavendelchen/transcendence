@@ -8,6 +8,7 @@ import { ChatModule } from './chat/chat.module';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     inject: [ConfigService],
     }),
     ChatModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppResolver, AppService],
