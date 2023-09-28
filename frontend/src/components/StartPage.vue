@@ -1,3 +1,6 @@
+<script setup lang="ts">
+</script>
+
 <template>
     <p id="highScore">
         Highscore: 3000p
