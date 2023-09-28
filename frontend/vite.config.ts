@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [
     vue(),
     checker({
-      typescript: true
+      typescript: true,
+      vueTsc: true
     })
   ],
 })
