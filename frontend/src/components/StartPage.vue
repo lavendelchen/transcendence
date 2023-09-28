@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 </script>
 
 <template>
@@ -43,7 +43,7 @@ section {
   font-size: var(--font-size-xxxl);
   letter-spacing: 0px;
   line-height: calc(30px + 5vw);
-  width: 100%%;
+  width: 100%;
   text-align: center;
   text-align: center;
   margin-top: 10vh;
