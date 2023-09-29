@@ -22,7 +22,7 @@
   </Modal>
 </template>
 
-<script>
+<script lang="ts">
   import './assets/main.css'
   import StartPage from "./components/StartPage.vue"
   import PlayPage from "./components/PlayPage.vue"
