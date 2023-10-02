@@ -5,6 +5,7 @@
     <p id="highScore">
         Highscore: 3000p
     </p>
+    <div id="buttons"></div>
     <section class="logo">
       Ping&#160;&#160;&#160;&#160;&#160;&#160;&#160; <br>
       Pang <br>
