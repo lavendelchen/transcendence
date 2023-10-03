@@ -1,8 +1,8 @@
 import './assets/main.css'
 
+import { createRouter, createWebHistory } from 'vue-router'
 import { createApp } from 'vue'
 import App from './App.vue'
-import { createRouter, createWebHistory } from 'vue-router'
 import StartPage from './components/StartPage.vue'
 import PlayPage from './components/PlayPage.vue'
 
@@ -16,5 +16,5 @@ const router = createRouter({
 })
 
 const app = createApp(App)
-app.use(router);
+app.use(router)
 app.mount('#app')
