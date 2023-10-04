@@ -2,7 +2,9 @@
 </script>
 
 <template>
-  <router-view/>
+	<router-link to="/start">Start Page</router-link> <br>
+	<router-link to="/play">Play Game</router-link>
+	<router-view/>
 </template>
 
 <style scoped>
@@ -25,6 +27,5 @@ p {
 
 h1 {
   font-family: 'logofont';
-  font-size: 500px !important;
 }
 </style>
