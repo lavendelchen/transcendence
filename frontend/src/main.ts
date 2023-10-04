@@ -11,7 +11,7 @@ const router = createRouter({
     routes: [
         { path: '/start', component: StartPage },
         { path: '/play', component: PlayPage },
-        { path: '/', redirect: () => ({path: '/start'})} 
+        { path: '/', redirect: '/start'} 
     ]
 })
 
