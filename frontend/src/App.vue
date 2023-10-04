@@ -11,6 +11,7 @@
 	import PlayPage from "./components/PlayPage.vue"
 	import Block from "./components/Block.vue"
 	import Results from "./components/Results.vue"
+	import Jobs from './components/Jobs.vue'
 
 	export default {
 		name: 'App',
@@ -19,6 +20,7 @@
 			PlayPage,
 			Block,
 			Results,
+			Jobs
 		},
 		data() {
 			return {

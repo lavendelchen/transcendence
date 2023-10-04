@@ -1,0 +1,10 @@
+{
+	"jobs": [
+		{"title": "Developer", "id": 1, "details": "lorem"},
+		{"title": "Designer", "id": 2, "details": "lorem"},
+		{"title": "CEO", "id": 3, "details": "lorem"}
+	],
+	"cute-guys": [
+		{"title": "schmusibaer", "id": 1, "details": "my little schmusibaer"}
+	]
+}
