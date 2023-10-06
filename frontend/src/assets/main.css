@@ -1,4 +1,4 @@
-@import './base.css';
+
 
 body {
   text-transform: uppercase;
@@ -10,13 +10,11 @@ body::before {
 
 
 #app {
-  /* width: ;
-  margin: 0 auto;
-  padding: 2rem;
 
-  font-weight: normal; */
 }
+font
 
 body {
   height: 100vh;
 }
+

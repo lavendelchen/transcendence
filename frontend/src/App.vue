@@ -17,6 +17,7 @@
 
 body {
   font-family: 'textfont', sans-serif;
+  background-color: black !important;
 }
 
 p {

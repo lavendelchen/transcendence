@@ -9,15 +9,10 @@ services:
       - 443:443
       - 3000:3000
     env_file: .env
-    volumes:
-      - ./back-end:/app
-      - /app/node_modules
-    depends_on: 
-      - db-container
-    networks:
-      - transcendence_net
-  frontend-container:
-    build: ./frontend
+    depends_on: database
+  
+  frontend:
+    build: ./requirements/frontend
     restart: unless-stopped
     ports:
       - 443:443
@@ -25,7 +20,7 @@ services:
     volumes:
       - vue-dev:/app
     env_file: .env
-    depends_on: db-container
+    depends_on: database
 
   db-container:
     build: ./database
