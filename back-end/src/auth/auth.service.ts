@@ -36,11 +36,14 @@ export class AuthService {
 	
 		try {
 		  // Send a POST request to exchange the code for a token
+		  console.log("wait for auth");
 		  const tokenResponse = await lastValueFrom(
 			this.httpService.post('https://api.intra.42.fr/oauth/token', tokenData).pipe(
 			  map((response) => response.data),
-			  catchError(() => {
+			  catchError((error) => {
+				console.error('Error during http request', error);
 				throw new ForbiddenException('Authorization failed: Token exchange failed');
+				console.log("token exchange failed");
 			  }),
 			),
 		  );
@@ -78,8 +81,8 @@ export class AuthService {
 			image: userResponse.image.versions.medium,
 		  };
 		  console.log('USER DATA:', userData);
-	
-		  return userData.email;
+		  
+		  return tokenResponse.access_token;
 		} catch (error) {
 		  throw new ForbiddenException('Authorization failed: ' + error.message);
 		}
