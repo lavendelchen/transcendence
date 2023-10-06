@@ -1,10 +1,11 @@
 {
 	"jobs": [
-		{"title": "Developer", "id": 1, "details": "lorem"},
-		{"title": "Designer", "id": 2, "details": "lorem"},
-		{"title": "CEO", "id": 3, "details": "lorem"}
+		{"title": "Programmer", "id": 1, "details": "lorem"},
+		{"title": "Little Guy", "id": 2, "details": "lorem"},
+		{"title": "Big Guy", "id": 3, "details": "lorem"}
 	],
-	"cute-guys": [
-		{"title": "schmusibaer", "id": 1, "details": "my little schmusibaer"}
+	"cute_guys": [
+		{"title": "schmusibaer", "id": 1, "details": "my little schmusibaer"},
+		{"title": "mausischatzi", "id": 1, "details": "du bist mein mausischatzi"}
 	]
 }

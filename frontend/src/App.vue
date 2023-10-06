@@ -3,6 +3,8 @@
 	<button @click="start" :disabled="currentlyPlaying">play</button>
 	<Block v-if="currentlyPlaying" :delay="delay" @clicked="endGame"></Block>
 	<Results v-if="score && !currentlyPlaying" :score="score"/>
+	<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+	<Jobs/>
 </template>
 
 <script lang="ts">
