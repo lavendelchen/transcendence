@@ -2,12 +2,10 @@
 </script>
 
 <template>
-	<router-link to="/start">Start Page</router-link> <br>
-	<router-link to="/play">Play Game</router-link>
 	<router-view/>
 </template>
 
-<style scoped>
+<style>
 @font-face {
     font-family: 'textfont';
     src: url('/fonts/Pixeled.ttf');
