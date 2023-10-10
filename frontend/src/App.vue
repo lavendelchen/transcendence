@@ -2,10 +2,10 @@
 </script>
 
 <template>
-  <router-view/>
+	<router-view/>
 </template>
 
-<style scoped>
+<style>
 @font-face {
     font-family: 'textfont';
     src: url('/fonts/Pixeled.ttf');
@@ -25,6 +25,5 @@ p {
 
 h1 {
   font-family: 'logofont';
-  font-size: 500px !important;
 }
 </style>
