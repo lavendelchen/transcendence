@@ -1,11 +1,37 @@
-{
-	"jobs": [
-		{"title": "Programmer", "id": 1, "details": "lorem"},
-		{"title": "Little Guy", "id": 2, "details": "lorem"},
-		{"title": "Big Guy", "id": 3, "details": "lorem"}
-	],
-	"cute_guys": [
-		{"title": "schmusibaer", "id": 1, "details": "my little schmusibaer"},
-		{"title": "mausischatzi", "id": 1, "details": "du bist mein mausischatzi"}
-	]
+{ // can we sort users by score? which would be.. number of won games?
+	"user": {
+		"idOrSth": "number",
+		"name": "string (will be filled with 42 name at start)",
+		"stats": {
+			"wonGames": "number",
+			"lostGames": "number",
+			"playedGames": "number",
+			"pointsMade": "number",
+			"pointsLost": "number"
+		},
+		"friends": [
+			"id",
+			"id",
+			"id",
+			...
+		],
+		"status": {
+			"online": "boolean",
+			"inAGame": "boolean"
+		},
+		"matchHistory": [
+			{
+				"opponent": "id",
+				"myScore": "number",
+				"opponentScore": "number",
+				"won": "boolean"
+			}, 
+			{
+				...
+			},
+			{
+				...
+			}
+		]
+	}
 }
