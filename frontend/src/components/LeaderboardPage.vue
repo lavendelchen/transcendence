@@ -1,6 +1,6 @@
 <template>
 	<h1>Leaderboard</h1>
-	<p>
+	<p v-if="players[0].avatar">
 		<span id="img"></span>
 		<span id="pseudo">Name</span>
 		<span id="legend">Wins</span>
@@ -20,9 +20,9 @@
 			<span id="pointsLost">{{ player.pointsLost }}</span>
 		</p>
 	</div>
-	<div v-else>
+	<p v-else>
 		no leaderboard available
-	</div>
+	</p>
 </template>
 
 <script lang="ts">
