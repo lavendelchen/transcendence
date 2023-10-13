@@ -42,16 +42,6 @@ a:link {
 	text-decoration: none;
 }
 
-
-@font-face {
-	font-family: textfont;
-	src: url('~@/assets/fonts/Pixeled.ttf');
-}
-@font-face {
-	font-family: logofont;
-	src: url('~@/assets/fonts/8-bit-Out.ttf');
-}
-
 section {
 	font-size: var(--font-size-xxxl);
 	letter-spacing: 0px;
