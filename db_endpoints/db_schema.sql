@@ -10,7 +10,7 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
-CREATE TABLE IF NOT EXISTS User (
+CREATE TABLE IF NOT EXISTS "User" (
     id SERIAL PRIMARY KEY,
     fortytwo_id INT,
     pseudo VARCHAR(50),
@@ -26,16 +26,16 @@ CREATE TABLE IF NOT EXISTS User (
 
 CREATE TABLE IF NOT EXISTS Friend (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES User(id),
-    followedUser_id INT REFERENCES User(id),
+    user_id INT REFERENCES "User"(id),
+    followedUser_id INT REFERENCES "User"(id),
     isPending BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS Match (
     id SERIAL PRIMARY KEY,
-    userHome_id INT REFERENCES User(id),
-    userForeign_id INT REFERENCES User(id),
-    winner_id INT REFERENCES User(id),
+    userHome_id INT REFERENCES "User"(id),
+    userForeign_id INT REFERENCES "User"(id),
+    winner_id INT REFERENCES "User"(id),
     map VARCHAR(255),
     userHomeScore INT,
     userForeignScore INT,
@@ -43,14 +43,14 @@ CREATE TABLE IF NOT EXISTS Match (
 );
 
 CREATE TABLE IF NOT EXISTS BlockedUser (
-    blockingUser_id INT REFERENCES User(id),
-    blockedUser_id INT REFERENCES User(id),
+    blockingUser_id INT REFERENCES "User"(id),
+    blockedUser_id INT REFERENCES "User"(id),
     PRIMARY KEY (blockingUser_id, blockedUser_id)
 );
 
 CREATE TABLE IF NOT EXISTS Channel (
     id SERIAL PRIMARY KEY,
-    owner_id INT REFERENCES User(id),
+    owner_id INT REFERENCES "User"(id),
     name VARCHAR(255),
     type channelTypesDto,
     password VARCHAR(255),
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS Channel (
 
 CREATE TABLE IF NOT EXISTS Message (
     id SERIAL PRIMARY KEY,
-    creator_id INT REFERENCES User(id),
+    creator_id INT REFERENCES "User"(id),
     channel_id INT REFERENCES Channel(id),
     content TEXT,
     timestamp TIMESTAMP,
@@ -68,26 +68,26 @@ CREATE TABLE IF NOT EXISTS Message (
 
 CREATE TABLE IF NOT EXISTS ChannelAdmins (
     channel_id INT REFERENCES Channel(id),
-    user_id INT REFERENCES User(id),
+    user_id INT REFERENCES "User"(id),
     PRIMARY KEY (channel_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS MutedUser (
     channel_id INT REFERENCES Channel(id),
-    user_id INT REFERENCES User(id),
+    user_id INT REFERENCES "User"(id),
     until DATE,
     PRIMARY KEY (channel_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS BannedUser (
     channel_id INT REFERENCES Channel(id),
-    user_id INT REFERENCES User(id),
+    user_id INT REFERENCES "User"(id),
     until DATE,
     PRIMARY KEY (channel_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS ChannelsUser (
-    user_id INT REFERENCES User(id),
+    user_id INT REFERENCES "User"(id),
     channel_id INT REFERENCES Channel(id),
     PRIMARY KEY (user_id, channel_id)
 );
