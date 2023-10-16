@@ -12,7 +12,6 @@ services:
       - ${DB_PORT}:${DB_PORT}
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
     env_file:
       - .env
 
@@ -20,6 +19,13 @@ services:
     build: .
     ports:
       - "3000:3000"
+    depends_on:
+      - db
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
     depends_on:
       - db
 

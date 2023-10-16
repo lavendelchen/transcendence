@@ -21,9 +21,6 @@ export class User {
     @Column({ length: 50 })
     email: string;
 
-    @Column({ length: 60 })
-    password: string;
-
     @Column({ length: 50, nullable: true })
     avatar?: string;
 
