@@ -15,16 +15,16 @@ export class User {
     @Column({ length: 50 })
     pseudo: string;
 
-    @Column({ length: 255 })
-    refresh_token: string;
-
     @Column({ length: 50 })
     email: string;
 
-    @Column({ length: 50, nullable: true })
+    @Column({ length: 255, nullable: true })
+    refresh_token: string;
+
+    @Column({ length: 255, nullable: true })
     avatar?: string;
 
-    @Column({ type: 'boolean' })
+    @Column({ type: 'boolean', default: false })
     is2FActive: boolean;
 
     @Column({ length: 60, nullable: true })

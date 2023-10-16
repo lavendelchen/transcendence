@@ -28,7 +28,25 @@ export class UserService {
         return this.userRepository.findOne({ where: { id } });
     }
 
-    delete(id: number): Promise<void> {
-        return this.userRepository.delete({ id }).then(() => {});
+    async delete(id: number): Promise<void> {
+        await this.userRepository.delete({ id });
     }
+
+	// extra ...
+	async saveOrUpdate(userData: Partial<User>): Promise<User> {
+		// Check if user already exists using email
+		let user = await this.userRepository.findOne({ where: { email: userData.email } });
+		if (user) {
+			user.email = userData.email;
+			user.pseudo = userData.pseudo;
+			user.avatar = userData.avatar;
+			await this.userRepository.save(user);
+		} else {
+			// If user does not exist, create a new one
+			user = this.userRepository.create(userData);
+			await this.userRepository.save(user);
+		}
+		return user;
+	}
+
 }
