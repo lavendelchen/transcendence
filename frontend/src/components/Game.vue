@@ -6,13 +6,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, Ref, computed, render } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
 
 /* these variables can be customized */
 const gameSize = 0.5;
 const framesPerSecond = 50;//fix
 const baseBallSpeed = 8;
-const pointsToWin = 2;
+const pointsToWin = 11;
 /* not these please */
 let backgroundColor = "white";
 let elementColor = "black";
@@ -53,9 +53,9 @@ const ball = {
 	x: gameWidth/2,
 	y: gameHeight/2,
 	radius: 8*gameSize,
-	speed: 0*gameSize,//fix
-	velocityX: 0*gameSize,//fix
-	velocityY: 0*gameSize//fix
+	speed: 0*gameSize,
+	velocityX: 0*gameSize,
+	velocityY: 0*gameSize
 };
 
 onMounted(() => {
@@ -70,8 +70,9 @@ function startQueue() {
 	buttonText.value = "Waiting for opponent...";
 	gameState.value = WAITING_IN_QUEUE;
 	setTimeout(() => {
-		renderElements();
 		buttonText.value = "3";
+		resetGame();
+		renderElements();
 	}, 1000);
 	setTimeout(() => buttonText.value = "2", 2000);
 	setTimeout(() => buttonText.value = "1", 3000);
@@ -156,9 +157,12 @@ async function gameEnd(message: string): Promise<void> {
     context.fillStyle = elementColor;
     context.font = fontSize.toString() + "px textfont";
     context.fillText(message, gameWidth/2, gameHeight/2);
-
 	// send data to database n shit
-	setTimeout(() => resetGame(), 1000);
+	
+	setTimeout(() => {
+		gameState.value = NOT_PLAYING;
+		buttonText.value = "play";
+	}, 1000);
 };
 function resetGame(): void {
 	backgroundColor = "white";
@@ -166,14 +170,13 @@ function resetGame(): void {
 	player.paddleStartY = gameHeight/2 - paddleHeight/2;
 	player.score = 0;
 	opponent.paddleStartY = gameHeight/2 - paddleHeight/2;
+	console.log()
+	opponent.score = 0;
 	ball.x = gameWidth/2;
 	ball.y = gameHeight/2;
 	ball.velocityX = 0;
 	ball.velocityY = 0;
 	ball.speed = 0;
-	opponent.score = 0;
-	gameState.value = NOT_PLAYING;
-	buttonText.value = "play";
 }
 function initBallDirection(): void {
 	var random = Math.floor(Math.random() * 4);
