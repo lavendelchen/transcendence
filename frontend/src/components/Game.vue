@@ -1,17 +1,21 @@
 <template>
-	<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
+	<div class="stupid-container" :style="{ 'width': gameWidth + 'px', 'height': gameHeight + 'px' }">
+		<button v-if="gameState != PLAYING" @click="startQueue" :disabled="gameState === WAITING_IN_QUEUE" class="playButton" :style="{ 'bottom': (gameHeight/2) + 'px', 'left': (gameWidth/2) + 'px' }">{{ buttonText }}</button>
+		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref, Ref, computed, render } from 'vue';
 
 /* these variables can be customized */
 const gameSize = 0.5;
-let backgroundColor = "white";
-let elementColor = "black";
 const framesPerSecond = 50;//fix
 const baseBallSpeed = 8;
+const pointsToWin = 2;
 /* not these please */
+let backgroundColor = "white";
+let elementColor = "black";
 const gameWidth = 1000*gameSize;
 const gameHeight = 800*gameSize;
 const fontSize = 50*gameSize;
@@ -20,8 +24,15 @@ const paddleHeight = 85*gameSize;
 const PLAYER = 1;
 const OPPONENT = -1;
 let interval: number;
-
 let context: CanvasRenderingContext2D;
+let canvas: HTMLCanvasElement;
+
+/* not directly part of game */
+const NOT_PLAYING: number = 0;
+const WAITING_IN_QUEUE: number = 1;
+const PLAYING: number = 2;
+let gameState: Ref<number> = ref(NOT_PLAYING);
+let buttonText = ref("play");
 
 const net = {
 	width: 3*gameSize,
@@ -48,16 +59,32 @@ const ball = {
 };
 
 onMounted(() => {
-	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	context = canvas.getContext("2d") as CanvasRenderingContext2D;
 	context.textAlign = 'center';
-	canvas.addEventListener("mousemove", movePaddle);
-
-	initBallDirection();
-	interval = setInterval(game, 1000/framesPerSecond);
+	renderElements();
 });
 
 /* functions */
+function startQueue() {
+	buttonText.value = "Waiting for opponent...";
+	gameState.value = WAITING_IN_QUEUE;
+	setTimeout(() => {
+		renderElements();
+		buttonText.value = "3";
+	}, 1000);
+	setTimeout(() => buttonText.value = "2", 2000);
+	setTimeout(() => buttonText.value = "1", 3000);
+	setTimeout(() => startGame(), 4000);
+}
+function startGame(): void {
+	gameState.value = PLAYING;
+	canvas.addEventListener("mousemove", movePaddle);
+	initBallDirection();
+	setTimeout(() => {
+		interval = setInterval(game, 1000/framesPerSecond);
+	}, 1000);
+}
 function game(): void {
 	updatePositions();
 	renderElements();
@@ -74,14 +101,14 @@ function updatePositions(): void {
 		calculateNewBallDirection(opponent, OPPONENT);
 	else if (ballHitLeft()) {
 		opponent.score++;
-		if (opponent.score >= 11)
+		if (opponent.score >= pointsToWin)
 			gameEnd("YOU HAVE LOST :(");
 		resetBall();
 		setTimeout(() => initBallDirection(), 1000);
 	}
 	else if (ballHitRight()) {
 		player.score++;
-		if (player.score >= 11)
+		if (player.score >= pointsToWin)
 			gameEnd("YOU HAVE WON!");
 		resetBall();
 		setTimeout(() => initBallDirection(), 1000);
@@ -131,7 +158,23 @@ async function gameEnd(message: string): Promise<void> {
     context.fillText(message, gameWidth/2, gameHeight/2);
 
 	// send data to database n shit
+	setTimeout(() => resetGame(), 1000);
 };
+function resetGame(): void {
+	backgroundColor = "white";
+	elementColor = "black";
+	player.paddleStartY = gameHeight/2 - paddleHeight/2;
+	player.score = 0;
+	opponent.paddleStartY = gameHeight/2 - paddleHeight/2;
+	ball.x = gameWidth/2;
+	ball.y = gameHeight/2;
+	ball.velocityX = 0;
+	ball.velocityY = 0;
+	ball.speed = 0;
+	opponent.score = 0;
+	gameState.value = NOT_PLAYING;
+	buttonText.value = "play";
+}
 function initBallDirection(): void {
 	var random = Math.floor(Math.random() * 4);
 	switch (random) {
@@ -238,6 +281,20 @@ function calculateNewBallDirection(hitPaddle: any, direction: number): void {
 </script>
 
 <style scoped>
-#gameCanvas {
+canvas {
+	z-index: 1;
 }
+
+.playButton {
+	z-index: 0;
+	position: absolute;
+	padding: 30px;
+	transform: translate(-50%, -50%);
+}
+
+/* .stupid-container {
+	width: v-bind('gameWidth');
+	height: v-bind('gameHeight');
+} */
+
 </style>
