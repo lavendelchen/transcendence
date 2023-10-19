@@ -6,7 +6,7 @@
 import { onMounted } from 'vue';
 
 /* these variables can be customized */
-const gameSize = 1;
+const gameSize = 0.5;
 let backgroundColor = "white";
 let elementColor = "black";
 const framesPerSecond = 50;//fix
@@ -21,7 +21,7 @@ const PLAYER = 1;
 const OPPONENT = -1;
 let interval: number;
 
-let canvas: CanvasRenderingContext2D;
+let context: CanvasRenderingContext2D;
 
 const net = {
 	width: 3*gameSize,
@@ -48,10 +48,10 @@ const ball = {
 };
 
 onMounted(() => {
-	const element = document.getElementById("gameCanvas") as HTMLCanvasElement;
-	canvas = element.getContext("2d") as CanvasRenderingContext2D;
-	canvas.textAlign = 'center';
-	element.addEventListener("mousemove", movePaddle);
+	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	context = canvas.getContext("2d") as CanvasRenderingContext2D;
+	context.textAlign = 'center';
+	canvas.addEventListener("mousemove", movePaddle);
 
 	initBallDirection();
 	interval = setInterval(game, 1000/framesPerSecond);
@@ -126,9 +126,9 @@ async function gameEnd(message: string): Promise<void> {
     ball.x = -10 * gameSize;
     ball.y = -10 * gameSize;
     renderElements();
-    canvas.fillStyle = elementColor;
-    canvas.font = fontSize.toString() + "px textfont";
-    canvas.fillText(message, gameWidth/2, gameHeight/2);
+    context.fillStyle = elementColor;
+    context.font = fontSize.toString() + "px textfont";
+    context.fillText(message, gameWidth/2, gameHeight/2);
 
 	// send data to database n shit
 };
@@ -155,15 +155,15 @@ function initBallDirection(): void {
 	ball.speed = Math.sqrt(ball.velocityX ** 2 + ball.velocityY ** 2);
 }
 function drawRectangle(startX: number, startY: number, lengthX: number, lengthY: number, color: string): void {
-	canvas.fillStyle = color;
-	canvas.fillRect(startX, startY, lengthX, lengthY);
+	context.fillStyle = color;
+	context.fillRect(startX, startY, lengthX, lengthY);
 };
 function drawBall(): void {
-	canvas.fillStyle = elementColor;
-	canvas.beginPath();
-	canvas.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2, false);
-	canvas.closePath();
-	canvas.fill();
+	context.fillStyle = elementColor;
+	context.beginPath();
+	context.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2, false);
+	context.closePath();
+	context.fill();
 };
 function drawPaddles(): void {
 	drawRectangle(player.paddleStartX, player.paddleStartY, paddleWidth, paddleHeight, elementColor);
@@ -175,12 +175,12 @@ function drawNet(): void {
 	}
 }
 function drawScore(): void {
-	canvas.fillStyle = elementColor;
-	canvas.font = fontSize.toString() + "px textfont";
-	canvas.fillText(player.score.toString(), gameWidth/4, gameHeight/6);
-	canvas.fillStyle = elementColor;
-	canvas.font = fontSize.toString() + "px textfont";
-	canvas.fillText(opponent.score.toString(), 3*gameWidth/4, gameHeight/6);
+	context.fillStyle = elementColor;
+	context.font = fontSize.toString() + "px textfont";
+	context.fillText(player.score.toString(), gameWidth/4, gameHeight/6);
+	context.fillStyle = elementColor;
+	context.font = fontSize.toString() + "px textfont";
+	context.fillText(opponent.score.toString(), 3*gameWidth/4, gameHeight/6);
 };
 function resetBall(): void {
 	ball.x = gameWidth / 2;
