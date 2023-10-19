@@ -21,9 +21,12 @@ body {
 
 p {
   font-family: 'textfont', sans-serif;
+  text-align: center;
 }
 
 h1 {
   font-family: 'logofont';
+  text-align: center;
+  font-size: var(--font-size-xl);
 }
 </style>
