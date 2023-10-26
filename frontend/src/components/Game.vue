@@ -1,6 +1,6 @@
 <template>
 	<div class="stupid-container" :style="{ 'width': gameWidth + 'px', 'height': gameHeight + 'px' }">
-		<button v-if="gameState != PLAYING" @click="startQueue" :disabled="gameState === WAITING_IN_QUEUE" class="playButton">
+		<button v-if="gameState != PLAYING && !notYet" @click="startQueue" :disabled="gameState === WAITING_IN_QUEUE" class="playButton">
 			{{ buttonText }}
 		</button>
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
@@ -10,15 +10,30 @@
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue';
 
+//const	NARROW = true;
+//const	WIDE = false;
+//let		gameView = WIDE;
+
 function calculateGameSize(): number {
-	var gameSize = 0.0006 * window.innerWidth;
+	var gameSize: number;
+
+	if (window.innerWidth < 992) {
+		gameSize = 0.00095 * window.innerWidth;
+		//gameView = NARROW;
+	}
+	else {
+		gameSize = 0.0006 * window.innerWidth;
+		//gameView = WIDE;
+	}
+
 	return (gameSize);
 };
+
 let		gameSize = calculateGameSize();
 
 let		playerScore =	0;
 let		opponentScore =	0;
-const	pointsToWin =	2;
+const	pointsToWin =	1;
 
 const	framesPerSecond =	50;
 const	baseBallSpeed =		8;
@@ -33,13 +48,16 @@ let		canvas: HTMLCanvasElement;
 const	PLAYER =	1;
 const	OPPONENT =	-1;
 
-const	NOT_PLAYING =		0;
+const	BEFORE_GAME =		0;
 const	WAITING_IN_QUEUE =	1;
 const	PLAYING = 			2;
+const	GAME_END =			3;
+let		notYet =			ref(false);
 
-let		gameState: Ref<number> =	ref(NOT_PLAYING);
+let		wonTheGame = false;
+
+let		gameState: Ref<number> =	ref(BEFORE_GAME);
 let		buttonText =				ref("play");
-let		resizingTimer: number;
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
@@ -55,7 +73,7 @@ const net = {
 
 const paddles = {
 	player: {
-		startX:	3 * gameSize,
+		startX:	30 * gameSize,
 		startY:	gameHeight.value/2 - paddleHeight/2
 	},
 	opponent: {
@@ -113,21 +131,31 @@ function resizeEverything(newGameSize: number, oldGameSize: number) {
 	ball.x *=		changeFactor;
 	ball.y *=		changeFactor;
 	ball.radius *=	changeFactor;
-	//ball.speed
-	//ball.velocityX
-	//ball.velocityY
+
+	ball.speed *=		changeFactor;
+	ball.velocityX *=	changeFactor;
+	ball.velocityY *=	changeFactor;
+
 	context.textAlign = 'center';
 };
 
 
 /* when the canvas height doesn't fit into screen despite adjustments */
 function adjustCanvas() {
-	if (canvas.getBoundingClientRect().bottom > window.innerHeight) {
+	if (/* gameView == WIDE &&  */canvas.getBoundingClientRect().bottom > window.innerHeight) {
 		var oldGameSize = gameSize;
 		gameSize = 0.0008 * window.innerHeight;
 		resizeEverything(gameSize, oldGameSize);
 		requestAnimationFrame(renderElements);
+		return;
 	}
+	/* if (gameView == NARROW && canvas.getBoundingClientRect().bottom > (window.innerHeight * 0.5)) {
+		var oldGameSize = gameSize;
+		gameSize = 0.0006 * window.innerHeight;
+		resizeEverything(gameSize, oldGameSize);
+		requestAnimationFrame(renderElements);
+		return;
+	} */
 };
 
 onMounted(() => {
@@ -192,15 +220,19 @@ function updatePositions(): void {
 		calculateNewBallDirection(paddles.opponent, OPPONENT);
 	else if (ballHitLeft()) {
 		opponentScore++;
-		if (opponentScore >= pointsToWin)
-			gameEnd("YOU HAVE LOST :(");
+		if (opponentScore >= pointsToWin) {
+			wonTheGame = false;
+			gameEnd();
+		}
 		resetBall();
 		setTimeout(() => initBallDirection(), 1000);
 	}
 	else if (ballHitRight()) {
 		playerScore++;
-		if (playerScore >= pointsToWin)
-			gameEnd("YOU HAVE WON!");
+		if (playerScore >= pointsToWin) {
+			wonTheGame = true;
+			gameEnd();
+		}
 		resetBall();
 		setTimeout(() => initBallDirection(), 1000);
 	}
@@ -214,6 +246,8 @@ function renderElements(): void {
 	drawPaddles();
 	drawNet();
 	drawScore();
+	if (gameState.value == GAME_END)
+		drawEndMessage();
 };
 
 function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
@@ -233,7 +267,7 @@ function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
 		currentlyPlaying.startY = event.clientY - mouse.top - paddleHeight/2;
 };
 
-async function gameEnd(message: string): Promise<void> {
+async function gameEnd(): Promise<void> {
 /* 	console.log("gameEnd()")
  */    resetBall();
     
@@ -245,19 +279,18 @@ async function gameEnd(message: string): Promise<void> {
     });
 
     await clearIntervalPromise;
-
+	notYet.value = true;
+	gameState.value = GAME_END;
+	
     elementColor = "white";
     backgroundColor = "black";
     ball.x = -10 * gameSize;
     ball.y = -10 * gameSize;
     renderElements();
-    context.fillStyle = elementColor;
-    context.font = fontSize.toString() + "px textfont";
-    context.fillText(message, gameWidth.value/2, gameHeight.value/2);
 	// send data to database n shit
 	
 	setTimeout(() => {
-		gameState.value = NOT_PLAYING;
+		notYet.value = false;
 		buttonText.value = "play";
 	}, 1000);
 };
@@ -338,6 +371,16 @@ function drawScore(): void {
 	context.fillStyle = elementColor;
 	context.font = fontSize.toString() + "px textfont";
 	context.fillText(opponentScore.toString(), 3*gameWidth.value/4, gameHeight.value/6);
+};
+
+function drawEndMessage(): void {
+	var message: string;
+	if (wonTheGame == true)	message = "YOU HAVE WON!";
+	else					message = "YOU HAVE LOST :(";
+
+	context.fillStyle = elementColor;
+	context.font = fontSize.toString() + "px textfont";
+	context.fillText(message, gameWidth.value/2, gameHeight.value/2);
 };
 
 function resetBall(): void {
