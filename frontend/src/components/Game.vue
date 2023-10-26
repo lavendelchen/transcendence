@@ -8,9 +8,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, Ref, computed, watch, render } from 'vue';
+import { onMounted, ref, Ref } from 'vue';
 
-let		gameSize = 0.001 * window.innerWidth;
+function calculateGameSize(): number {
+	var gameSize = 0.0006 * window.innerWidth;
+	return (gameSize);
+};
+let		gameSize = calculateGameSize();
 
 let		playerScore =	0;
 let		opponentScore =	0;
@@ -35,12 +39,13 @@ const	PLAYING = 			2;
 
 let		gameState: Ref<number> =	ref(NOT_PLAYING);
 let		buttonText =				ref("play");
+let		resizingTimer: number;
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
-let	fontSize =		50		*gameSize;
-let paddleWidth =	12		*gameSize;
-let paddleHeight =	85		*gameSize;
+let	fontSize =		50			*gameSize;
+let paddleWidth =	12			*gameSize;
+let paddleHeight =	85			*gameSize;
 
 const net = {
 	width:	3	*gameSize,
@@ -67,12 +72,29 @@ const ball = {
 	velocityX:	0	*gameSize,
 	velocityY:	0	*gameSize
 };
- 
-function atWindowResize() { // EVERYTHING JUST *= ??????
-	const oldGameSize =	gameSize;
-	gameSize =			0.001 * window.innerWidth;
-	const changeFactor = gameSize / oldGameSize;
-	
+
+function atWindowResize(timeout = 300){
+/* 	console.log("atWindowResize()");
+ */	let timer: number;
+	return () => {
+	  clearTimeout(timer);
+	  timer = setTimeout(() => resizeCanvas(), timeout);
+	};
+};
+
+function resizeCanvas() {
+	/* 	console.log("resizeCanvas()");
+	*/	const oldGameSize =		gameSize;
+	gameSize =				calculateGameSize();
+	resizeEverything(gameSize, oldGameSize);
+	requestAnimationFrame(renderElements);
+	requestAnimationFrame(adjustCanvas);
+};
+
+function resizeEverything(newGameSize: number, oldGameSize: number) {
+	/* 	console.log("resizeEverything()");
+ */	var changeFactor = newGameSize / oldGameSize;
+
 	gameWidth.value *=	changeFactor;
 	gameHeight.value *=	changeFactor;
 	fontSize *=			changeFactor;
@@ -94,25 +116,42 @@ function atWindowResize() { // EVERYTHING JUST *= ??????
 	//ball.speed
 	//ball.velocityX
 	//ball.velocityY
-	var rect = canvas.getBoundingClientRect();
-	canvas.width = rect.width;
-	canvas.height = rect.height;
 	context.textAlign = 'center';
-	renderElements();
+};
+
+
+/* when the canvas height doesn't fit into screen despite adjustments */
+function adjustCanvas() {
+	if (canvas.getBoundingClientRect().bottom > window.innerHeight) {
+		var oldGameSize = gameSize;
+		gameSize = 0.0008 * window.innerHeight;
+		resizeEverything(gameSize, oldGameSize);
+		requestAnimationFrame(renderElements);
+	}
 };
 
 onMounted(() => {
-	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+/* 	console.log("onMounted()");
+ */	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	context = canvas.getContext("2d") as CanvasRenderingContext2D;
 	context.textAlign = 'center';
 	renderElements();
-	window.addEventListener("resize", atWindowResize);
+	adjustCanvas();
+
+	window.addEventListener("resize", atWindowResize());
+	console.log("Window width: " + window.innerWidth);
+	console.log("Window height: " + window.innerHeight);
+	console.log("Canvas bottom: " + canvas.getBoundingClientRect().bottom);
+	console.log("Canvas top: " + canvas.getBoundingClientRect().top);
+	console.log("Canvas y: " + canvas.getBoundingClientRect().y);
+	console.log("Canvas height: " + canvas.getBoundingClientRect().height);
 });
 
 /* functions */
 
 function startQueue() {
-	buttonText.value = "Waiting for opponent...";
+/* 	console.log("startQueue()");
+ */	buttonText.value = "Waiting for opponent...";
 	gameState.value = WAITING_IN_QUEUE;
 	setTimeout(() => {
 		buttonText.value = "3";
@@ -125,7 +164,8 @@ function startQueue() {
 }
 
 function startGame(): void {
-	gameState.value = PLAYING;
+/* 	console.log("startGame()");
+ */	gameState.value = PLAYING;
 	canvas.addEventListener("mousemove", movePaddle);
 	initBallDirection();
 	setTimeout(() => {
@@ -134,13 +174,14 @@ function startGame(): void {
 };
 
 function game(): void {
-	console.log(paddles.player.startY);
-	updatePositions();
+/* 	console.log("game()");
+ */	updatePositions();
 	renderElements();
 };
 
 function updatePositions(): void {
-	ball.x += ball.velocityX;
+/* 	console.log("updatePositions()");
+ */	ball.x += ball.velocityX;
 	ball.y += ball.velocityY;
 
 	if (ballHitTopOrBottom())
@@ -166,7 +207,8 @@ function updatePositions(): void {
 };
 
 function renderElements(): void {
-	context.clearRect(0, 0, canvas.width, canvas.height);
+/* 	console.log("renderElements()");
+ */	context.clearRect(0, 0, canvas.width, canvas.height);
 	drawRectangle(0, 0, gameWidth.value, gameHeight.value, backgroundColor);
 	drawBall();
 	drawPaddles();
@@ -174,8 +216,9 @@ function renderElements(): void {
 	drawScore();
 };
 
-function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {//HTMLCanvasElement
-	let mouse = this.getBoundingClientRect();
+function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
+/* 	console.log("movePaddle()");
+ */	let mouse = this.getBoundingClientRect();
 
 	if (event.clientX < gameWidth.value/2)
 		var currentlyPlaying = paddles.player;
@@ -191,7 +234,8 @@ function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {//HTMLCan
 };
 
 async function gameEnd(message: string): Promise<void> {
-    resetBall();
+/* 	console.log("gameEnd()")
+ */    resetBall();
     
     const clearIntervalPromise = new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -219,7 +263,8 @@ async function gameEnd(message: string): Promise<void> {
 };
 
 function resetGame(): void {
-	backgroundColor = "white";
+/* 	console.log("resetGame()");
+ */	backgroundColor = "white";
 	elementColor = "black";
 	paddles.player.startY = gameHeight.value/2 - paddleHeight/2;
 	playerScore = 0;
@@ -234,7 +279,8 @@ function resetGame(): void {
 };
 
 function initBallDirection(): void {
-	var random = Math.floor(Math.random() * 4);
+/* 	console.log("initBallDirection()");
+ */	var random = Math.floor(Math.random() * 4);
 	switch (random) {
 		case 0:
 			ball.velocityX = baseBallSpeed*gameSize*-1;
@@ -257,12 +303,14 @@ function initBallDirection(): void {
 };
 
 function drawRectangle(startX: number, startY: number, lengthX: number, lengthY: number, color: string): void {
+/* 	console.log("drawRectangle()"); */
 	context.fillStyle = color;
 	context.fillRect(startX, startY, lengthX, lengthY);
 };
 
 function drawBall(): void {
-	context.fillStyle = elementColor;
+/* 	console.log("drawBall()");
+ */	context.fillStyle = elementColor;
 	context.beginPath();
 	context.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2, false);
 	context.closePath();
@@ -270,18 +318,21 @@ function drawBall(): void {
 };
 
 function drawPaddles(): void {
-	drawRectangle(paddles.player.startX, paddles.player.startY, paddleWidth, paddleHeight, elementColor);
+/* 	console.log("drawPaddles()");
+ */	drawRectangle(paddles.player.startX, paddles.player.startY, paddleWidth, paddleHeight, elementColor);
 	drawRectangle(paddles.opponent.startX, paddles.opponent.startY, paddleWidth, paddleHeight, elementColor);
 };
 
 function drawNet(): void {
-	for(let i = 5; i <= gameHeight.value; i += (net.gaps + net.height)) { //+=?? {
+/* 	console.log("drawNet()");
+ */	for(let i = 5; i <= gameHeight.value; i += (net.gaps + net.height)) {
 		drawRectangle((gameWidth.value/2 - net.width/2), i, net.width, net.height, elementColor);
 	}
 };
 
 function drawScore(): void {
-	context.fillStyle = elementColor;
+/* 	console.log("drawScore()");
+ */	context.fillStyle = elementColor;
 	context.font = fontSize.toString() + "px textfont";
 	context.fillText(playerScore.toString(), gameWidth.value/4, gameHeight.value/6);
 	context.fillStyle = elementColor;
@@ -290,7 +341,8 @@ function drawScore(): void {
 };
 
 function resetBall(): void {
-	ball.x = gameWidth.value / 2;
+/* 	console.log("resetBall()");
+ */	ball.x = gameWidth.value / 2;
 	ball.y = gameHeight.value / 2;
 	ball.velocityX = 0;
 	ball.velocityY = 0;
@@ -334,7 +386,8 @@ function ballHitOpponentPaddle(): boolean {
 };
 
 function calculateNewBallDirection(hitPaddle: any, direction: number): void {
-	var collidePoint = ball.y - (hitPaddle.startY + paddleHeight/2);
+/* 	console.log("calculateNewBallDirection()");
+ */	var collidePoint = ball.y - (hitPaddle.startY + paddleHeight/2);
 	
 	/* normalization */
 	collidePoint = collidePoint / (paddleHeight/2);
