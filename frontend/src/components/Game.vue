@@ -99,7 +99,6 @@ function atWindowResize(timeout = 300){
 	  timer = setTimeout(() => resizeCanvas(), timeout);
 	};
 };
-
 function resizeCanvas() {
 	/* 	console.log("resizeCanvas()");
 	*/const oldGameSize =	gameSize;
@@ -108,7 +107,6 @@ function resizeCanvas() {
 	requestAnimationFrame(renderElements);
 	requestAnimationFrame(adjustCanvas);
 };
-
 function resizeEverything(newGameSize: number, oldGameSize: number) {
 	/* 	console.log("resizeEverything()");
  */	var changeFactor = newGameSize / oldGameSize;
@@ -136,8 +134,6 @@ function resizeEverything(newGameSize: number, oldGameSize: number) {
 	ball.velocityX *=	changeFactor;
 	ball.velocityY *=	changeFactor;
 };
-
-
 /* when the canvas height doesn't fit into screen despite adjustments */
 function adjustCanvas() {
 	if (/* gameView == WIDE &&  */canvas.getBoundingClientRect().bottom > window.innerHeight) {
@@ -165,8 +161,12 @@ onMounted(() => {
 
 	window.addEventListener("resize", atWindowResize());
 
-	try				{ const webSocket = new WebSocket("ws://localhost:5174"); }
+	try {
+		const webSocket = new WebSocket("ws://localhost:5174");
+		// webSocket.on('error', console.error);
+	}
 	catch(error)	{ console.error(error); }
+	
 	
 });
 
