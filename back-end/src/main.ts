@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { WsAdapter } from '@nestjs/platform-ws';
 import * as session from 'express-session';
 import * as FilesStore from 'session-file-store'
 import * as cors from 'cors';
@@ -10,6 +11,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   
+  //enable WebSockets
+  app.useWebSocketAdapter(new WsAdapter(app));
+
   //enable "cros origin resource charing" - so that frontend can fetch data from the backend
   // setup session
   app.use(
