@@ -38,6 +38,7 @@ import { GameserverModule } from './gameserver/gameserver.module';
     // }),
     // ChatModule,
     AuthModule,
+	GameserverModule
   ],
   controllers: [AppController],
   providers: [AppResolver, AppService],

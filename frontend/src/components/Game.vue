@@ -102,7 +102,7 @@ function atWindowResize(timeout = 300){
 
 function resizeCanvas() {
 	/* 	console.log("resizeCanvas()");
-	*/	const oldGameSize =		gameSize;
+	*/const oldGameSize =	gameSize;
 	gameSize =				calculateGameSize();
 	resizeEverything(gameSize, oldGameSize);
 	requestAnimationFrame(renderElements);
@@ -135,8 +135,6 @@ function resizeEverything(newGameSize: number, oldGameSize: number) {
 	ball.speed *=		changeFactor;
 	ball.velocityX *=	changeFactor;
 	ball.velocityY *=	changeFactor;
-
-	context.textAlign = 'center';
 };
 
 
@@ -162,17 +160,14 @@ onMounted(() => {
 /* 	console.log("onMounted()");
  */	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	context = canvas.getContext("2d") as CanvasRenderingContext2D;
-	context.textAlign = 'center';
 	renderElements();
 	adjustCanvas();
 
 	window.addEventListener("resize", atWindowResize());
-	console.log("Window width: " + window.innerWidth);
-	console.log("Window height: " + window.innerHeight);
-	console.log("Canvas bottom: " + canvas.getBoundingClientRect().bottom);
-	console.log("Canvas top: " + canvas.getBoundingClientRect().top);
-	console.log("Canvas y: " + canvas.getBoundingClientRect().y);
-	console.log("Canvas height: " + canvas.getBoundingClientRect().height);
+
+	try				{ const webSocket = new WebSocket("ws://localhost:5174"); }
+	catch(error)	{ console.error(error); }
+	
 });
 
 /* functions */
@@ -292,7 +287,7 @@ async function gameEnd(): Promise<void> {
 	setTimeout(() => {
 		notYet.value = false;
 		buttonText.value = "play";
-	}, 1000);
+	}, 2500);
 };
 
 function resetGame(): void {
@@ -365,9 +360,12 @@ function drawNet(): void {
 
 function drawScore(): void {
 /* 	console.log("drawScore()");
- */	context.fillStyle = elementColor;
+ */	
+	context.textAlign = 'center';
+	context.fillStyle = elementColor;
 	context.font = fontSize.toString() + "px textfont";
 	context.fillText(playerScore.toString(), gameWidth.value/4, gameHeight.value/6);
+	context.textAlign = 'center';
 	context.fillStyle = elementColor;
 	context.font = fontSize.toString() + "px textfont";
 	context.fillText(opponentScore.toString(), 3*gameWidth.value/4, gameHeight.value/6);
@@ -378,6 +376,7 @@ function drawEndMessage(): void {
 	if (wonTheGame == true)	message = "YOU HAVE WON!";
 	else					message = "YOU HAVE LOST :(";
 
+	context.textAlign = 'center';
 	context.fillStyle = elementColor;
 	context.font = fontSize.toString() + "px textfont";
 	context.fillText(message, gameWidth.value/2, gameHeight.value/2);
