@@ -5,7 +5,10 @@
   <router-view/>
 </template>
 
-<style scoped>
+<style>
+
+@import "./assets/base.css";
+
 @font-face {
     font-family: 'textfont';
     src: url('/fonts/Pixeled.ttf');

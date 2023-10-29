@@ -96,8 +96,8 @@ function addMessageToChat() {
 
 </script>
 
-<template>
-<aside class="chat">
+<template class="chat">
+<div class="chat">
     <h3>Chat</h3>
     <div class="messages_container" id="messages_container">
             <Message v-for="message in text_array" :message_name="message.message_name" :message_content="message.message_content" :from_myself="message.from_myself"/>
@@ -107,17 +107,19 @@ function addMessageToChat() {
         <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto"></textarea>
         <button @click="addMessageToChat" >send</button>
     </div>
-</aside>
+</div>
 
 </template>
 
 <style scoped>
 
-aside {
+@import "../assets/base.css";
+
+
+div.chat {
     height: 95vh;
     width: 30vw;
-    border: 2px solid green;
-    border-radius: 8px;
+    border: 0.2px solid lightgray;
     position: fixed;
     right: 0;
     top: 0;
@@ -133,7 +135,6 @@ aside {
 
 h3 {
     padding: 10px 10px 10px 10px;
-    background-color: blue;
     border-radius: 6px;
     height: 2rem;
     width: auto;
@@ -141,15 +142,12 @@ h3 {
 }
 
 .messages_container {
-    background-color: yellow;
     margin: 0px 10px;
     overflow-y: scroll;
-
-    
 }
 
 .controls {
-    background-color: lightblue;
+    /* background-color: lightblue; */
     display: grid;
     grid-template-columns: auto 80px;
     grid-column-gap: 10px;
@@ -161,9 +159,31 @@ h3 {
 textarea {
     resize: none;
     height: auto;
-    width: auto;
-    
+    width: 100%;
+    background-color: #787878;
+    color: white;
+    outline: none;
+    border: none;
+    font-family: textfont;
+    text-transform: uppercase;
+    font-size: var(--font-size-sm);
+
 }
+
+button {
+    border: none;
+    background: white;
+    font-family: textfont;
+    text-transform: uppercase;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+}
+
+button:active {
+    margin-top: 8px;
+}
+
 
 </style>
 

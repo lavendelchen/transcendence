@@ -16,14 +16,16 @@ defineProps({
 </template>
 
 <style scoped>
+
+@import "../assets/base.css";
 .message {
-    background-color: red;
+    background-color: white;
+    color: black;
+    font-size: var(--font-size-sm);
     width: 80%;
     padding: 5px;
-    font-size: 1rem;
     display: block;
     margin-bottom: 20px;
-    /* height: fit-content; */
     float: left;
 }
 

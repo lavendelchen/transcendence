@@ -2,7 +2,7 @@
   --background-color-dark: black;
   --text-color-light: white;
 
-  --font-size-sm: clamp(0.8rem, 0.17vw + 0.76rem, 0.89rem);
+--font-size-sm: clamp(0.5rem, 0.17vw + 0.4rem, 0.89rem);
 --font-size-base: clamp(1rem, 0.34vw + 0.91rem, 1.19rem);
 --font-size-md: clamp(1.25rem, 0.61vw + 1.1rem, 1.58rem);
 --font-size-lg: clamp(1.56rem, 1vw + 1.31rem, 2.11rem);
@@ -23,4 +23,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
+}
+
+@font-face {
+  font-family: textfont;
+  src: url('~@/assets/fonts/Pixeled.ttf');
+}
+@font-face {
+font-family: logofont;
+src: url('~@/assets/fonts/8-bit-Out.ttf');
 }
