@@ -10,13 +10,18 @@ export class UserService {
         private userRepository: Repository<User>,
     ) {}
 
-    findAll(): Promise<User[]> {
-        return this.userRepository.find();
-    }
+	findAll(): Promise<User[]> {
+		return this.userRepository.find({
+			select: ['fortytwo_id', 'pseudo', 'email']
+		});
+	}
 
-    findOne(id: number): Promise<User> {
-        return this.userRepository.findOne({ where: { id } });
-    }
+	findOne(id: number): Promise<User> {
+		return this.userRepository.findOne({
+			where: { id },
+			select: ['fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'xp', 'homeMatches', 'foreignMatches']
+		});
+	}
 
     create(userData: Partial<User>): Promise<User> {
         const user = this.userRepository.create(userData);
@@ -33,6 +38,16 @@ export class UserService {
     }
 
 	// extra ...
+	async updateOrCreate(id: number, userData: Partial<User>): Promise<User> {
+		const existingUser = await this.userRepository.findOne({ where: { id } });
+
+		if (existingUser) {
+			return this.update(id, userData);
+		} else {
+			return this.create(userData);
+		}
+	}
+
 	async saveOrUpdate(userData: Partial<User>): Promise<User> {
 		// Check if user already exists using email
 		let user = await this.userRepository.findOne({ where: { email: userData.email } });

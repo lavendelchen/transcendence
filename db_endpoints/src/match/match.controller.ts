@@ -21,7 +21,7 @@ export class MatchController {
         return this.matchService.create(matchData);
     }
 
-    @Put(':id')
+    @Post(':id')
     async update(@Param('id') id: number, @Body() matchData: Partial<Match>): Promise<Match> {
         const updatedMatch = await this.matchService.update(id, matchData);
         if (!updatedMatch) {

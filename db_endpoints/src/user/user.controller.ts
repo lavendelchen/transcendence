@@ -21,6 +21,11 @@ export class UserController {
         return this.userService.create(userData);
     }
 
+    @Post(':id')
+    updateOrCreate(@Param('id') id: number, @Body() userData: Partial<User>): Promise<User> {
+        return this.userService.updateOrCreate(id, userData);
+    }
+
     @Put(':id')
     async update(@Param('id') id: number, @Body() userData: Partial<User>): Promise<User> {
         const updatedUser = await this.userService.update(id, userData);
