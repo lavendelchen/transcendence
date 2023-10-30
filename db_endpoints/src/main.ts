@@ -8,13 +8,14 @@ const FileStoreSession = FilesStore(session);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+
   //enable "cros origin resource charing" - so that frontend can fetch data from the backend
   // setup session
   app.use(
     cors({
       origin: function (origin, callback) {
-        return callback(null, true);
-      },
+        return callback(null, true);},
       credentials: true
     }),
     session({
