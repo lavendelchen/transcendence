@@ -5,6 +5,7 @@
 		</button>
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
 	</div>
+	<p>{{ opponentMsg }}</p>
 </template>
 
 <script setup lang="ts">
@@ -33,7 +34,7 @@ let		gameSize = calculateGameSize();
 
 let		playerScore =	0;
 let		opponentScore =	0;
-const	pointsToWin =	1;
+const	pointsToWin =	11;
 
 const	framesPerSecond =	50;
 const	baseBallSpeed =		8;
@@ -58,6 +59,7 @@ let		wonTheGame = false;
 
 let		gameState: Ref<number> =	ref(BEFORE_GAME);
 let		buttonText =				ref("play");
+let		opponentMsg =				ref("no game started yet");
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
@@ -90,6 +92,8 @@ const ball = {
 	velocityX:	0	*gameSize,
 	velocityY:	0	*gameSize
 };
+
+let webSocket: WebSocket;
 
 function atWindowResize(timeout = 300){
 /* 	console.log("atWindowResize()");
@@ -160,21 +164,19 @@ onMounted(() => {
 	adjustCanvas();
 
 	window.addEventListener("resize", atWindowResize());
-
-	try {
-		const webSocket = new WebSocket("ws://localhost:5174");
-		// webSocket.on('error', console.error);
-	}
-	catch(error)	{ console.error(error); }
-	
-	
 });
 
 /* functions */
 
 function startQueue() {
-/* 	console.log("startQueue()");
- */	buttonText.value = "Waiting for opponent...";
+/*	console.log("startQueue()");*/
+	try {
+		//webSocket = new WebSocket("ws://localhost:5174");
+	}
+	catch(error) { console.error(error); }
+	console.log(webSocket.url);
+
+	buttonText.value = "Waiting for opponent...";
 	gameState.value = WAITING_IN_QUEUE;
 	setTimeout(() => {
 		buttonText.value = "3";
