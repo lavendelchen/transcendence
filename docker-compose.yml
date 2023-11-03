@@ -4,10 +4,6 @@ services:
   db-container:
     image: postgres:16
     container_name: db
-    environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
     ports:
       - ${DB_PORT}:${DB_PORT}
     volumes:
@@ -27,19 +23,6 @@ services:
       - ./back-end:/app
       - /app/node_modules
 
-  # change this accordingly
-  # frontend-container:
-  #   build: ./front-end
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   depends_on:
-  #     - backend-container
-  #   volumes:
-  #     - ./front-end:/usr/share/nginx/html
-  #   networks:
-  #     - transcendence_net
-
   adminer:
     image: adminer
     ports:
@@ -49,6 +32,3 @@ services:
 
 volumes:
   db-data:
-
-networks:
-  transcendence_net:
