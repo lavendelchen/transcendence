@@ -1,30 +1,51 @@
-version: '3.8'
+version: '3.9'
 
 services:
+  db-container:
+    image: postgres:16
+    container_name: db
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
   backend-container:
     build: ./back-end
     ports:
-      - 80:80
-      - 443:443
-      - 3000:3000
-    env_file: .env
+      - "3000:3000"
+    depends_on:
+      - db-container
+    env_file:
+      - .env
     volumes:
       - ./back-end:/app
       - /app/node_modules
-    depends_on: 
-      - db-container
-    networks:
-      - transcendence_net
 
-  db-container:
-    build: ./database
+  # change this accordingly
+  # frontend-container:
+  #   build: ./front-end
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   depends_on:
+  #     - backend-container
+  #   volumes:
+  #     - ./front-end:/usr/share/nginx/html
+  #   networks:
+  #     - transcendence_net
+
+  adminer:
+    image: adminer
     ports:
-      - 5432-5433:5432-5433
-    env_file: .env
-    volumes:
-      - db-data:/var/lib/postgresql/data/
-    networks:
-      - transcendence_net
+      - "8080:8080"
+    depends_on:
+      - db-container
 
 volumes:
   db-data:
