@@ -1,6 +1,6 @@
 <template>
 	<div class="stupid-container" :style="{ 'width': gameWidth + 'px', 'height': gameHeight + 'px' }">
-		<button v-if="gameState != PLAYING && !notYet" @click="startQueue" :disabled="gameState === WAITING_IN_QUEUE" class="playButton">
+		<button v-if="gameState != PLAYING && !notYet" @click="initWebsocket" :disabled="gameState === WAITING_IN_QUEUE" class="playButton">
 			{{ buttonText }}
 		</button>
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
@@ -10,6 +10,16 @@
 
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue';
+
+interface Message {
+    type: string,
+    data: {
+	
+	}
+};
+
+const	playerName = "ANITA_" + Math.round(Math.random()*100);
+const	playerID = Math.round(Math.random()*10);
 
 //const	NARROW = true;
 //const	WIDE = false;
@@ -170,11 +180,7 @@ onMounted(() => {
 
 function startQueue() {
 /*	console.log("startQueue()");*/
-	try {
-		//webSocket = new WebSocket("ws://localhost:5174");
-	}
-	catch(error) { console.error(error); }
-	console.log(webSocket.url);
+	initWebsocket();
 
 	buttonText.value = "Waiting for opponent...";
 	gameState.value = WAITING_IN_QUEUE;
@@ -187,6 +193,32 @@ function startQueue() {
 	setTimeout(() => buttonText.value = "1", 3000);
 	setTimeout(() => startGame(), 4000);
 }
+
+function initWebsocket(): void {
+	try {
+		webSocket = new WebSocket("ws://localhost:5174");
+
+		webSocket.addEventListener('open', (event) => {
+            const authMsg = {
+                event: 'authenticate',
+                data: {
+					name: playerName, /////// neeed client name!!!!!
+					ID: playerID /////// neeed client name!!!!!
+                }
+            };
+            webSocket.send(JSON.stringify(authMsg));
+			console.log(authMsg);
+        });
+
+		webSocket.addEventListener('message', (event) => {
+			//const message = JSON.parse(event.data);
+	        console.log('Message from server:', event.data);
+	    });
+	}
+	catch(error) {
+		console.error(error);
+	}
+};
 
 function startGame(): void {
 /* 	console.log("startGame()");
@@ -266,24 +298,24 @@ function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
 
 async function gameEnd(): Promise<void> {
 /* 	console.log("gameEnd()")
- */    resetBall();
-    
-    const clearIntervalPromise = new Promise<void>((resolve) => {
-        setTimeout(() => {
-            clearInterval(interval);
-            resolve();
-        }, 0); // 0 milliseconds delay, executes on the next tick
-    });
+ */	resetBall();
+		
+	const clearIntervalPromise = new Promise<void>((resolve) => {
+		setTimeout(() => {
+			clearInterval(interval);
+			resolve();
+		}, 0); // 0 milliseconds delay, executes on the next tick
+	});
 
-    await clearIntervalPromise;
+	await clearIntervalPromise;
 	notYet.value = true;
 	gameState.value = GAME_END;
 	
-    elementColor = "white";
-    backgroundColor = "black";
-    ball.x = -10 * gameSize;
-    ball.y = -10 * gameSize;
-    renderElements();
+	elementColor = "white";
+	backgroundColor = "black";
+	ball.x = -10 * gameSize;
+	ball.y = -10 * gameSize;
+	renderElements();
 	// send data to database n shit
 	
 	setTimeout(() => {
@@ -299,7 +331,6 @@ function resetGame(): void {
 	paddles.player.startY = gameHeight.value/2 - paddleHeight/2;
 	playerScore = 0;
 	paddles.opponent.startY = gameHeight.value/2 - paddleHeight/2;
-	console.log()
 	opponentScore = 0;
 	ball.x = gameWidth.value/2;
 	ball.y = gameHeight.value/2;
