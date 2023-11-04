@@ -26,7 +26,7 @@ export class GameserverGateway {
 
 	private queue: Player[] = [];
 	private ongoingMatches: Match[] = [];
-	private disconnectMsg: {
+	private disconnectMsg = {
 		event: "opponentDisconnect"
 	};
 
