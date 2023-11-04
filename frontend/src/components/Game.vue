@@ -184,6 +184,7 @@ onMounted(() => {
 function startQueue() {
 /*	console.log("startQueue()");*/
 	initWebsocket();
+	//HERE
 
 	buttonText.value = "Waiting for opponent...";
 	gameState.value = WAITING_IN_QUEUE;
@@ -234,7 +235,9 @@ function initWebsocket(): void {
 };
 
 function handleOpponentDisconnect(): void {
-
+	gameResult = DISCONNECT;
+	gameEnd();
+	//HERE -> is that all we need to do?
 };
 
 function startGame(): void {
@@ -411,33 +414,35 @@ function drawNet(): void {
 function drawScore(): void {
 /* 	console.log("drawScore()");
  */	
-	context.textAlign = 'center';
-	context.fillStyle = elementColor;
-	context.font = fontSize.toString() + "px textfont";
-	context.fillText(playerScore.toString(), gameWidth.value/4, gameHeight.value/6);
-	context.textAlign = 'center';
-	context.fillStyle = elementColor;
-	context.font = fontSize.toString() + "px textfont";
-	context.fillText(opponentScore.toString(), 3*gameWidth.value/4, gameHeight.value/6);
+	drawText(playerScore.toString(), gameWidth.value/4, gameHeight.value/6);
+	drawText(opponentScore.toString(), 3*gameWidth.value/4, gameHeight.value/6);
 };
 
 function drawEndMessage(): void {
 	var message: string;
+	gameResult = DISCONNECT;
 	switch (gameResult) {
 		case WON:
 			message = "YOU HAVE WON!"; break;
 		case LOST:
 			message = "YOU HAVE LOST :("; break;
 		case DISCONNECT:
-			message = "Connection error:\nGame terminated"; break;
+			message = "connection error:"; break;
 		default:
 			message = "???";
 	}
 
+	drawText(message, gameWidth.value/2, gameHeight.value/2);
+	if (gameResult === DISCONNECT) {
+		drawText("game terminated", gameWidth.value/2, (gameHeight.value/2) + (100*gameSize));
+	}
+};
+
+function drawText(text: string, xOffset: number, yOffset: number): void {
 	context.textAlign = 'center';
 	context.fillStyle = elementColor;
 	context.font = fontSize.toString() + "px textfont";
-	context.fillText(message, gameWidth.value/2, gameHeight.value/2);
+	context.fillText(text, xOffset, yOffset);
 };
 
 function resetBall(): void {
