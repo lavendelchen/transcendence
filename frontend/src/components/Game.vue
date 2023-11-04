@@ -65,7 +65,10 @@ const	PLAYING = 			2;
 const	GAME_END =			3;
 let		notYet =			ref(false);
 
-let		wonTheGame = false;
+const	WON =			0;
+const	LOST =			1;
+const	DISCONNECT =	2;
+let		gameResult =	WON;
 
 let		gameState: Ref<number> =	ref(BEFORE_GAME);
 let		buttonText =				ref("play");
@@ -207,17 +210,31 @@ function initWebsocket(): void {
                 }
             };
             webSocket.send(JSON.stringify(authMsg));
-			console.log(authMsg);
         });
 
 		webSocket.addEventListener('message', (event) => {
-			//const message = JSON.parse(event.data);
-	        console.log('Message from server:', event.data);
+			const message = JSON.parse(event.data);
+	        switch (message.event) {
+				case 'opponentDisconnect':
+					handleOpponentDisconnect();
+					break;
+			}
 	    });
+
+		webSocket.addEventListener('close', (event) => {
+			//HERE
+		});
+		webSocket.addEventListener('error', (event) => {
+			//HERE
+		});
 	}
 	catch(error) {
 		console.error(error);
 	}
+};
+
+function handleOpponentDisconnect(): void {
+
 };
 
 function startGame(): void {
@@ -250,7 +267,7 @@ function updatePositions(): void {
 	else if (ballHitLeft()) {
 		opponentScore++;
 		if (opponentScore >= pointsToWin) {
-			wonTheGame = false;
+			gameResult = LOST;
 			gameEnd();
 		}
 		resetBall();
@@ -259,7 +276,7 @@ function updatePositions(): void {
 	else if (ballHitRight()) {
 		playerScore++;
 		if (playerScore >= pointsToWin) {
-			wonTheGame = true;
+			gameResult = WON;
 			gameEnd();
 		}
 		resetBall();
@@ -406,8 +423,16 @@ function drawScore(): void {
 
 function drawEndMessage(): void {
 	var message: string;
-	if (wonTheGame == true)	message = "YOU HAVE WON!";
-	else					message = "YOU HAVE LOST :(";
+	switch (gameResult) {
+		case WON:
+			message = "YOU HAVE WON!"; break;
+		case LOST:
+			message = "YOU HAVE LOST :("; break;
+		case DISCONNECT:
+			message = "Connection error:\nGame terminated"; break;
+		default:
+			message = "???";
+	}
 
 	context.textAlign = 'center';
 	context.fillStyle = elementColor;
