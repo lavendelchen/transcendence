@@ -81,7 +81,6 @@ export class GameserverGateway {
 			this.queue.push(newPlayer);
 			console.log("Player added to queue!");
 		}
-		client.send(JSON.stringify(this.disconnectMsg));
 	}
 
 	initGame(player1: Player, player2: Player) {

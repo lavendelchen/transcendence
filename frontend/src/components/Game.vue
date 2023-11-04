@@ -420,7 +420,6 @@ function drawScore(): void {
 
 function drawEndMessage(): void {
 	var message: string;
-	gameResult = DISCONNECT;
 	switch (gameResult) {
 		case WON:
 			message = "YOU HAVE WON!"; break;
