@@ -37,7 +37,7 @@ async function startAuth() {
 
 <template>
 	<p id="score">
-		Score: {{ score }}p
+		Score: 3000p
 	</p>
 	<section class="logo">
 		Ping&#160;&#160;&#160;&#160;&#160;&#160;&#160; <br>

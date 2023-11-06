@@ -21,7 +21,7 @@ defineProps({
 .message {
     background-color: white;
     color: black;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-tiny);
     width: 80%;
     padding: 5px;
     display: block;
@@ -31,6 +31,7 @@ defineProps({
 
 p {
     padding: 0px 5px;
+    text-align: left;
 }
 
 .myself {

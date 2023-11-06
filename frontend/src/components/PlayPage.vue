@@ -4,6 +4,7 @@
 import Chat from "./Chat.vue"
 import Menue from "./Menue.vue"
 import Profile from "./Profile.vue"
+import Game from './Game.vue'
 
 import { store } from '../store/store.ts'
 
@@ -15,7 +16,7 @@ import { store } from '../store/store.ts'
     <!-- <h1>Playpage</h1> -->
     <div class="appbody">
         <main>
-            
+            <Game />
         </main>
         <aside>
             <Menue />
@@ -26,15 +27,6 @@ import { store } from '../store/store.ts'
 
 </template>
 
-<script lang="ts">
-import Game from './Game.vue'
-
-export default {
-	components: {
-		Game
-	}
-}
-</script>
 
 <style scooped>
 
@@ -46,11 +38,14 @@ export default {
     grid-template-columns: auto 30vw;
     grid-template-rows: 1fr;
     grid-column-gap: 20px;
+    /* height: 100%; */
 }
 
 aside {
     width: 30vw;
-    height: 80vw;
+    max-width: 400px;
+    height: 100%;
+    /* max-width: 500px; */
 }
 
 h1 {

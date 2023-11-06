@@ -117,7 +117,7 @@ function addMessageToChat() {
 
 
 div.chat {
-    height: 100%;
+    height: 80vh;
     width: 100%;
     border: 0.2px solid lightgray;
     position: relative;
@@ -166,7 +166,7 @@ textarea {
     border: none;
     font-family: textfont;
     text-transform: uppercase;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-tiny);
 
 }
 

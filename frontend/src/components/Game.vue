@@ -238,6 +238,9 @@ function calculateNewBallDirection(hitPaddle: any, direction: number): void {
 </script>
 
 <style scoped>
-#gameCanvas {
-}
+ canvas {
+	display: block;
+	margin: auto;
+	margin-top: 30vh;
+ }
 </style>

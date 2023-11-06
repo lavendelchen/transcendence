@@ -42,7 +42,7 @@ import { store } from '../store/store.ts';
     grid-template-rows: 1fr;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
-    height: 10vw;
+    height: 10vh;
     width: 100%;
     /* border: 0.5px solid white; */
     justify-content: space-evenly;
@@ -52,6 +52,8 @@ import { store } from '../store/store.ts';
  .button {
     height:auto;
     width: auto;
+    max-width: 100px;
+    max-height: 100px;
     justify-content: center;
     align-items: center;
   padding: 10px 10px;
