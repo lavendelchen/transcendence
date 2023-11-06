@@ -117,10 +117,10 @@ function addMessageToChat() {
 
 
 div.chat {
-    height: 95vh;
-    width: 30vw;
+    height: 100%;
+    width: 100%;
     border: 0.2px solid lightgray;
-    position: fixed;
+    position: relative;
     right: 0;
     top: 0;
     margin-top: 2vh;
