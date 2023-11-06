@@ -1,6 +1,6 @@
 <template>
 	<div class="stupid-container" :style="{ 'width': gameWidth + 'px', 'height': gameHeight + 'px' }">
-		<button v-if="gameState != PLAYING && !notYet" @click="initWebsocket" :disabled="gameState === WAITING_IN_QUEUE" class="playButton">
+		<button v-if="gameState != PLAYING && !notYet" @click="connectToServer" :disabled="gameState === WAITING" class="playButton">
 			{{ buttonText }}
 		</button>
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
@@ -10,16 +10,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue';
-
-interface Message {
-    type: string,
-    data: {
-	
-	}
-};
-
-const	playerName = "ANITA_" + Math.round(Math.random()*100);
-const	playerID = Math.round(Math.random()*10);
 
 //const	NARROW = true;
 //const	WIDE = false;
@@ -60,7 +50,7 @@ const	PLAYER =	1;
 const	OPPONENT =	-1;
 
 const	BEFORE_GAME =		0;
-const	WAITING_IN_QUEUE =	1;
+const	WAITING =	1;
 const	PLAYING = 			2;
 const	GAME_END =			3;
 let		notYet =			ref(false);
@@ -106,14 +96,20 @@ const ball = {
 	velocityY:	0	*gameSize
 };
 
-let webSocket: WebSocket;
+interface Message {
+	type: string,
+	data: { }
+};
+const	playerName = "ANITA_" + Math.round(Math.random()*100);
+const	playerID = Math.round(Math.random()*10);
+let		webSocket: WebSocket;
 
 function atWindowResize(timeout = 300){
-/* 	console.log("atWindowResize()");
- */	let timer: number;
+	/* 	console.log("atWindowResize()");
+	*/	let timer: number;
 	return () => {
-	  clearTimeout(timer);
-	  timer = setTimeout(() => resizeCanvas(), timeout);
+		clearTimeout(timer);
+		timer = setTimeout(() => resizeCanvas(), timeout);
 	};
 };
 function resizeCanvas() {
@@ -183,11 +179,9 @@ onMounted(() => {
 
 function startQueue() {
 /*	console.log("startQueue()");*/
-	initWebsocket();
-	//HERE
+	connectToServer();
+	//HERE -> when we start game, hier ist die Vorlage
 
-	buttonText.value = "Waiting for opponent...";
-	gameState.value = WAITING_IN_QUEUE;
 	setTimeout(() => {
 		buttonText.value = "3";
 		resetGame();
@@ -198,35 +192,40 @@ function startQueue() {
 	setTimeout(() => startGame(), 4000);
 }
 
-function initWebsocket(): void {
+function connectToServer(): void {
+	
+	gameState.value = WAITING;
+	buttonText.value = "Connecting to server...";
 	try {
 		webSocket = new WebSocket("ws://localhost:5174");
-
+		
 		webSocket.addEventListener('open', (event) => {
-            const authMsg = {
-                event: 'authenticate',
+			const authMsg = {
+				event: 'authenticate',
                 data: {
 					name: playerName, /////// neeed client name!!!!!
 					ID: playerID /////// neeed client name!!!!!
                 }
             };
             webSocket.send(JSON.stringify(authMsg));
+			buttonText.value = "Waiting for opponent...";
         });
 
 		webSocket.addEventListener('message', (event) => {
 			const message = JSON.parse(event.data);
 	        switch (message.event) {
 				case 'opponentDisconnect':
-					handleOpponentDisconnect();
+					handleDisconnect();
 					break;
+				//HERE -> message to start game (get opponent name)
 			}
 	    });
 
 		webSocket.addEventListener('close', (event) => {
-			//HERE
+			handleDisconnect();
 		});
 		webSocket.addEventListener('error', (event) => {
-			//HERE
+			console.error(event);
 		});
 	}
 	catch(error) {
@@ -234,10 +233,9 @@ function initWebsocket(): void {
 	}
 };
 
-function handleOpponentDisconnect(): void {
+function handleDisconnect(): void {
 	gameResult = DISCONNECT;
 	gameEnd();
-	//HERE -> is that all we need to do?
 };
 
 function startGame(): void {

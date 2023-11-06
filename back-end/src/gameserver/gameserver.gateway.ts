@@ -31,7 +31,7 @@ export class GameserverGateway {
 	};
 
 	handleConnection(client: Socket) {
-		console.log('New client connected');
+		console.log('New player connected');
 	}
 	
 	handleDisconnect(client: Socket) {
@@ -45,13 +45,11 @@ export class GameserverGateway {
 		this.ongoingMatches.forEach((match, i) => {
 			if (match.player1.socket === client) {
 				match.player2.socket.send(JSON.stringify(this.disconnectMsg));
-				//HERE -> CLIENT
 				match.player2.socket.close();
 				return;
 			}
 			else if (match.player2.socket === client) {
 				match.player1.socket.send(JSON.stringify(this.disconnectMsg));
-				//HERE -> CLIENT
 				match.player1.socket.close();
 				return;
 			}
@@ -79,7 +77,7 @@ export class GameserverGateway {
 		}
 		else {
 			this.queue.push(newPlayer);
-			console.log("Player added to queue!");
+			console.log("Player " + newPlayer.name + " added to queue!");
 		}
 	}
 
@@ -89,7 +87,9 @@ export class GameserverGateway {
 			player2: player2
 		};
 		this.ongoingMatches.push(newMatch);
-		console.log("Match made!");
-		//HERE
+		console.log("Match made! " + newMatch.player1.name + " will play against " + newMatch.player2.name);
+		// HERE -> send names to other players & do game stuff :[
+		// Step by step move things from clients to server to see if it works.
+		// look at startGame & startQueue to follow the logic
 	};
 }
