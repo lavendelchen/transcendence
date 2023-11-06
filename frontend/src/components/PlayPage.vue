@@ -26,6 +26,16 @@ import { store } from '../store/store.ts'
 
 </template>
 
+<script lang="ts">
+import Game from './Game.vue'
+
+export default {
+	components: {
+		Game
+	}
+}
+</script>
+
 <style scooped>
 
 

@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <router-view/>
+	<router-view/>
 </template>
 
 <style>
@@ -25,10 +25,12 @@ body {
 
 p {
   font-family: 'textfont', sans-serif;
+  text-align: center;
 }
 
 h1 {
   font-family: 'logofont';
-  font-size: 500px !important;
+  text-align: center;
+  font-size: var(--font-size-xl);
 }
 </style>

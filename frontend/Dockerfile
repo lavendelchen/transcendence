@@ -1,19 +1,10 @@
-FROM node:14
+FROM	node:18.18
 
-WORKDIR /app
+WORKDIR	/app
 
-COPY package*.json ./
+COPY	setup.sh /bin/
+RUN		chmod +x /bin/setup.sh
 
-RUN npm install
+EXPOSE	5173
 
-#COPY . .
-
-RUN npm run build
-
-FROM nginx:stable-alpine
-
-#COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD		npm install && npm run dev

@@ -36,81 +36,80 @@ async function startAuth() {
 </script>
 
 <template>
-    <p id="highScore">
-        Highscore: 3000p
-    </p>
-    <section class="logo">
-      Ping&#160;&#160;&#160;&#160;&#160;&#160;&#160; <br>
-      Pang <br>
-      &#160;&#160;&#160;&#160;&#160;&#160;&#160;Pong
-    </section>
-    <!-- <img src="http://via.placeholder.com/800x300" alt=""> -->
-    <!-- <a href="https://api."> -->
-      <div @click="startAuth" class="buttonLogin">
-        Login
-      </div>
-    <!-- </a> -->
+	<p id="score">
+		Score: {{ score }}p
+	</p>
+	<section class="logo">
+		Ping&#160;&#160;&#160;&#160;&#160;&#160;&#160; <br>
+		Pang <br>
+		&#160;&#160;&#160;&#160;&#160;&#160;&#160;Pong
+	</section>
+	<!-- <a href="https://api."> -->
+		<div @click="startAuth" class="buttonLogin">
+			Login
+		</div>
+	<!-- </a> -->
     <RouterLink class="link-skipp-login" to="/play">Skip Login</RouterLink>
-    <p class="copyrightFooter">
-        &#169; The PingPangPong Company 2023 <br>
-        All rights reserved
-    </p>
+	<p class="copyrightFooter"> <!-- put this outside of router view maybe? -->
+		&#169; The PingPangPong Company 2023 <br>
+		All rights reserved
+	</p>
 </template>
+
+<script lang="ts">
+
+export default {
+	data() {
+		return {
+			score: -1
+		}
+	},
+	methods: {
+	},
+	mounted() {
+		this.score = 3000; // FETCH from backend
+	}
+}
+
+</script>
 
 <style scoped>
 
 a:link {
-  color: white;
-  text-decoration: none;
-}
-
-
-@font-face {
-    font-family: textfont;
-    src: url('~@/assets/fonts/Pixeled.ttf');
-}
-@font-face {
-  font-family: logofont;
-  src: url('~@/assets/fonts/8-bit-Out.ttf');
+	color: white;
+	text-decoration: none;
 }
 
 section {
-  font-size: var(--font-size-xxxl);
-  letter-spacing: 0px;
-  line-height: calc(30px + 5vw);
-  width: 100%;
-  text-align: center;
-  text-align: center;
-  margin-top: 10vh;
-
-  
-  
+	font-size: var(--font-size-xxxl);
+	letter-spacing: 0px;
+	line-height: calc(30px + 5vw);
+	width: 100%;
+	text-align: center;
+	text-align: center;
+	margin-top: 10vh;
 }
 
 .logo {
-  font-family: 'Logofont';
+	font-family: 'Logofont';
 }
 
 body {
-  font-family: 'textfont', sans-serif;
+	font-family: 'textfont', sans-serif;
 }
 
 p {
-  font-family: 'textfont', sans-serif;
+	text-align: center;
+	font-family: 'textfont', sans-serif;
 }
 
-    img {
-      width: 800px;
-      display: block;
-      margin: 20vh auto 0 auto;
-    }
+img {
+	width: 800px;
+	display: block;
+	margin: 20vh auto 0 auto;
+}
 
-    p {
-      text-align: center;
-    }
-
-    div.buttonLogin,
-    .link-skipp-login {
+    div.buttonLogin {
       display: block;
       margin: 10vh auto 0 auto;
       width: 100px;
@@ -119,11 +118,26 @@ p {
       padding: 10px 20px;
     }
 
-    .copyrightFooter {
-        position: fixed;
-        bottom: 0;
-        display: block;
-        left: 30vw;
-        width: 40vw;
-    }
+.copyrightFooter {
+	font-size: var(--font-size-sm);
+	position: fixed;
+	bottom: 0;
+	display: block;
+	left: 30vw;
+	width: 40vw;
+}
+
+.leaderboard {
+	margin: 0;
+	font-size: var(--font-size-tiny);
+}
+
+.position {
+	margin: 0;
+	top: 7px;
+	position: relative;
+	color: tomato;
+	font-family: 'logofont', sans-serif;
+	font-size: var(--font-size-lg);
+}
 </style>
