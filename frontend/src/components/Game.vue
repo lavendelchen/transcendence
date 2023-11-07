@@ -249,7 +249,7 @@ function handleDisconnect(): void {
 };
 
 function startGame(): void {
-	// HERE -> switch this to server
+	// HERE -> switch this to server. maybe look at that game tutorial for how to do these events
 	gameState.value = PLAYING;
 	canvas.addEventListener("mousemove", movePaddle);
 	initBallDirection();
