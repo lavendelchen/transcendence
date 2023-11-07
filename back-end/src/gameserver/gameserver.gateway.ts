@@ -54,6 +54,7 @@ export class GameserverGateway {
 				return;
 			}
 		});
+		console.log('Player disconnected');
 	}
 
 	handleError(client: Socket, ...args: any[]) {

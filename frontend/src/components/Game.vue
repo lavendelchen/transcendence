@@ -10,6 +10,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue';
+import fontUrl from '/fonts/Pixeled.ttf';
+
+let canvasFont: FontFace;
 
 //const	NARROW = true;
 //const	WIDE = false;
@@ -17,7 +20,7 @@ import { onMounted, ref, Ref } from 'vue';
 
 function calculateGameSize(): number {
 	var gameSize: number;
-
+	
 	if (window.innerWidth < 992) {
 		gameSize = 0.00095 * window.innerWidth;
 		//gameView = NARROW;
@@ -109,7 +112,7 @@ function atWindowResize(timeout = 300){
 	*/	let timer: number;
 	return () => {
 		clearTimeout(timer);
-		timer = setTimeout(() => resizeCanvas(), timeout);
+		timer = window.setTimeout(() => resizeCanvas(), timeout);
 	};
 };
 function resizeCanvas() {
@@ -166,19 +169,23 @@ function adjustCanvas() {
 };
 
 onMounted(() => {
-/* 	console.log("onMounted()");
- */	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
-	context = canvas.getContext("2d") as CanvasRenderingContext2D;
-	renderElements();
-	adjustCanvas();
+	canvasFont = new FontFace('canvasFont', `url(${fontUrl})`);
 
-	window.addEventListener("resize", atWindowResize());
+	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	context = canvas.getContext("2d") as CanvasRenderingContext2D;
+	
+	canvasFont.load().then((font) => {
+		document.fonts.add(font);
+
+		renderElements();
+		adjustCanvas();
+		window.addEventListener("resize", atWindowResize());
+	});
 });
 
 /* functions */
 
 function startQueue() {
-/*	console.log("startQueue()");*/
 	connectToServer();
 	//HERE -> when we start game, hier ist die Vorlage
 
@@ -244,7 +251,7 @@ function startGame(): void {
 	canvas.addEventListener("mousemove", movePaddle);
 	initBallDirection();
 	setTimeout(() => {
-		interval = setInterval(game, 1000/framesPerSecond);
+		interval = window.setInterval(game, 1000/framesPerSecond);
 	}, 1000);
 };
 
@@ -438,7 +445,7 @@ function drawEndMessage(): void {
 function drawText(text: string, xOffset: number, yOffset: number): void {
 	context.textAlign = 'center';
 	context.fillStyle = elementColor;
-	context.font = fontSize.toString() + "px textfont";
+	context.font = fontSize.toString() + `px ${canvasFont.family}`;
 	context.fillText(text, xOffset, yOffset);
 };
 
