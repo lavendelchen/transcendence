@@ -65,7 +65,7 @@ let		gameResult =	WON;
 
 let		gameState: Ref<number> =	ref(BEFORE_GAME);
 let		buttonText =				ref("play");
-let		opponentMsg =				ref("no game started yet");
+let		opponentMsg =				ref("not playing");
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
@@ -185,20 +185,6 @@ onMounted(() => {
 
 /* functions */
 
-function startQueue() {
-	connectToServer();
-	//HERE -> when we start game, hier ist die Vorlage
-
-	setTimeout(() => {
-		buttonText.value = "3";
-		resetGame();
-		renderElements();
-	}, 1000);
-	setTimeout(() => buttonText.value = "2", 2000);
-	setTimeout(() => buttonText.value = "1", 3000);
-	setTimeout(() => startGame(), 4000);
-}
-
 function connectToServer(): void {
 	
 	gameState.value = WAITING;
@@ -218,15 +204,7 @@ function connectToServer(): void {
 			buttonText.value = "Waiting for opponent...";
         });
 
-		webSocket.addEventListener('message', (event) => {
-			const message = JSON.parse(event.data);
-	        switch (message.event) {
-				case 'opponentDisconnect':
-					handleDisconnect();
-					break;
-				//HERE -> message to start game (get opponent name)
-			}
-	    });
+		webSocket.addEventListener('message', handleMessages);
 
 		webSocket.addEventListener('close', (event) => {
 			handleDisconnect();
@@ -240,14 +218,39 @@ function connectToServer(): void {
 	}
 };
 
+function handleMessages(event: MessageEvent<any>) {
+	const message = JSON.parse(event.data);
+	console.log(message);
+
+	switch (message.event) {
+		case 'opponentDisconnect':
+			handleDisconnect();
+			break;
+
+		case 'gameInfo':
+			opponentMsg.value = "Playing against " + message.data.opponentName;
+			resetGame();
+			renderElements();
+			break;
+
+		case 'countdown':
+			buttonText.value = message.data.number.toString();
+			break;
+
+		case 'startGame':
+			startGame();
+			break;
+	}
+};
+
 function handleDisconnect(): void {
 	gameResult = DISCONNECT;
 	gameEnd();
 };
 
 function startGame(): void {
-/* 	console.log("startGame()");
- */	gameState.value = PLAYING;
+	// HERE -> switch this to server
+	gameState.value = PLAYING;
 	canvas.addEventListener("mousemove", movePaddle);
 	initBallDirection();
 	setTimeout(() => {
@@ -307,18 +310,12 @@ function renderElements(): void {
 function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
 /* 	console.log("movePaddle()");
  */	let mouse = this.getBoundingClientRect();
-
-	if (event.clientX < gameWidth.value/2)
-		var currentlyPlaying = paddles.player;
-	else
-		var currentlyPlaying = paddles.opponent;
-
 	if (event.clientY - mouse.top - paddleHeight/2 < 0)
-		currentlyPlaying.startY = 0;
+		paddles.player.startY = 0;
 	else if (event.clientY - mouse.top + paddleHeight/2 >= gameHeight.value)
-		currentlyPlaying.startY = gameHeight.value - paddleHeight;
+		paddles.player.startY = gameHeight.value - paddleHeight;
 	else
-		currentlyPlaying.startY = event.clientY - mouse.top - paddleHeight/2;
+		paddles.player.startY = event.clientY - mouse.top - paddleHeight/2;
 };
 
 async function gameEnd(): Promise<void> {
@@ -346,6 +343,7 @@ async function gameEnd(): Promise<void> {
 	setTimeout(() => {
 		notYet.value = false;
 		buttonText.value = "play";
+		opponentMsg.value = "not playing";
 	}, 2500);
 };
 

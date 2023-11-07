@@ -11,7 +11,6 @@ interface Player {
 	socket: Socket;
 	name: string;
 	ID: number;
-	//playerIDs??
 }
 
 interface Match {
@@ -26,9 +25,23 @@ export class GameserverGateway {
 
 	private queue: Player[] = [];
 	private ongoingMatches: Match[] = [];
+
 	private disconnectMsg = {
 		event: "opponentDisconnect"
 	};
+	private gameInfoMsg = {
+		event: "gameInfo",
+		data: {
+			opponentName: ''
+		}
+	};
+	private countdownMsg = {
+		event: "countdown",
+		data: { number: 0 }
+	}
+	private startGameMsg = {
+		event: "startGame",
+	}
 
 	handleConnection(client: Socket) {
 		console.log('New player connected');
@@ -60,6 +73,12 @@ export class GameserverGateway {
 	handleError(client: Socket, ...args: any[]) {
 		console.error(args);
 	}
+
+	sendToBoth(msg: string, match: Match) {
+		console.log(msg);
+		match.player1.socket.send(msg);
+		match.player2.socket.send(msg);
+	}
 	
 	@SubscribeMessage('authenticate')
 	authenticatePlayer(client: Socket,
@@ -85,12 +104,35 @@ export class GameserverGateway {
 	initGame(player1: Player, player2: Player) {
 		const newMatch: Match = {
 			player1: player1,
-			player2: player2
+			player2: player2,
 		};
+
 		this.ongoingMatches.push(newMatch);
-		console.log("Match made! " + newMatch.player1.name + " will play against " + newMatch.player2.name);
-		// HERE -> send names to other players & do game stuff :[
+		console.log("Match made! " + player1.name + " will play against " + player2.name);
+
+		this.gameInfoMsg.data.opponentName = player1.name;
+		player2.socket.send(JSON.stringify(this.gameInfoMsg));
+		this.gameInfoMsg.data.opponentName = player2.name;
+		player1.socket.send(JSON.stringify(this.gameInfoMsg));
+		this.doCountdown(newMatch);
+		// HERE
 		// Step by step move things from clients to server to see if it works.
-		// look at startGame & startQueue to follow the logic
+		// look at startGame to follow the logic
+	};
+
+	doCountdown(match: Match) {
+		this.countdownMsg.data.number = 3;
+		this.sendToBoth(JSON.stringify(this.countdownMsg), match);
+		setTimeout(() => {
+			this.countdownMsg.data.number--;
+			this.sendToBoth(JSON.stringify(this.countdownMsg), match);
+		}, 2000);
+		setTimeout(() => {
+			this.countdownMsg.data.number--;
+			this.sendToBoth(JSON.stringify(this.countdownMsg), match);
+		}, 3000);
+		setTimeout(() => 
+			this.sendToBoth(JSON.stringify(this.startGameMsg), match)
+		, 4000);
 	};
 }
