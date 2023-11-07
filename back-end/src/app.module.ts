@@ -9,6 +9,7 @@ import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { GameserverModule } from './gameserver/gameserver.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AuthModule } from './auth/auth.module';
     // }),
     // ChatModule,
     AuthModule,
+	GameserverModule
   ],
   controllers: [AppController],
   providers: [AppResolver, AppService],
