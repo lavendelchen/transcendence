@@ -39,7 +39,7 @@ let		playerScore =	0;
 let		opponentScore =	0;
 const	pointsToWin =	11;
 
-const	framesPerSecond =	50;
+let		framesPerSecond =	50;
 const	baseBallSpeed =		8;
 
 let		backgroundColor =	"white";
@@ -53,19 +53,19 @@ const	PLAYER =	1;
 const	OPPONENT =	-1;
 
 const	BEFORE_GAME =		0;
-const	WAITING =	1;
+const	WAITING =			1;
 const	PLAYING = 			2;
 const	GAME_END =			3;
-let		notYet =			ref(false);
+let		notYet =					ref(false);
+let		gameState: Ref<number> =	ref(BEFORE_GAME);
 
 const	WON =			0;
 const	LOST =			1;
 const	DISCONNECT =	2;
 let		gameResult =	WON;
 
-let		gameState: Ref<number> =	ref(BEFORE_GAME);
 let		buttonText =				ref("play");
-let		opponentMsg =				ref("not playing");
+let		opponentMsg =				ref("no game active");
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
@@ -108,16 +108,14 @@ const	playerID = Math.round(Math.random()*10);
 let		webSocket: WebSocket;
 
 function atWindowResize(timeout = 300){
-	/* 	console.log("atWindowResize()");
-	*/	let timer: number;
+	let timer: number;
 	return () => {
 		clearTimeout(timer);
 		timer = window.setTimeout(() => resizeCanvas(), timeout);
 	};
 };
 function resizeCanvas() {
-	/* 	console.log("resizeCanvas()");
-	*/const oldGameSize =	gameSize;
+	const oldGameSize =	gameSize;
 	gameSize =				calculateGameSize();
 	resizeEverything(gameSize, oldGameSize);
 	requestAnimationFrame(renderElements);
@@ -190,7 +188,7 @@ function connectToServer(): void {
 	gameState.value = WAITING;
 	buttonText.value = "Connecting to server...";
 	try {
-		webSocket = new WebSocket("ws://localhost:5174");
+		webSocket = new WebSocket("ws://10.13.3.7:5174");
 		
 		webSocket.addEventListener('open', (event) => {
 			const authMsg = {
@@ -207,7 +205,8 @@ function connectToServer(): void {
 		webSocket.addEventListener('message', handleMessages);
 
 		webSocket.addEventListener('close', (event) => {
-			handleDisconnect();
+			if (gameState.value != GAME_END)
+				handleDisconnect();
 		});
 		webSocket.addEventListener('error', (event) => {
 			console.error(event);
@@ -228,7 +227,7 @@ function handleMessages(event: MessageEvent<any>) {
 			break;
 
 		case 'gameInfo':
-			opponentMsg.value = "Playing against " + message.data.opponentName;
+			opponentMsg.value = "Opponent: " + message.data.opponentName;
 			resetGame();
 			renderElements();
 			break;
@@ -238,7 +237,32 @@ function handleMessages(event: MessageEvent<any>) {
 			break;
 
 		case 'startGame':
+			ball.speed =		message.data.ball.speed		*gameSize;
+			ball.velocityX =	message.data.ball.velocityX	*gameSize;
+			ball.velocityY =	message.data.ball.velocityY	*gameSize;
 			startGame();
+			break;
+
+		case 'update':
+			ball.x =			message.data.ball.x			*gameSize;
+			ball.y =			message.data.ball.y			*gameSize;
+			ball.speed =		message.data.ball.speed		*gameSize;
+			ball.velocityX =	message.data.ball.velocityX	*gameSize;
+			ball.velocityY =	message.data.ball.velocityY	*gameSize;
+			break;
+
+		case 'moveOpponentPaddle':
+			paddles.opponent.startY = message.data.paddle.startY * gameSize;
+			break;
+
+		case 'updateScore':
+			playerScore = message.data.playerScore;
+			opponentScore = message.data.opponentScore;
+			break;
+		
+		case 'gameEnd':
+			gameResult = message.data.won ? WON : LOST;
+			gameEnd();
 			break;
 	}
 };
@@ -252,47 +276,34 @@ function startGame(): void {
 	// HERE -> switch this to server. maybe look at that game tutorial for how to do these events
 	gameState.value = PLAYING;
 	canvas.addEventListener("mousemove", movePaddle);
-	initBallDirection();
-	setTimeout(() => {
-		interval = window.setInterval(game, 1000/framesPerSecond);
-	}, 1000);
+	interval = window.setInterval(game, 1000/framesPerSecond);
 };
 
 function game(): void {
-/* 	console.log("game()");
- */	updatePositions();
+	updatePositions();
 	renderElements();
 };
 
 function updatePositions(): void {
-/* 	console.log("updatePositions()");
- */	ball.x += ball.velocityX;
+	ball.x += ball.velocityX;
 	ball.y += ball.velocityY;
 
-	if (ballHitTopOrBottom())
-		ball.velocityY *= -1;
-	else if (ballHitPlayerPaddle())
-		calculateNewBallDirection(paddles.player, PLAYER);
-	else if (ballHitOpponentPaddle())
-		calculateNewBallDirection(paddles.opponent, OPPONENT);
-	else if (ballHitLeft()) {
-		opponentScore++;
-		if (opponentScore >= pointsToWin) {
-			gameResult = LOST;
-			gameEnd();
-		}
-		resetBall();
-		setTimeout(() => initBallDirection(), 1000);
-	}
-	else if (ballHitRight()) {
-		playerScore++;
-		if (playerScore >= pointsToWin) {
-			gameResult = WON;
-			gameEnd();
-		}
-		resetBall();
-		setTimeout(() => initBallDirection(), 1000);
-	}
+	// else if (ballHitLeft()) {
+	// 	opponentScore++;
+	// 	if (opponentScore >= pointsToWin) {
+	// 		gameResult = LOST;
+	// 		gameEnd();
+	// 	}
+	// 	resetBall();
+	// }
+	// else if (ballHitRight()) {
+	// 	playerScore++;
+	// 	if (playerScore >= pointsToWin) {
+	// 		gameResult = WON;
+	// 		gameEnd();
+	// 	}
+	// 	resetBall();
+	// }
 };
 
 function renderElements(): void {
@@ -308,48 +319,54 @@ function renderElements(): void {
 };
 
 function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
-/* 	console.log("movePaddle()");
- */	let mouse = this.getBoundingClientRect();
+	let mouse = this.getBoundingClientRect();
 	if (event.clientY - mouse.top - paddleHeight/2 < 0)
 		paddles.player.startY = 0;
 	else if (event.clientY - mouse.top + paddleHeight/2 >= gameHeight.value)
 		paddles.player.startY = gameHeight.value - paddleHeight;
 	else
 		paddles.player.startY = event.clientY - mouse.top - paddleHeight/2;
+
+	const movePaddleMsg = {
+		event: 'movePaddle',
+        data: {
+			paddle: {
+				startY: paddles.player.startY / gameSize
+			}
+        }
+    };
+    webSocket.send(JSON.stringify(movePaddleMsg));
 };
 
 async function gameEnd(): Promise<void> {
-/* 	console.log("gameEnd()")
- */	resetBall();
-		
 	const clearIntervalPromise = new Promise<void>((resolve) => {
 		setTimeout(() => {
 			clearInterval(interval);
 			resolve();
-		}, 0); // 0 milliseconds delay, executes on the next tick
+		}, 0); /* 0 milliseconds delay, executes on the next tick */
 	});
 
 	await clearIntervalPromise;
 	notYet.value = true;
 	gameState.value = GAME_END;
+
+	webSocket.close();
 	
 	elementColor = "white";
 	backgroundColor = "black";
 	ball.x = -10 * gameSize;
 	ball.y = -10 * gameSize;
 	renderElements();
-	// send data to database n shit
 	
 	setTimeout(() => {
 		notYet.value = false;
 		buttonText.value = "play";
-		opponentMsg.value = "not playing";
+		opponentMsg.value = "No game active";
 	}, 2500);
 };
 
 function resetGame(): void {
-/* 	console.log("resetGame()");
- */	backgroundColor = "white";
+	backgroundColor = "white";
 	elementColor = "black";
 	paddles.player.startY = gameHeight.value/2 - paddleHeight/2;
 	playerScore = 0;
@@ -360,30 +377,6 @@ function resetGame(): void {
 	ball.velocityX = 0;
 	ball.velocityY = 0;
 	ball.speed = 0;
-};
-
-function initBallDirection(): void {
-/* 	console.log("initBallDirection()");
- */	var random = Math.floor(Math.random() * 4);
-	switch (random) {
-		case 0:
-			ball.velocityX = baseBallSpeed*gameSize*-1;
-			ball.velocityY = baseBallSpeed*gameSize*-1;
-			break;
-		case 1:
-			ball.velocityX = baseBallSpeed*gameSize*-1;
-			ball.velocityY = baseBallSpeed*gameSize;
-			break;
-		case 2:
-			ball.velocityX = baseBallSpeed*gameSize;
-			ball.velocityY = baseBallSpeed*gameSize*-1;
-			break;
-		case 3:
-			ball.velocityX = baseBallSpeed*gameSize;
-			ball.velocityY = baseBallSpeed*gameSize;
-			break;
-	}
-	ball.speed = Math.sqrt(ball.velocityX ** 2 + ball.velocityY ** 2);
 };
 
 function drawRectangle(startX: number, startY: number, lengthX: number, lengthY: number, color: string): void {
@@ -415,8 +408,6 @@ function drawNet(): void {
 };
 
 function drawScore(): void {
-/* 	console.log("drawScore()");
- */	
 	drawText(playerScore.toString(), gameWidth.value/4, gameHeight.value/6);
 	drawText(opponentScore.toString(), 3*gameWidth.value/4, gameHeight.value/6);
 };
@@ -453,60 +444,6 @@ function resetBall(): void {
 	ball.y = gameHeight.value / 2;
 	ball.velocityX = 0;
 	ball.velocityY = 0;
-};
-
-function ballHitTopOrBottom(): boolean {
-	if (ball.y + ball.radius > gameHeight.value ||
-		ball.y - ball.radius < 0)
-		return true;
-	return false;
-};
-
-function ballHitLeft(): boolean {
-	if (ball.x - ball.radius < 0)
-		return true;
-	return false;
-};
-
-function ballHitRight(): boolean {
-	if (ball.x + ball.radius > gameWidth.value)
-		return true;
-	return false;
-};
-
-function ballHitPlayerPaddle(): boolean {
-	if (ball.x - ball.radius < paddles.player.startX + paddleWidth
-		&& ball.y + ball.radius > paddles.player.startY
-		&& ball.y - ball.radius <  paddles.player.startY + paddleHeight
-		&& ball.x + ball.radius > paddles.player.startX)
-		return true;
-	return false;
-};
-
-function ballHitOpponentPaddle(): boolean {
-	if (ball.x - ball.radius < paddles.opponent.startX + paddleWidth
-		&& ball.y + ball.radius > paddles.opponent.startY
-		&& ball.y - ball.radius <  paddles.opponent.startY + paddleHeight
-		&& ball.x + ball.radius > paddles.opponent.startX)
-		return true;
-	return false;
-};
-
-function calculateNewBallDirection(hitPaddle: any, direction: number): void {
-/* 	console.log("calculateNewBallDirection()");
- */	var collidePoint = ball.y - (hitPaddle.startY + paddleHeight/2);
-	
-	/* normalization */
-	collidePoint = collidePoint / (paddleHeight/2);
-	/* calculate angle in radian */
-	var angleRad = collidePoint * Math.PI/4;
-
-	/* increase ball speed with every paddle hit */
-	ball.speed += 0.4;
-
-	ball.velocityX = direction *	ball.speed * Math.cos(angleRad);
-	ball.velocityY = 				ball.speed * Math.sin(angleRad);
-	
 };
 
 </script>
