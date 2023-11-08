@@ -13,9 +13,16 @@ interface Player {
 	ID: number;
 }
 
-interface Match {
+class Match {
 	player1: Player;
 	player2: Player;
+
+		//HERE -> implementation
+	sendToBoth(msg: any) {
+		console.log(msg);
+		this.player1.socket.send(JSON.stringify(msg));
+		this.player2.socket.send(JSON.stringify(msg));
+	}
 }
 
 @WebSocketGateway(5174, {cors: {origin: '*', methods: ['GET', 'POST']}})
@@ -73,19 +80,12 @@ export class GameserverGateway {
 	handleError(client: Socket, ...args: any[]) {
 		console.error(args);
 	}
-
-	sendToBoth(msg: string, match: Match) {
-		console.log(msg);
-		match.player1.socket.send(msg);
-		match.player2.socket.send(msg);
-	}
 	
 	@SubscribeMessage('authenticate')
 	authenticatePlayer(client: Socket,
 		message: {
 			name: string
 			ID: number }) {
-		//this.server.to(message.room).emit('chatToClient', message);
 		const newPlayer: Player = {
 			socket: client,
 			name: message.name,
