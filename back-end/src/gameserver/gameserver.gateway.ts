@@ -449,7 +449,7 @@ export class GameserverGateway {
 		var angleRad = collidePoint * Math.PI/4;
 	
 		/* increase ball speed with every paddle hit */
-		match.ball.speed += 0.4;
+		match.ball.speed += 0.7;
 	
 		match.ball.velocityX = direction *	match.ball.speed * Math.cos(angleRad);
 		match.ball.velocityY = 				match.ball.speed * Math.sin(angleRad);
