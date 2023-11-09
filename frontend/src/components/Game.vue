@@ -5,7 +5,8 @@
 		</button>
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
 	</div>
-	<p>{{ opponentMsg }}</p>
+	<p v-if="opponentName"							>Opponent: {{ opponentName }}</p>
+	<p v-if="!opponentName" id="opponentName-inactive">Opponent: {{ opponentName }}</p>
 </template>
 
 <script setup lang="ts">
@@ -65,7 +66,7 @@ const	DISCONNECT =	2;
 let		gameResult =	WON;
 
 let		buttonText =				ref("play");
-let		opponentMsg =				ref("no game active");
+let		opponentName =				ref("");
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
@@ -150,14 +151,14 @@ function resizeEverything(newGameSize: number, oldGameSize: number) {
 };
 /* when the canvas height doesn't fit into screen despite adjustments */
 function adjustCanvas() {
-	if (/* gameView == WIDE &&  */canvas.getBoundingClientRect().bottom > window.innerHeight) {
+	if (canvas.getBoundingClientRect().bottom > window.innerHeight/* && gameView == WIDE*/) {
 		var oldGameSize = gameSize;
 		gameSize = 0.0008 * window.innerHeight;
 		resizeEverything(gameSize, oldGameSize);
 		requestAnimationFrame(renderElements);
 		return;
 	}
-	/* if (gameView == NARROW && canvas.getBoundingClientRect().bottom > (window.innerHeight * 0.5)) {
+	/* if (canvas.getBoundingClientRect().bottom > (window.innerHeight * 0.5) && gameView == NARROW) {
 		var oldGameSize = gameSize;
 		gameSize = 0.0006 * window.innerHeight;
 		resizeEverything(gameSize, oldGameSize);
@@ -188,7 +189,7 @@ function connectToServer(): void {
 	gameState.value = WAITING;
 	buttonText.value = "Connecting to server...";
 	try {
-		webSocket = new WebSocket("ws://10.13.3.7:5174");
+		webSocket = new WebSocket("ws://localhost:5174");
 		
 		webSocket.addEventListener('open', (event) => {
 			const authMsg = {
@@ -227,7 +228,7 @@ function handleMessages(event: MessageEvent<any>) {
 			break;
 
 		case 'gameInfo':
-			opponentMsg.value = "Opponent: " + message.data.opponentName;
+			opponentName.value = message.data.opponentName;
 			resetGame();
 			renderElements();
 			break;
@@ -275,7 +276,7 @@ function handleDisconnect(): void {
 function startGame(): void {
 	// HERE -> switch this to server. maybe look at that game tutorial for how to do these events
 	gameState.value = PLAYING;
-	canvas.addEventListener("mousemove", movePaddle);
+	document.addEventListener("mousemove", movePaddle);
 	interval = window.setInterval(game, 1000/framesPerSecond);
 };
 
@@ -288,22 +289,22 @@ function updatePositions(): void {
 	ball.x += ball.velocityX;
 	ball.y += ball.velocityY;
 
-	// else if (ballHitLeft()) {
-	// 	opponentScore++;
-	// 	if (opponentScore >= pointsToWin) {
-	// 		gameResult = LOST;
-	// 		gameEnd();
-	// 	}
-	// 	resetBall();
-	// }
-	// else if (ballHitRight()) {
-	// 	playerScore++;
-	// 	if (playerScore >= pointsToWin) {
-	// 		gameResult = WON;
-	// 		gameEnd();
-	// 	}
-	// 	resetBall();
-	// }
+	/* else if (ballHitLeft()) {
+		opponentScore++;
+		if (opponentScore >= pointsToWin) {
+			gameResult = LOST;
+			gameEnd();
+		}
+		resetBall();
+	}
+	else if (ballHitRight()) {
+		playerScore++;
+		if (playerScore >= pointsToWin) {
+			gameResult = WON;
+			gameEnd();
+		}
+		resetBall();
+	} */
 };
 
 function renderElements(): void {
@@ -318,14 +319,14 @@ function renderElements(): void {
 		drawEndMessage();
 };
 
-function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
-	let mouse = this.getBoundingClientRect();
-	if (event.clientY - mouse.top - paddleHeight/2 < 0)
+function movePaddle(this: Document, event: MouseEvent): void {
+	let canvasRect = canvas.getBoundingClientRect();
+	if (event.clientY - canvasRect.top - paddleHeight/2 < 0)
 		paddles.player.startY = 0;
-	else if (event.clientY - mouse.top + paddleHeight/2 >= gameHeight.value)
+	else if (event.clientY - canvasRect.top + paddleHeight/2 >= gameHeight.value)
 		paddles.player.startY = gameHeight.value - paddleHeight;
 	else
-		paddles.player.startY = event.clientY - mouse.top - paddleHeight/2;
+		paddles.player.startY = event.clientY - canvasRect.top - paddleHeight/2;
 
 	const movePaddleMsg = {
 		event: 'movePaddle',
@@ -347,6 +348,7 @@ async function gameEnd(): Promise<void> {
 	});
 
 	await clearIntervalPromise;
+	document.removeEventListener("mousemove", movePaddle);
 	notYet.value = true;
 	gameState.value = GAME_END;
 
@@ -361,7 +363,7 @@ async function gameEnd(): Promise<void> {
 	setTimeout(() => {
 		notYet.value = false;
 		buttonText.value = "play";
-		opponentMsg.value = "No game active";
+		opponentName.value = "";
 	}, 2500);
 };
 
@@ -472,6 +474,10 @@ canvas {
 	position: relative;
 	width: 100%;
 	height: 100%;
+}
+
+#opponentName-inactive {
+	visibility: hidden;
 }
 
 </style>
