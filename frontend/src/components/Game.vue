@@ -5,26 +5,32 @@
 		</button>
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
 	</div>
-	<p>{{ opponentMsg }}</p>
+	<p v-if="opponentName"							>Opponent: {{ opponentName }}</p>
+	<p v-if="!opponentName" id="opponentName-inactive">Opponent: {{ opponentName }}</p>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue';
+import fontUrl from '/fonts/Pixeled.ttf';
 
-//const	NARROW = true;
-//const	WIDE = false;
-//let		gameView = WIDE;
+let canvasFont: FontFace;
+
+/*
+const	NARROW = true;
+const	WIDE = false;
+let		gameView = WIDE;
+*/
 
 function calculateGameSize(): number {
 	var gameSize: number;
-
+	
 	if (window.innerWidth < 992) {
 		gameSize = 0.00095 * window.innerWidth;
-		//gameView = NARROW;
+		/* gameView = NARROW; */
 	}
 	else {
 		gameSize = 0.0006 * window.innerWidth;
-		//gameView = WIDE;
+		/* gameView = WIDE; */
 	}
 
 	return (gameSize);
@@ -36,7 +42,7 @@ let		playerScore =	0;
 let		opponentScore =	0;
 const	pointsToWin =	11;
 
-const	framesPerSecond =	50;
+let		framesPerSecond =	50;
 const	baseBallSpeed =		8;
 
 let		backgroundColor =	"white";
@@ -50,19 +56,19 @@ const	PLAYER =	1;
 const	OPPONENT =	-1;
 
 const	BEFORE_GAME =		0;
-const	WAITING =	1;
+const	WAITING =			1;
 const	PLAYING = 			2;
 const	GAME_END =			3;
-let		notYet =			ref(false);
+let		notYet =					ref(false);
+let		gameState: Ref<number> =	ref(BEFORE_GAME);
 
 const	WON =			0;
 const	LOST =			1;
 const	DISCONNECT =	2;
 let		gameResult =	WON;
 
-let		gameState: Ref<number> =	ref(BEFORE_GAME);
 let		buttonText =				ref("play");
-let		opponentMsg =				ref("no game started yet");
+let		opponentName =				ref("");
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
@@ -105,16 +111,14 @@ const	playerID = Math.round(Math.random()*10);
 let		webSocket: WebSocket;
 
 function atWindowResize(timeout = 300){
-	/* 	console.log("atWindowResize()");
-	*/	let timer: number;
+	let timer: number;
 	return () => {
 		clearTimeout(timer);
-		timer = setTimeout(() => resizeCanvas(), timeout);
+		timer = window.setTimeout(() => resizeCanvas(), timeout);
 	};
 };
 function resizeCanvas() {
-	/* 	console.log("resizeCanvas()");
-	*/const oldGameSize =	gameSize;
+	const oldGameSize =	gameSize;
 	gameSize =				calculateGameSize();
 	resizeEverything(gameSize, oldGameSize);
 	requestAnimationFrame(renderElements);
@@ -149,14 +153,14 @@ function resizeEverything(newGameSize: number, oldGameSize: number) {
 };
 /* when the canvas height doesn't fit into screen despite adjustments */
 function adjustCanvas() {
-	if (/* gameView == WIDE &&  */canvas.getBoundingClientRect().bottom > window.innerHeight) {
+	if (canvas.getBoundingClientRect().bottom > window.innerHeight/* && gameView == WIDE*/) {
 		var oldGameSize = gameSize;
 		gameSize = 0.0008 * window.innerHeight;
 		resizeEverything(gameSize, oldGameSize);
 		requestAnimationFrame(renderElements);
 		return;
 	}
-	/* if (gameView == NARROW && canvas.getBoundingClientRect().bottom > (window.innerHeight * 0.5)) {
+	/* if (canvas.getBoundingClientRect().bottom > (window.innerHeight * 0.5) && gameView == NARROW) {
 		var oldGameSize = gameSize;
 		gameSize = 0.0006 * window.innerHeight;
 		resizeEverything(gameSize, oldGameSize);
@@ -166,31 +170,21 @@ function adjustCanvas() {
 };
 
 onMounted(() => {
-/* 	console.log("onMounted()");
- */	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
-	context = canvas.getContext("2d") as CanvasRenderingContext2D;
-	renderElements();
-	adjustCanvas();
+	canvasFont = new FontFace('canvasFont', `url(${fontUrl})`);
 
-	window.addEventListener("resize", atWindowResize());
+	canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	context = canvas.getContext("2d") as CanvasRenderingContext2D;
+	
+	canvasFont.load().then((font) => {
+		document.fonts.add(font);
+
+		renderElements();
+		adjustCanvas();
+		window.addEventListener("resize", atWindowResize());
+	});
 });
 
 /* functions */
-
-function startQueue() {
-/*	console.log("startQueue()");*/
-	connectToServer();
-	//HERE -> when we start game, hier ist die Vorlage
-
-	setTimeout(() => {
-		buttonText.value = "3";
-		resetGame();
-		renderElements();
-	}, 1000);
-	setTimeout(() => buttonText.value = "2", 2000);
-	setTimeout(() => buttonText.value = "1", 3000);
-	setTimeout(() => startGame(), 4000);
-}
 
 function connectToServer(): void {
 	
@@ -203,26 +197,19 @@ function connectToServer(): void {
 			const authMsg = {
 				event: 'authenticate',
                 data: {
-					name: playerName, /////// neeed client name!!!!!
-					ID: playerID /////// neeed client name!!!!!
+					name: playerName, // neeed client name!!!!!
+					ID: playerID // neeed client name!!!!!
                 }
             };
             webSocket.send(JSON.stringify(authMsg));
 			buttonText.value = "Waiting for opponent...";
         });
 
-		webSocket.addEventListener('message', (event) => {
-			const message = JSON.parse(event.data);
-	        switch (message.event) {
-				case 'opponentDisconnect':
-					handleDisconnect();
-					break;
-				//HERE -> message to start game (get opponent name)
-			}
-	    });
+		webSocket.addEventListener('message', handleMessages);
 
 		webSocket.addEventListener('close', (event) => {
-			handleDisconnect();
+			if (gameState.value != GAME_END)
+				handleDisconnect();
 		});
 		webSocket.addEventListener('error', (event) => {
 			console.error(event);
@@ -233,46 +220,83 @@ function connectToServer(): void {
 	}
 };
 
+function handleMessages(event: MessageEvent<any>) {
+	const message = JSON.parse(event.data);
+	console.log(message);
+
+	switch (message.event) {
+		case 'opponentDisconnect':
+			handleDisconnect();
+			break;
+
+		case 'gameInfo':
+			opponentName.value = message.data.opponentName;
+			resetGame();
+			renderElements();
+			break;
+
+		case 'countdown':
+			buttonText.value = message.data.number.toString();
+			break;
+
+		case 'startGame':
+			ball.speed =		message.data.ball.speed		*gameSize;
+			ball.velocityX =	message.data.ball.velocityX	*gameSize;
+			ball.velocityY =	message.data.ball.velocityY	*gameSize;
+			startGame();
+			break;
+
+		case 'update':
+			ball.x =			message.data.ball.x			*gameSize;
+			ball.y =			message.data.ball.y			*gameSize;
+			ball.speed =		message.data.ball.speed		*gameSize;
+			ball.velocityX =	message.data.ball.velocityX	*gameSize;
+			ball.velocityY =	message.data.ball.velocityY	*gameSize;
+			break;
+
+		case 'moveOpponentPaddle':
+			paddles.opponent.startY = message.data.paddle.startY * gameSize;
+			break;
+
+		case 'updateScore':
+			playerScore = message.data.playerScore;
+			opponentScore = message.data.opponentScore;
+			break;
+		
+		case 'gameEnd':
+			gameResult = message.data.won ? WON : LOST;
+			gameEnd();
+			break;
+	}
+};
+
 function handleDisconnect(): void {
 	gameResult = DISCONNECT;
 	gameEnd();
 };
 
 function startGame(): void {
-/* 	console.log("startGame()");
- */	gameState.value = PLAYING;
-	canvas.addEventListener("mousemove", movePaddle);
-	initBallDirection();
-	setTimeout(() => {
-		interval = setInterval(game, 1000/framesPerSecond);
-	}, 1000);
+	gameState.value = PLAYING;
+	document.addEventListener("mousemove", movePaddle);
+	interval = window.setInterval(game, 1000/framesPerSecond);
 };
 
 function game(): void {
-/* 	console.log("game()");
- */	updatePositions();
+	updatePositions();
 	renderElements();
 };
 
 function updatePositions(): void {
-/* 	console.log("updatePositions()");
- */	ball.x += ball.velocityX;
+	ball.x += ball.velocityX;
 	ball.y += ball.velocityY;
 
-	if (ballHitTopOrBottom())
-		ball.velocityY *= -1;
-	else if (ballHitPlayerPaddle())
-		calculateNewBallDirection(paddles.player, PLAYER);
-	else if (ballHitOpponentPaddle())
-		calculateNewBallDirection(paddles.opponent, OPPONENT);
-	else if (ballHitLeft()) {
+	/* else if (ballHitLeft()) {
 		opponentScore++;
 		if (opponentScore >= pointsToWin) {
 			gameResult = LOST;
 			gameEnd();
 		}
 		resetBall();
-		setTimeout(() => initBallDirection(), 1000);
 	}
 	else if (ballHitRight()) {
 		playerScore++;
@@ -281,8 +305,7 @@ function updatePositions(): void {
 			gameEnd();
 		}
 		resetBall();
-		setTimeout(() => initBallDirection(), 1000);
-	}
+	} */
 };
 
 function renderElements(): void {
@@ -297,54 +320,56 @@ function renderElements(): void {
 		drawEndMessage();
 };
 
-function movePaddle(this: HTMLCanvasElement, event: MouseEvent): void {
-/* 	console.log("movePaddle()");
- */	let mouse = this.getBoundingClientRect();
-
-	if (event.clientX < gameWidth.value/2)
-		var currentlyPlaying = paddles.player;
+function movePaddle(this: Document, event: MouseEvent): void {
+	let canvasRect = canvas.getBoundingClientRect();
+	if (event.clientY - canvasRect.top - paddleHeight/2 < 0)
+		paddles.player.startY = 0;
+	else if (event.clientY - canvasRect.top + paddleHeight/2 >= gameHeight.value)
+		paddles.player.startY = gameHeight.value - paddleHeight;
 	else
-		var currentlyPlaying = paddles.opponent;
+		paddles.player.startY = event.clientY - canvasRect.top - paddleHeight/2;
 
-	if (event.clientY - mouse.top - paddleHeight/2 < 0)
-		currentlyPlaying.startY = 0;
-	else if (event.clientY - mouse.top + paddleHeight/2 >= gameHeight.value)
-		currentlyPlaying.startY = gameHeight.value - paddleHeight;
-	else
-		currentlyPlaying.startY = event.clientY - mouse.top - paddleHeight/2;
+	const movePaddleMsg = {
+		event: 'movePaddle',
+        data: {
+			paddle: {
+				startY: paddles.player.startY / gameSize
+			}
+        }
+    };
+    webSocket.send(JSON.stringify(movePaddleMsg));
 };
 
 async function gameEnd(): Promise<void> {
-/* 	console.log("gameEnd()")
- */	resetBall();
-		
 	const clearIntervalPromise = new Promise<void>((resolve) => {
 		setTimeout(() => {
 			clearInterval(interval);
 			resolve();
-		}, 0); // 0 milliseconds delay, executes on the next tick
+		}, 0); /* 0 milliseconds delay, executes on the next tick */
 	});
 
 	await clearIntervalPromise;
+	document.removeEventListener("mousemove", movePaddle);
 	notYet.value = true;
 	gameState.value = GAME_END;
+
+	webSocket.close();
 	
 	elementColor = "white";
 	backgroundColor = "black";
 	ball.x = -10 * gameSize;
 	ball.y = -10 * gameSize;
 	renderElements();
-	// send data to database n shit
 	
 	setTimeout(() => {
 		notYet.value = false;
 		buttonText.value = "play";
+		opponentName.value = "";
 	}, 2500);
 };
 
 function resetGame(): void {
-/* 	console.log("resetGame()");
- */	backgroundColor = "white";
+	backgroundColor = "white";
 	elementColor = "black";
 	paddles.player.startY = gameHeight.value/2 - paddleHeight/2;
 	playerScore = 0;
@@ -355,30 +380,6 @@ function resetGame(): void {
 	ball.velocityX = 0;
 	ball.velocityY = 0;
 	ball.speed = 0;
-};
-
-function initBallDirection(): void {
-/* 	console.log("initBallDirection()");
- */	var random = Math.floor(Math.random() * 4);
-	switch (random) {
-		case 0:
-			ball.velocityX = baseBallSpeed*gameSize*-1;
-			ball.velocityY = baseBallSpeed*gameSize*-1;
-			break;
-		case 1:
-			ball.velocityX = baseBallSpeed*gameSize*-1;
-			ball.velocityY = baseBallSpeed*gameSize;
-			break;
-		case 2:
-			ball.velocityX = baseBallSpeed*gameSize;
-			ball.velocityY = baseBallSpeed*gameSize*-1;
-			break;
-		case 3:
-			ball.velocityX = baseBallSpeed*gameSize;
-			ball.velocityY = baseBallSpeed*gameSize;
-			break;
-	}
-	ball.speed = Math.sqrt(ball.velocityX ** 2 + ball.velocityY ** 2);
 };
 
 function drawRectangle(startX: number, startY: number, lengthX: number, lengthY: number, color: string): void {
@@ -410,8 +411,6 @@ function drawNet(): void {
 };
 
 function drawScore(): void {
-/* 	console.log("drawScore()");
- */	
 	drawText(playerScore.toString(), gameWidth.value/4, gameHeight.value/6);
 	drawText(opponentScore.toString(), 3*gameWidth.value/4, gameHeight.value/6);
 };
@@ -438,7 +437,7 @@ function drawEndMessage(): void {
 function drawText(text: string, xOffset: number, yOffset: number): void {
 	context.textAlign = 'center';
 	context.fillStyle = elementColor;
-	context.font = fontSize.toString() + "px textfont";
+	context.font = fontSize.toString() + `px ${canvasFont.family}`;
 	context.fillText(text, xOffset, yOffset);
 };
 
@@ -448,60 +447,6 @@ function resetBall(): void {
 	ball.y = gameHeight.value / 2;
 	ball.velocityX = 0;
 	ball.velocityY = 0;
-};
-
-function ballHitTopOrBottom(): boolean {
-	if (ball.y + ball.radius > gameHeight.value ||
-		ball.y - ball.radius < 0)
-		return true;
-	return false;
-};
-
-function ballHitLeft(): boolean {
-	if (ball.x - ball.radius < 0)
-		return true;
-	return false;
-};
-
-function ballHitRight(): boolean {
-	if (ball.x + ball.radius > gameWidth.value)
-		return true;
-	return false;
-};
-
-function ballHitPlayerPaddle(): boolean {
-	if (ball.x - ball.radius < paddles.player.startX + paddleWidth
-		&& ball.y + ball.radius > paddles.player.startY
-		&& ball.y - ball.radius <  paddles.player.startY + paddleHeight
-		&& ball.x + ball.radius > paddles.player.startX)
-		return true;
-	return false;
-};
-
-function ballHitOpponentPaddle(): boolean {
-	if (ball.x - ball.radius < paddles.opponent.startX + paddleWidth
-		&& ball.y + ball.radius > paddles.opponent.startY
-		&& ball.y - ball.radius <  paddles.opponent.startY + paddleHeight
-		&& ball.x + ball.radius > paddles.opponent.startX)
-		return true;
-	return false;
-};
-
-function calculateNewBallDirection(hitPaddle: any, direction: number): void {
-/* 	console.log("calculateNewBallDirection()");
- */	var collidePoint = ball.y - (hitPaddle.startY + paddleHeight/2);
-	
-	/* normalization */
-	collidePoint = collidePoint / (paddleHeight/2);
-	/* calculate angle in radian */
-	var angleRad = collidePoint * Math.PI/4;
-
-	/* increase ball speed with every paddle hit */
-	ball.speed += 0.4;
-
-	ball.velocityX = direction *	ball.speed * Math.cos(angleRad);
-	ball.velocityY = 				ball.speed * Math.sin(angleRad);
-	
 };
 
 </script>
@@ -530,6 +475,10 @@ canvas {
 	position: relative;
 	width: 100%;
 	height: 100%;
+}
+
+#opponentName-inactive {
+	visibility: hidden;
 }
 
 </style>
