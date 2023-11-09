@@ -15,20 +15,22 @@ import fontUrl from '/fonts/Pixeled.ttf';
 
 let canvasFont: FontFace;
 
-//const	NARROW = true;
-//const	WIDE = false;
-//let		gameView = WIDE;
+/*
+const	NARROW = true;
+const	WIDE = false;
+let		gameView = WIDE;
+*/
 
 function calculateGameSize(): number {
 	var gameSize: number;
 	
 	if (window.innerWidth < 992) {
 		gameSize = 0.00095 * window.innerWidth;
-		//gameView = NARROW;
+		/* gameView = NARROW; */
 	}
 	else {
 		gameSize = 0.0006 * window.innerWidth;
-		//gameView = WIDE;
+		/* gameView = WIDE; */
 	}
 
 	return (gameSize);
@@ -195,8 +197,8 @@ function connectToServer(): void {
 			const authMsg = {
 				event: 'authenticate',
                 data: {
-					name: playerName, /////// neeed client name!!!!!
-					ID: playerID /////// neeed client name!!!!!
+					name: playerName, // neeed client name!!!!!
+					ID: playerID // neeed client name!!!!!
                 }
             };
             webSocket.send(JSON.stringify(authMsg));
@@ -274,7 +276,6 @@ function handleDisconnect(): void {
 };
 
 function startGame(): void {
-	// HERE -> switch this to server. maybe look at that game tutorial for how to do these events
 	gameState.value = PLAYING;
 	document.addEventListener("mousemove", movePaddle);
 	interval = window.setInterval(game, 1000/framesPerSecond);

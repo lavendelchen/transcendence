@@ -18,7 +18,7 @@ class Match {
 	player2: Player;
 
 	/*	Game variables
-		Careful when changing */
+		Careful when changing, they might have equivalents in Game.vue that need to be the same */
 	player1Score =	0;
 	player2Score =	0;
 	pointsToWin =	11;
@@ -59,7 +59,6 @@ class Match {
 	DISCONNECT	= 2;
 	gameEnded = false;
 	
-	//HERE -> implementation
 	constructor(player1: Player, player2: Player){
 		this.player1 = player1;
 		this.player2 = player2;
@@ -237,9 +236,6 @@ export class GameserverGateway {
 		gameInfoMsg.data.opponentName = player2.name;
 		newMatch.sendToPlayer1(gameInfoMsg);
 		this.doCountdown(newMatch);
-		// HERE
-		// Step by step move things from clients to server to see if it works.
-		// look at startGame to follow the logic
 	};
 
 	doCountdown(match: Match) {
