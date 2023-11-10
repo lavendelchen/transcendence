@@ -5,12 +5,11 @@
 		</button>
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
 	</div>
-	<p v-if="opponentName"							>Opponent: {{ opponentName }}</p>
-	<p v-if="!opponentName" id="opponentName-inactive">Opponent: {{ opponentName }}</p>
+	<p v-if="opponentName" :style="{ 'visibility': visibility }">Opponent: {{ opponentName }}</p>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, Ref } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
 import fontUrl from '/fonts/Pixeled.ttf';
 
 let canvasFont: FontFace;
@@ -69,6 +68,9 @@ let		gameResult =	WON;
 
 let		buttonText =				ref("play");
 let		opponentName =				ref("");
+let		visibility =				computed(() => {
+	return opponentName.value ? 'visible' : 'hidden'
+});
 
 let	gameWidth =		ref(1000	*gameSize);
 let	gameHeight =	ref(800		*gameSize);
@@ -111,7 +113,7 @@ const	playerID = Math.round(Math.random()*10);
 let		webSocket: WebSocket;
 
 function atWindowResize(timeout = 300){
-	let timer: number;
+	var timer: number;
 	return () => {
 		clearTimeout(timer);
 		timer = window.setTimeout(() => resizeCanvas(), timeout);
@@ -337,7 +339,7 @@ function movePaddle(this: Document, event: MouseEvent): void {
 			}
         }
     };
-    webSocket.send(JSON.stringify(movePaddleMsg));
+	webSocket.send(JSON.stringify(movePaddleMsg));
 };
 
 async function gameEnd(): Promise<void> {
@@ -475,10 +477,6 @@ canvas {
 	position: relative;
 	width: 100%;
 	height: 100%;
-}
-
-#opponentName-inactive {
-	visibility: hidden;
 }
 
 </style>
