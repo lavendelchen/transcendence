@@ -2,33 +2,44 @@ version: '3.9'
 
 services:
   db-container:
+    container_name: db-container
     image: postgres:16
-    container_name: db
-    ports:
-      - ${DB_PORT}:${DB_PORT}
-    volumes:
-      - db-data:/var/lib/postgresql/data
     env_file:
       - .env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}" #svenja: does the database have to communicate with anything else but the backend? if anyone knows, lemme know
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - transcendence-net
 
   backend-container:
+    container_name: backend-container
     build: ./back-end
-    ports:
-      - "3000:3000"
     depends_on:
       - db-container
     env_file:
       - .env
+    ports:
+      - "3000:3000"
     volumes:
       - ./back-end:/app
       - /app/node_modules
+    networks:
+      - transcendence-net
 
   adminer:
+    container_name: adminer
     image: adminer
-    ports:
-      - "8080:8080"
     depends_on:
       - db-container
+    ports:
+      - "8080:8080" #does adminer need to communicate outside the docker containers?
+    networks:
+      - transcendence-net
 
 volumes:
   db-data:
+
+networks:
+  transcendence-net:
