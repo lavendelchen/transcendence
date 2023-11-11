@@ -26,13 +26,13 @@ import { AppController } from './app.controller';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: configService.get<number>('POSTGRES_PORT'),
+        username: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_DB'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<boolean>('DB_SYNC', true), // if DB_SYNC is true, the database is created again on each launch from TypeORM
+        synchronize: configService.get<boolean>('POSTGRES_SYNC', true), // if DB_SYNC is true, the database is created again on each launch from TypeORM
       }),
     }),
     AuthModule,
