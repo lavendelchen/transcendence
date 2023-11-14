@@ -11,6 +11,7 @@ import { MatchModule } from './match/match.module';
 import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { AppController } from './app.controller';
+import { TfaModule } from './tfa/tfa.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AppController } from './app.controller';
       }),
     }),
     AuthModule,
+    TfaModule,
     UserModule,
     FriendModule,
     MatchModule,
