@@ -29,7 +29,7 @@ class Match {
 	gameWidth =			1000;
 	gameHeight =		800;
 
-	interval: NodeJS.Timer;
+	interval: any;
 
 	ball = {
 		x:			this.gameWidth/2,
