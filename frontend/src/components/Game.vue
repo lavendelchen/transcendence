@@ -1,11 +1,29 @@
 <template>
-	<div class="stupid-container" :style="{ 'width': gameWidth + 'px', 'height': gameHeight + 'px' }">
-		<button v-if="gameState != PLAYING && !notYet" @click="connectToServer" :disabled="gameState === WAITING" class="playButton">
+	<div
+		class="stupid-container"
+		:style="{ 'width': gameWidth + 'px', 'height': gameHeight + 'px' }"
+	>
+		<button
+			class="playButton"
+			v-if="gameState != PLAYING && !notYet"
+			@click="connectToServer"
+			:disabled="gameState === WAITING"
+		>
 			{{ buttonText }}
 		</button>
-		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
+		<canvas
+			id="gameCanvas"
+			:width="gameWidth"
+			:height="gameHeight"
+		></canvas>
 	</div>
-	<p v-if="opponentName" :style="{ 'visibility': visibility }">Opponent: {{ opponentName }}</p>
+	<p
+		id="opponentMsg"
+		v-if="opponentName"
+		:style="{ 'visibility': visibility, 'width': gameWidth + 'px' }"
+	>
+		Opponent: {{ opponentName }}
+	</p>
 </template>
 
 <script setup lang="ts">
