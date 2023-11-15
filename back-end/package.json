@@ -27,7 +27,9 @@
     "@nestjs/graphql": "^12.0.8",
     "@nestjs/jwt": "^10.1.1",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-ws": "^10.2.7",
     "@nestjs/typeorm": "^10.0.0",
+    "@nestjs/websockets": "^10.2.7",
     "@types/express-session": "^1.17.8",
     "cors": "^2.8.5",
     "express-session": "^1.17.3",
@@ -39,7 +41,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "session-file-store": "^1.5.0",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

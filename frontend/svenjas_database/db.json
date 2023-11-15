@@ -1,0 +1,324 @@
+{
+	"players": [
+		{
+			"id": 0,
+			"pseudo": "01234567890123456789",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 1,
+			"pseudo": "hngo",
+			"avatar": "https://cdn.intra.42.fr/users/4fe443f2cc7d8c67d865163bc8c29201/hngo.png",
+			"wonGames": 10000,
+			"lostGames": 5,
+			"playedGames": 15,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 2,
+			"pseudo": "nhaas",
+			"avatar": "https://cdn.intra.42.fr/users/ec0c47d9a68c34d0c3789ed9b635a257/nhaas.jpg",
+			"wonGames": 7,
+			"lostGames": 5,
+			"playedGames": 12,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 3,
+			"pseudo": "cboubour",
+			"avatar": "https://cdn.intra.42.fr/users/94b350c281e752b707fb88fd2d9bcbb7/cboubour.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 4,
+			"pseudo": "gjupy",
+			"avatar": "https://cdn.intra.42.fr/users/db014dbdae170f9c052a391d3b5d588a/gjupy.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 0,
+			"pseudo": "01234567890123456789",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 1,
+			"pseudo": "hngo",
+			"avatar": "https://cdn.intra.42.fr/users/4fe443f2cc7d8c67d865163bc8c29201/hngo.png",
+			"wonGames": 10000,
+			"lostGames": 5,
+			"playedGames": 15,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 2,
+			"pseudo": "nhaas",
+			"avatar": "https://cdn.intra.42.fr/users/ec0c47d9a68c34d0c3789ed9b635a257/nhaas.jpg",
+			"wonGames": 7,
+			"lostGames": 5,
+			"playedGames": 12,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 3,
+			"pseudo": "cboubour",
+			"avatar": "https://cdn.intra.42.fr/users/94b350c281e752b707fb88fd2d9bcbb7/cboubour.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 4,
+			"pseudo": "gjupy",
+			"avatar": "https://cdn.intra.42.fr/users/db014dbdae170f9c052a391d3b5d588a/gjupy.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 0,
+			"pseudo": "01234567890123456789",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 1,
+			"pseudo": "hngo",
+			"avatar": "https://cdn.intra.42.fr/users/4fe443f2cc7d8c67d865163bc8c29201/hngo.png",
+			"wonGames": 10000,
+			"lostGames": 5,
+			"playedGames": 15,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 2,
+			"pseudo": "nhaas",
+			"avatar": "https://cdn.intra.42.fr/users/ec0c47d9a68c34d0c3789ed9b635a257/nhaas.jpg",
+			"wonGames": 7,
+			"lostGames": 5,
+			"playedGames": 12,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 3,
+			"pseudo": "cboubour",
+			"avatar": "https://cdn.intra.42.fr/users/94b350c281e752b707fb88fd2d9bcbb7/cboubour.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 4,
+			"pseudo": "gjupy",
+			"avatar": "https://cdn.intra.42.fr/users/db014dbdae170f9c052a391d3b5d588a/gjupy.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 0,
+			"pseudo": "01234567890123456789",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 1,
+			"pseudo": "hngo",
+			"avatar": "https://cdn.intra.42.fr/users/4fe443f2cc7d8c67d865163bc8c29201/hngo.png",
+			"wonGames": 10000,
+			"lostGames": 5,
+			"playedGames": 15,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 2,
+			"pseudo": "nhaas",
+			"avatar": "https://cdn.intra.42.fr/users/ec0c47d9a68c34d0c3789ed9b635a257/nhaas.jpg",
+			"wonGames": 7,
+			"lostGames": 5,
+			"playedGames": 12,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 3,
+			"pseudo": "cboubour",
+			"avatar": "https://cdn.intra.42.fr/users/94b350c281e752b707fb88fd2d9bcbb7/cboubour.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 4,
+			"pseudo": "gjupy",
+			"avatar": "https://cdn.intra.42.fr/users/db014dbdae170f9c052a391d3b5d588a/gjupy.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 0,
+			"pseudo": "01234567890123456789",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 1,
+			"pseudo": "hngo",
+			"avatar": "https://cdn.intra.42.fr/users/4fe443f2cc7d8c67d865163bc8c29201/hngo.png",
+			"wonGames": 10000,
+			"lostGames": 5,
+			"playedGames": 15,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 2,
+			"pseudo": "nhaas",
+			"avatar": "https://cdn.intra.42.fr/users/ec0c47d9a68c34d0c3789ed9b635a257/nhaas.jpg",
+			"wonGames": 7,
+			"lostGames": 5,
+			"playedGames": 12,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 3,
+			"pseudo": "cboubour",
+			"avatar": "https://cdn.intra.42.fr/users/94b350c281e752b707fb88fd2d9bcbb7/cboubour.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 4,
+			"pseudo": "gjupy",
+			"avatar": "https://cdn.intra.42.fr/users/db014dbdae170f9c052a391d3b5d588a/gjupy.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 5,
+			"pseudo": "shaas",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 0,
+			"pseudo": "01234567890123456789",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 1,
+			"pseudo": "hngo",
+			"avatar": "https://cdn.intra.42.fr/users/4fe443f2cc7d8c67d865163bc8c29201/hngo.png",
+			"wonGames": 10000,
+			"lostGames": 5,
+			"playedGames": 15,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 2,
+			"pseudo": "nhaas",
+			"avatar": "https://cdn.intra.42.fr/users/ec0c47d9a68c34d0c3789ed9b635a257/nhaas.jpg",
+			"wonGames": 7,
+			"lostGames": 5,
+			"playedGames": 12,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 3,
+			"pseudo": "cboubour",
+			"avatar": "https://cdn.intra.42.fr/users/94b350c281e752b707fb88fd2d9bcbb7/cboubour.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 4,
+			"pseudo": "gjupy",
+			"avatar": "https://cdn.intra.42.fr/users/db014dbdae170f9c052a391d3b5d588a/gjupy.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		},
+		{
+			"id": 5,
+			"pseudo": "shaas",
+			"avatar": "https://cdn.intra.42.fr/users/e38fe8d8a169e100578a7b15b075cc82/shaas.jpg",
+			"wonGames": 10,
+			"lostGames": 3,
+			"playedGames": 13,
+			"pointsMade": 75,
+			"pointsLost": 20
+		}
+	]
+}

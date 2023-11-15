@@ -1,0 +1,33 @@
+
+
+@font-face {
+  font-family: textfont;
+  src: url('~@/assets/fonts/Pixeled.ttf');
+}
+@font-face {
+font-family: logofont;
+src: url('~@/assets/fonts/8-bit-Out.ttf');
+}
+
+
+body {
+  text-transform: uppercase;
+  background-color: black;
+  color: white;
+  font-family: textfont;
+}
+
+body::before {
+  display: none;
+}
+
+
+#app {
+
+}
+font
+
+body {
+  height: 100vh;
+}
+
