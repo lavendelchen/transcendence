@@ -127,8 +127,7 @@ function resizeCanvas() {
 	requestAnimationFrame(adjustCanvas);
 };
 function resizeEverything(newGameSize: number, oldGameSize: number) {
-	/* 	console.log("resizeEverything()");
- */	var changeFactor = newGameSize / oldGameSize;
+	var changeFactor = newGameSize / oldGameSize;
 
 	gameWidth.value *=	changeFactor;
 	gameHeight.value *=	changeFactor;
@@ -224,7 +223,6 @@ function connectToServer(): void {
 
 function handleMessages(event: MessageEvent<any>) {
 	const message = JSON.parse(event.data);
-	console.log(message);
 
 	switch (message.event) {
 		case 'opponentDisconnect':
@@ -311,8 +309,7 @@ function updatePositions(): void {
 };
 
 function renderElements(): void {
-/* 	console.log("renderElements()");
- */	context.clearRect(0, 0, canvas.width, canvas.height);
+	context.clearRect(0, 0, canvas.width, canvas.height);
 	drawRectangle(0, 0, gameWidth.value, gameHeight.value, backgroundColor);
 	drawBall();
 	drawPaddles();

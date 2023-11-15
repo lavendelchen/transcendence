@@ -64,16 +64,13 @@ class Match {
 		this.player2 = player2;
 	}
 	sendToBoth(msg: any) {
-		console.log(msg);
 		this.player1.socket.send(JSON.stringify(msg));
 		this.player2.socket.send(JSON.stringify(msg));
 	}
 	sendToPlayer1(msg: any) {
-		console.log(msg);
 		this.player1.socket.send(JSON.stringify(msg));
 	}
 	sendToPlayer2(msg: any) {
-		console.log(msg);
 		this.player2.socket.send(JSON.stringify(msg));
 	}
 }
@@ -334,12 +331,10 @@ export class GameserverGateway {
 		
 		await clearIntervalPromise;
 		
-		console.log(this.ongoingMatches.length)
 		this.ongoingMatches.forEach((matchI, i) => {
 			if (matchI === match)
 			match = this.ongoingMatches.splice(i, 1)[0];
 		});
-		console.log(this.ongoingMatches.length);
 
 		if (result == match.DISCONNECT)
 			return;
