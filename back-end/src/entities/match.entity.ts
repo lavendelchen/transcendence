@@ -6,16 +6,16 @@ export class Match {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 255 })
+    @Column({ length: 255, nullable: true })
     map: string;
 
-    @Column({ type: 'int' })
+    @Column({ type: 'int', nullable: true })
     userHomeScore: number;
 
-    @Column({ type: 'int' })
+    @Column({ type: 'int', nullable: true })
     userForeignScore: number;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', nullable: true })
     timestamp: Date;
 
 	//entity relationships ...

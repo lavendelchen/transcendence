@@ -5,11 +5,53 @@
 	>
 		<button
 			class="playButton"
-			v-if="gameState != PLAYING && !notYet"
-			@click="connectToServer"
-			:disabled="gameState === WAITING"
+			id="classicPlayButton"
+			v-if="	gameState == BEFORE_GAME ||
+					gameState == GAME_END && !notYet"
+			@click="classicGame"
 		>
-			{{ buttonText }}
+			Play on classic map!
+		</button>
+		<button
+			class="playButton"
+			id="upgradePlayButton"
+			v-if="	gameState == BEFORE_GAME ||
+					gameState == GAME_END && !notYet"
+			@click="gameState = CHOOSE_COLOUR"
+		>
+			Play in different colours!
+		</button>
+		<button
+			class="playButton"
+			id="pinkPlayButton"
+			v-if="gameState == CHOOSE_COLOUR"
+			@click="upgradeGame(PINK)"
+		>
+			Pink
+		</button>
+		<button
+			class="playButton"
+			id="bluePlayButton"
+			v-if="gameState == CHOOSE_COLOUR"
+			@click="upgradeGame(BLUE)"
+		>
+			Blue
+		</button>
+		<button
+			class="playButton"
+			id="greenPlayButton"
+			v-if="gameState == CHOOSE_COLOUR"
+			@click="upgradeGame(GREEN)"
+		>
+			Green
+		</button>
+		<button
+			class="playButton"
+			id="waitingPlayButton"
+			v-if="gameState == WAITING"
+			disabled="true"
+		>
+			{{ waitingButtonText }}
 		</button>
 		<canvas
 			id="gameCanvas"
@@ -72,10 +114,11 @@ let		canvas: HTMLCanvasElement;
 const	PLAYER =	1;
 const	OPPONENT =	-1;
 
-const	BEFORE_GAME =		0;
-const	WAITING =			1;
-const	PLAYING = 			2;
-const	GAME_END =			3;
+const	BEFORE_GAME =	0;
+const	WAITING =		1;
+const	CHOOSE_COLOUR =	2;
+const	PLAYING = 		3;
+const	GAME_END =		4;
 let		notYet =					ref(false);
 let		gameState: Ref<number> =	ref(BEFORE_GAME);
 
@@ -84,9 +127,19 @@ const	LOST =			1;
 const	DISCONNECT =	2;
 let		gameResult =	WON;
 
-let		buttonText =				ref("play");
-let		opponentName =				ref("");
-let		visibility =				computed(() => {
+const	WHITE =		0;
+const	PINK =		1;
+const	GREEN =		2;
+const	BLUE =		3;
+let		gameColor =	WHITE;
+
+const	CLASSIC_MODE =		true;
+const	UPGRADE_MODE =		false;
+let		gameMode =			ref(CLASSIC_MODE);
+let		waitingButtonText =	ref("");
+
+let		opponentName =	ref("");
+let		visibility =	computed(() => {
 	return opponentName.value ? 'visible' : 'hidden'
 });
 
@@ -122,10 +175,6 @@ const ball = {
 	velocityY:	0	*gameSize
 };
 
-interface Message {
-	type: string,
-	data: { }
-};
 const	playerName = "ANITA_" + Math.round(Math.random()*100);
 const	playerID = Math.round(Math.random()*10);
 let		webSocket: WebSocket;
@@ -205,10 +254,38 @@ onMounted(() => {
 
 /* functions */
 
+function classicGame(): void {
+	gameMode.value = CLASSIC_MODE;
+	gameColor = WHITE;
+	connectToServer();
+};
+
+function upgradeGame(color: number): void {
+	gameColor = color;
+	// switch (colour) {
+	// 	case PINK:
+	// 		elementColor = "rgb(255, 81, 168)";
+	// 		backgroundColor = "rgb(255, 212, 233)";
+	// 		break;
+	// 	case GREEN:
+	// 		elementColor = "green";
+	// 		backgroundColor = "rgb(192, 211, 192)";
+	// 		break;
+	// 	case BLUE:
+	// 		elementColor = "blue";
+	// 		backgroundColor = "rgb(175, 175, 255)";
+	// 		break;
+	// }
+	// renderElements();
+
+	gameMode.value = UPGRADE_MODE;
+	connectToServer();
+};
+
 function connectToServer(): void {
 	
 	gameState.value = WAITING;
-	buttonText.value = "Connecting to server...";
+	waitingButtonText.value = "Connecting to server...";
 	try {
 		webSocket = new WebSocket("ws://localhost:5174");
 		
@@ -221,7 +298,7 @@ function connectToServer(): void {
                 }
             };
             webSocket.send(JSON.stringify(authMsg));
-			buttonText.value = "Waiting for opponent...";
+			waitingButtonText.value = "Waiting for opponent...";
         });
 
 		webSocket.addEventListener('message', handleMessages);
@@ -254,7 +331,7 @@ function handleMessages(event: MessageEvent<any>) {
 			break;
 
 		case 'countdown':
-			buttonText.value = message.data.number.toString();
+			waitingButtonText.value = message.data.number.toString();
 			break;
 
 		case 'startGame':
@@ -372,22 +449,38 @@ async function gameEnd(): Promise<void> {
 
 	webSocket.close();
 	
-	elementColor = "white";
-	backgroundColor = "black";
+	const oldElementColor = elementColor;
+	elementColor = backgroundColor;
+	backgroundColor = oldElementColor;
 	ball.x = -10 * gameSize;
 	ball.y = -10 * gameSize;
 	renderElements();
 	
 	setTimeout(() => {
 		notYet.value = false;
-		buttonText.value = "play";
 		opponentName.value = "";
 	}, 2500);
 };
 
 function resetGame(): void {
-	backgroundColor = "white";
-	elementColor = "black";
+	switch(gameColor) {
+		case WHITE:
+			elementColor = "black";
+			backgroundColor = "white";
+			break;
+		case PINK:
+			elementColor = "rgb(255, 81, 168)";
+			backgroundColor = "rgb(255, 212, 233)";
+			break;
+		case GREEN:
+			elementColor = "green";
+			backgroundColor = "rgb(192, 211, 192)";
+			break;
+		case BLUE:
+			elementColor = "blue";
+			backgroundColor = "rgb(175, 175, 255)";
+			break;
+	}
 	paddles.player.startY = gameHeight.value/2 - paddleHeight/2;
 	playerScore = 0;
 	paddles.opponent.startY = gameHeight.value/2 - paddleHeight/2;
@@ -482,10 +575,36 @@ canvas {
 	z-index: 0;
 	position: absolute;
 	top: 50%;
-	left: 50%;
 	transform: translate(-50%, -50%);
 	display: flex;
 	align-items: center;
+}
+
+#classicPlayButton {
+	left: 30%;
+}
+
+#upgradePlayButton {
+	left: 70%
+}
+
+#pinkPlayButton {
+	left: 25%;
+	background-color: rgb(255, 212, 233);
+}
+
+#bluePlayButton {
+	left: 50%;
+	background-color: rgb(171, 171, 255);
+}
+
+#greenPlayButton {
+	left: 75%;
+	background-color: rgb(136, 193, 136);
+}
+
+#waitingPlayButton {
+	left: 50%
 }
 
 .stupid-container {
