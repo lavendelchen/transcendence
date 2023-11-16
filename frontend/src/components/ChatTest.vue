@@ -7,33 +7,37 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue'
+import { io } from "socket.io-client"
 
-let webSocket: WebSocket;
+let socket: any;
 
 onMounted(() => {
 	try {
-		webSocket = new WebSocket("ws://localhost:9000"); // use the port for your chat server!! if you can't find it ask me
-		
-		webSocket.addEventListener('open', (event) => {
+		socket = io("ws://localhost:9000") // use the port for your chat server!! if you can't find it ask me
+
+		socket.on("connect", () => {
 			console.log("connection established");
-        });
-
-		// webSocket.addEventListener('message', handleMessages);
-
-		webSocket.addEventListener('close', (event) => {
-			console.log("connection closed");
+		})
+		socket.on("disconnect", (reason: string) => {
+			console.log("connection closed because:")
+			console.log(reason)
 		});
-		webSocket.addEventListener('error', (event) => {
-			console.error(event);
+		socket.io.on("error", (error: Error) => {
+			console.error(error)
+		})
+		socket.on("connect_error", (error: Error) => {
+		  console.error(error)
 		});
+		// // webSocket.addEventListener('message', handleMessages);
 	}
 	catch(error) {
-		console.error(error);
+		console.error(error)
 	}
 })
 
 const	userID = Math.round(Math.random()*10);
 const	userName = "DUMMY_" + Math.round(Math.random()*100);
+
 enum EChannelType {
   PRIVATE,
   PUBLIC
@@ -99,34 +103,24 @@ sendMessage = {
 }
 
 function message() {
-	console.log("where's the error")
-	const msg = {
-		type: "message",
-		data: {
-			sendMessage
-		}
-	}
-	webSocket.send(JSON.stringify(msg));
+	console.log("sending MESSAGE")
+	socket.emit("message", sendMessage, (response: any) => {
+		console.log("Server response: " + response)
+	})
 };
 
 function join() {
-	const msg = {
-		type: "join",
-		data: {
-			sendChannel
-		}
-	}
-	webSocket.send(JSON.stringify(msg));
+	console.log("sending JOIN")
+	socket.emit("join", sendMessage, (response: any) => {
+		console.log("Server response: " + response)
+	})
 };
 
 function create() {
-	const msg = {
-		type: "create",
-		data: {
-			sendChannel
-		}
-	}
-	webSocket.send(JSON.stringify(msg));
+	console.log("sending CREATE")
+	socket.emit("create", sendMessage, (response: any) => {
+		console.log("Server response: " + response)
+	})
 };
 
 </script>
