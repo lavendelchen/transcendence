@@ -23,10 +23,14 @@ onMounted(() => {
 			console.log(reason)
 		});
 		socket.io.on("error", (error: Error) => {
-			console.error(error)
+			console.error("Socket.io error: " + error)
+			socket.close()
+			console.log("Socket closed due to error")
 		})
 		socket.on("connect_error", (error: Error) => {
-		  console.error(error)
+			console.error("Connect error: " + error)
+			socket.close()
+			console.log("Socket closed due to error")
 		});
 		// // webSocket.addEventListener('message', handleMessages);
 	}
