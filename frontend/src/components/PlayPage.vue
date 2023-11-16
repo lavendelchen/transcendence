@@ -1,21 +1,8 @@
-
-
-<script setup lang="ts">
-import Chat from "./Chat.vue"
-import Menue from "./Menue.vue"
-import Profile from "./Profile.vue"
-import Game from './Game.vue'
-
-import { store } from '../store/store.ts'
-
-
-
-</script>
-
 <template>
     <!-- <h1>Playpage</h1> -->
     <div class="appbody">
         <main>
+			<ChatTest/>
             <Game />
         </main>
         <aside>
@@ -27,10 +14,20 @@ import { store } from '../store/store.ts'
 
 </template>
 
+<script setup lang="ts">
+import Chat from "./Chat.vue"
+import Menue from "./Menue.vue"
+import Profile from "./Profile.vue"
+import Game from './Game.vue'
+import ChatTest from './ChatTest.vue'
 
-<style scooped>
+import { store } from '../store/store.ts'
+
+</script>
 
 
+
+<style>
 
 .appbody {
     background-color: black !important;
@@ -51,7 +48,5 @@ aside {
 h1 {
     font-size: 2rem !important;
 }
-
-
 
 </style>
