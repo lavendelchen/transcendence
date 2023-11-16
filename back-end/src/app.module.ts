@@ -13,6 +13,7 @@ import { ChannelModule } from './channel/channel.module';
 import { MessageModule } from './message/message.module';
 import { AppController } from './app.controller';
 import { TfaModule } from './tfa/tfa.module';
+import { WSocketModule } from '../wsocket/wsocket.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { TfaModule } from './tfa/tfa.module';
     MatchModule,
     ChannelModule,
     MessageModule,
+    WSocketModule,
   ],
   controllers: [AppController],
 })

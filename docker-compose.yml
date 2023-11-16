@@ -23,6 +23,7 @@ services:
     ports:
       - "3000:3000"
       - "5174:5174"
+      - "9000:9000" 
     volumes:
       - ./back-end:/app
       - /app/node_modules

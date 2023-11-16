@@ -17,10 +17,8 @@ async function bootstrap() {
   // setup session
   app.use(
     cors({
-      origin: function (origin, callback) {
-        return callback(null, true);
-      },
-      credentials: true
+      origin: 'http://localhost:5173',  // Replace with the origin of your frontend application
+      credentials: true,
     }),
     session({
       store: new FileStoreSession(),
