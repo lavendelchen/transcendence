@@ -17,7 +17,7 @@ import {
   cors: {
     origin: 'http://localhost:5173',  // adjust the origin based on your frontend configuration
     credentials: true,
-  },
+  }
 })
 
 export class WSocketGateway implements OnGatewayInit {
