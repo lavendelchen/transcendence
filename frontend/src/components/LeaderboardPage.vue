@@ -54,7 +54,6 @@
 							player.pseudo += "..."
 						}
 					})
-					console.log(this.players)
 				})
 				.catch(error => console.log(error.message))
 		}
