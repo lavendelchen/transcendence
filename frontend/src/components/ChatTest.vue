@@ -5,48 +5,33 @@
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue'
-import { io } from "socket.io-client"
-
-let socket: any;
-
+let webSocket: WebSocket;
 onMounted(() => {
 	try {
-		socket = io("ws://localhost:9000") // use the port for your chat server!! if you can't find it ask me
-
-		socket.on("connect", () => {
+		webSocket = new WebSocket("ws://localhost:9000"); // use the port for your chat server!! if you can't find it ask me
+		
+		webSocket.addEventListener('open', (event) => {
 			console.log("connection established");
-		})
-		socket.on("disconnect", (reason: string) => {
-			console.log("connection closed because:")
-			console.log(reason)
+        });
+		// webSocket.addEventListener('message', handleMessages);
+		webSocket.addEventListener('close', (event) => {
+			console.log("connection closed");
 		});
-		socket.io.on("error", (error: Error) => {
-			console.error("Socket.io error: " + error)
-			socket.close()
-			console.log("Socket closed due to error")
-		})
-		socket.on("connect_error", (error: Error) => {
-			console.error("Connect error: " + error)
-			socket.close()
-			console.log("Socket closed due to error")
+		webSocket.addEventListener('error', (event) => {
+			console.error(event);
 		});
-		// // webSocket.addEventListener('message', handleMessages);
 	}
 	catch(error) {
-		console.error(error)
+		console.error(error);
 	}
 })
-
 const	userID = Math.round(Math.random()*10);
 const	userName = "DUMMY_" + Math.round(Math.random()*100);
-
 enum EChannelType {
   PRIVATE,
   PUBLIC
 }
-
 interface IUser {
   id?: number | undefined;
   name: string | undefined;
@@ -56,19 +41,16 @@ interface IUser {
   token?: string | undefined;
   activeChats: string[];
 }
-
 interface IMessage {
   user: IUser;
   input: string;
   room: string;
 }
-
 interface IChannel {
   user: IUser;
   type: EChannelType;
   title: string;
 }
-
 let sendChannel: IChannel;
 sendChannel = {
 	user: {
@@ -105,28 +87,33 @@ sendMessage = {
 	input: "this is my message",
 	room: "Room number one"
 }
-
 function message() {
-	console.log("sending MESSAGE")
-	socket.emit("message", sendMessage, (response: any) => {
-		console.log("Server response: " + response)
-	})
+	const msg = {
+		event: "message",
+		data: {
+			sendMessage
+		}
+	}
+	webSocket.send(JSON.stringify(msg));
 };
-
 function join() {
-	console.log("sending JOIN")
-	socket.emit("join", sendMessage, (response: any) => {
-		console.log("Server response: " + response)
-	})
+	const msg = {
+		event: "join",
+		data: {
+			sendChannel
+		}
+	}
+	webSocket.send(JSON.stringify(msg));
 };
-
 function create() {
-	console.log("sending CREATE")
-	socket.emit("create", sendMessage, (response: any) => {
-		console.log("Server response: " + response)
-	})
+	const msg = {
+		event: "create",
+		data: {
+			sendChannel
+		}
+	}
+	webSocket.send(JSON.stringify(msg));
 };
-
 </script>
 
 <style scoped>
