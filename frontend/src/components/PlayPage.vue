@@ -11,10 +11,10 @@ import { onMounted } from 'vue'
 
 onMounted(() => {
 	// GET specific user
-	fetch('http://localhost:3000/user/1/won-matches')
+	fetch('http://localhost:3000/user/1')
 	.then(response => response.json())
 	.then(data => {
-		console.log(data.fortytwo_id)
+		console.log("User:")
 		console.log(data)
 	})
 	.catch(error => console.error('Error:', error));
@@ -36,12 +36,12 @@ onMounted(() => {
 	
 	// PUSH new match onto database
 	const postData = {
-		map: 'Blue',
 		player1Score: 11,
-		player2Score: 3,
-		player1: 1,
-		player2: 2,
-		winner: 1
+		player2Score: 1,
+		player1: 2,
+		player2: 3,
+		winner: 2,
+		loser: 3
 	};
 	fetch('http://localhost:3000/match', {
 		method: 'POST',

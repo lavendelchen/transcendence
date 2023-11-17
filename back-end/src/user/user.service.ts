@@ -13,7 +13,22 @@ export class UserService {
 
 	findAll(): Promise<User[]> {
 		return this.userRepository.find({
-			select: ['fortytwo_id', 'pseudo', 'email']
+			select: ['id', 'fortytwo_id', 'pseudo', 'email']
+		});
+	}
+
+	findAllLeaderboard(): Promise<User[]> {
+		return this.userRepository.find({
+			select: [
+				'id',
+				'pseudo',
+				'avatar',
+				'wonMatchesCount',
+				'lostMatchesCount',
+				'matchesCount',
+				'pointsMade',
+				'pointsLost'
+			]
 		});
 	}
 
@@ -24,21 +39,21 @@ export class UserService {
 		});
 	}
 
-	async getWonMatches(userId: number): Promise<Match[]> {
-    // Find the user by ID along with the wonMatches relationship
-    const user = await this.userRepository.findOne({
-		where: { id: userId },
-		relations: ['wonMatches'],
-	});
+// 	async getWonMatches(userId: number): Promise<Match[]> {
+//     // Find the user by ID along with the wonMatches relationship
+//     const user = await this.userRepository.findOne({
+// 		where: { id: userId },
+// 		relations: ['wonMatches'],
+// 	});
   
-    if (!user) {
-      // Handle the case where the user is not found
-      // You can throw an exception or handle it according to your application's logic
-      throw new Error('User not found');
-    }
+//     if (!user) {
+//       // Handle the case where the user is not found
+//       // You can throw an exception or handle it according to your application's logic
+//       throw new Error('User not found');
+//     }
 
-    return user.wonMatches;
-  }
+//     return user.wonMatches;
+//   }
 
     create(userData: Partial<User>): Promise<User> {
         const user = this.userRepository.create(userData);

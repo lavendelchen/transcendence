@@ -262,21 +262,6 @@ function classicGame(): void {
 
 function upgradeGame(color: number): void {
 	gameColor = color;
-	// switch (colour) {
-	// 	case PINK:
-	// 		elementColor = "rgb(255, 81, 168)";
-	// 		backgroundColor = "rgb(255, 212, 233)";
-	// 		break;
-	// 	case GREEN:
-	// 		elementColor = "green";
-	// 		backgroundColor = "rgb(192, 211, 192)";
-	// 		break;
-	// 	case BLUE:
-	// 		elementColor = "blue";
-	// 		backgroundColor = "rgb(175, 175, 255)";
-	// 		break;
-	// }
-	// renderElements();
 
 	gameMode.value = UPGRADE_MODE;
 	connectToServer();
@@ -293,8 +278,8 @@ function connectToServer(): void {
 			const authMsg = {
 				event: 'authenticate',
                 data: {
-					name: playerName, // neeed client name!!!!!
-					ID: playerID // neeed client name!!!!!
+					name: playerName, // neeed client name!!!!! -> auth/session/cookies
+					ID: playerID // neeed client name!!!!! -> auth/session/cookies
                 }
             };
             webSocket.send(JSON.stringify(authMsg));

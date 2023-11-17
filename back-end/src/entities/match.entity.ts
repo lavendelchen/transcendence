@@ -21,4 +21,7 @@ export class Match {
 
     @ManyToOne(() => User, user => user.wonMatches)
     winner: User;
+
+	@ManyToOne(() => User, user => user.lostMatches)
+    loser: User;
 }
