@@ -3,6 +3,7 @@
 import { Server, Socket } from 'ws';
 import { ChatService } from 'src/chat/chat.service';
 import { Injectable } from '@nestjs/common';
+import { IMessage } from 'src/chat/properties';
 import {
   ConnectedSocket, //wird spaeter fuer join un dque gebraucht
   MessageBody,
@@ -13,26 +14,47 @@ import {
 } from '@nestjs/websockets';
 
 @Injectable()
-@WebSocketGateway(9000, {cors: {origin: '*', methods: ['GET', 'POST']}})
+@WebSocketGateway(9000, { cors: { origin: '*', methods: ['GET', 'POST'] } })
 export class WSocketGateway implements OnGatewayInit {
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService) { }
 
   @WebSocketServer()
   server: Server;
 
   @SubscribeMessage('message')
-  async handleMessage(@MessageBody() data: any, client: Socket): Promise<void> {
-    console.log('Received message:', data);
-    
-    // Forward the message to the ChatService for processing
-    const result = await this.chatService.processMessage(data);
-
-    // Send a response back to the client if needed
-    client.send('messageResponse', result);
-    
+  async handleMessage(@MessageBody() data: any): Promise<void> {
+    console.log('received message');
+    // this may be provisory but somehow I could not process the data directly
+    try {
+      const convertedReceivedData: IMessage = {
+        user: {
+          id: data.sendMessage.user.id,
+          name: data.sendMessage.user.name,
+          intraname: data.sendMessage.user.intraname,
+          twoFAenabled: data.sendMessage.user.twoFAenabled,
+          image: data.sendMessage.user.image,
+          token: data.sendMessage.user.token,
+          activeChats: data.sendMessage.user.activeChats,
+        },
+        input: data.sendMessage.input,
+        room: data.sendMessage.room,
+      };
+      await this.chatService.processMessage(convertedReceivedData, this.server);
+    } catch (error) {
+      console.error('Error processing message:', error);
+    }
     // Broadcast the updated chat history to all connected clients
-    const chatHistory = await this.chatService.getChatHistory();
-    this.server.emit('chatHistory', chatHistory);
+    // const chatHistory = await this.chatService.getChatHistory();
+    // this.server.emit('chatHistory', chatHistory);
   }
-  afterInit(server: any): any {}
+
+
+  handleConnection(client: WebSocket, ...args: any[]) {
+    console.log('Client connected: ', (client as any)._socket.remoteAddress);
+    // Additional logic for handling new connections...
+  }
+
+  afterInit(server: any): any {
+    console.log('WebSocket server initialized!');
+  }
 }

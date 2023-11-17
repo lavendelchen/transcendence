@@ -1,10 +1,11 @@
-
-
 export interface IUser {
-  id: number | undefined;
+  id?: number | undefined;
   name: string | undefined;
+  intraname: string | undefined;
+  twoFAenabled: boolean;
   image: string | undefined;
-  token: string | undefined;
+  token?: string | undefined;
+  activeChats: string[];
 }
 
 export interface IMessage {
@@ -23,3 +24,6 @@ export interface IChannel {
   type: EChannelType;
   title: string;
 }
+
+
+export const roomConnections: Record<string, WebSocket[]> = {};

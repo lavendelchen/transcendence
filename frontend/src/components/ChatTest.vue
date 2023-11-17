@@ -10,10 +10,10 @@ let webSocket: WebSocket;
 onMounted(() => {
 	try {
 		webSocket = new WebSocket("ws://localhost:9000"); // use the port for your chat server!! if you can't find it ask me
-		
+
 		webSocket.addEventListener('open', (event) => {
 			console.log("connection established");
-        });
+		});
 		// webSocket.addEventListener('message', handleMessages);
 		webSocket.addEventListener('close', (event) => {
 			console.log("connection closed");
@@ -22,34 +22,34 @@ onMounted(() => {
 			console.error(event);
 		});
 	}
-	catch(error) {
+	catch (error) {
 		console.error(error);
 	}
 })
-const	userID = Math.round(Math.random()*10);
-const	userName = "DUMMY_" + Math.round(Math.random()*100);
+const userID = Math.round(Math.random() * 10);
+const userName = "DUMMY_" + Math.round(Math.random() * 100);
 enum EChannelType {
-  PRIVATE,
-  PUBLIC
+	PRIVATE,
+	PUBLIC
 }
 interface IUser {
-  id?: number | undefined;
-  name: string | undefined;
-  intraname: string | undefined;
-  twoFAenabled: boolean;
-  image: string | undefined;
-  token?: string | undefined;
-  activeChats: string[];
+	id?: number | undefined;
+	name: string | undefined;
+	intraname: string | undefined;
+	twoFAenabled: boolean;
+	image: string | undefined;
+	token?: string | undefined;
+	activeChats: string[];
 }
 interface IMessage {
-  user: IUser;
-  input: string;
-  room: string;
+	user: IUser;
+	input: string;
+	room: string;
 }
 interface IChannel {
-  user: IUser;
-  type: EChannelType;
-  title: string;
+	user: IUser;
+	type: EChannelType;
+	title: string;
 }
 let sendChannel: IChannel;
 sendChannel = {
