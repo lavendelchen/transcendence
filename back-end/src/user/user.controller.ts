@@ -16,6 +16,13 @@ export class UserController {
         return this.userService.findOne(id);
     }
 
+	@Get(':id/won-matches')
+  	async getWonMatches(@Param('id') id: number) {
+  	  const user = await this.userService.findOne(id);
+	  console.log(user);
+  		return this.userService.getWonMatches(user.id);
+  	}
+
     @Post()
     create(@Body() userData: Partial<User>): Promise<User> {
         return this.userService.create(userData);

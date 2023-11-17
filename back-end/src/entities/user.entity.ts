@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
 import { Match } from './match.entity';
 import { Channel } from './channel.entity';
 import { Message } from './message.entity';
@@ -30,23 +30,18 @@ export class User {
     @Column({ length: 60, nullable: true })
     secretOf2FA?: string;
 
-    @Column({ type: 'float', default: 0 })
-    xp: number;
-
-    @Column({ type: 'int', default: 0 })
-    ratio: number;
-
 	//entity relationships ...
 	@OneToMany(() => Message, message => message.creator)
-    messages: Message[];
+	messages: Message[];
 
-    @OneToMany(() => Match, match => match.userHome)
-    homeMatches: Match[];
+    @OneToMany(() => Match, match => match.player1)
+    player1Matches: Match[];
 
-    @OneToMany(() => Match, match => match.userForeign)
-    foreignMatches: Match[];
+    @OneToMany(() => Match, match => match.player2)
+    player2Matches: Match[];
 
     @OneToMany(() => Match, match => match.winner)
+	//@JoinColumn([{ name: "winnerId", referencedColumnName: "id" }])
     wonMatches: Match[];
 
     @OneToMany(() => Channel, channel => channel.owner)
