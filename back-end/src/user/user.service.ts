@@ -39,6 +39,13 @@ export class UserService {
 		});
 	}
 
+	findSecret(id: number): Promise<User> {
+		return this.userRepository.findOne({
+			where: { id },
+			select: ['secretOf2FA']
+		});
+	}
+
 // 	async getWonMatches(userId: number): Promise<Match[]> {
 //     // Find the user by ID along with the wonMatches relationship
 //     const user = await this.userRepository.findOne({

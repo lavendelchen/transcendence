@@ -21,6 +21,11 @@ export class UserController {
         return this.userService.findOne(id);
     }
 
+    @Get(':id/secret')
+    findSecret(@Param('id') id: number): Promise<User> {
+        return this.userService.findSecret(id);
+    }
+
 	// @Get(':id/won-matches')
   	// async getWonMatches(@Param('id') id: number) {
   	//   const user = await this.userService.findOne(id);
