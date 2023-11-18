@@ -36,22 +36,28 @@ export class TfaController {
     return { message: 'TFA enabled for the user.', user: updatedUser };
   }
 
-  @Post('generateOtp')
-  async generateOtp(@Body() body) {
-    const { secret } = body;
-
-    // Generate a TFA OTP based on the provided secret
-    const otp = this.tfaService.generateTfaToken(secret);
-
-    return { otp }; // Return the OTP in a JSON response
-  }
-
   @Post('verifyTfa')
-  async verifyTfa(@Body() body) {
-    const { otp, secret } = body;
+  async verifyTfa(@Body() body: { userId: number, otp: string }) {
+    const { userId, otp } = body;
+
+    console.log('Received userId:', userId);
+    console.log('Received OTP:', otp);
+
+    const user = await this.userService.findSecret(userId);
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    if (!user.is2FActive) {
+      return { message: 'TFA is not enabled for the user.' };
+    }
+
+    if (!user.secretOf2FA) {
+      throw new Error('User does not have a TFA secret.');
+    }
 
     // Verify the TFA OTP
-    const isValid = this.tfaService.verifyTfaToken(otp, secret);
+    const isValid = this.tfaService.verifyTfaToken(otp, user.secretOf2FA);
 
     if (isValid) {
       return { message: 'TFA OTP is valid.' };

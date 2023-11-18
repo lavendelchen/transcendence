@@ -42,7 +42,7 @@ export class UserService {
 	findSecret(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
-			select: ['secretOf2FA']
+			select: ['secretOf2FA', 'is2FActive']
 		});
 	}
 
