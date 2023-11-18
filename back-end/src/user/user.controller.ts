@@ -40,7 +40,8 @@ export class UserController {
 
     @Post(':id')
     updateOrCreate(@Param('id') id: number, @Body() userData: Partial<User>): Promise<User> {
-        return this.userService.updateOrCreate(id, userData);
+        console.log(userData);
+		return this.userService.updateOrCreate(id, userData);
     }
 
     @Put(':id')

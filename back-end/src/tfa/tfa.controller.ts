@@ -1,4 +1,4 @@
-import { Controller, Post, Body, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, NotFoundException, Param } from '@nestjs/common';
 import { TfaService } from './tfa.service';
 import { UserService } from 'src/user/user.service';
 
@@ -9,6 +9,22 @@ export class TfaController {
     private readonly tfaService: TfaService,
     private readonly userService: UserService,
   ) {}
+
+  @Get('isTfaEnabled/:userId')
+  async isTfaEnabled(@Param('userId') userId: number) {
+    // Retrieve the user from the database
+    const user = await this.userService.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    // Check if TFA is already enabled for the user
+    if (user.is2FActive)
+    	return { isTfaEnabled: true };
+	else 
+		return { isTfaEnabled: false };
+  }
 
   @Post('enableTfa/:userId')
   async enableTfa(@Param('userId') userId: number) {

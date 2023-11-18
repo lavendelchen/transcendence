@@ -35,7 +35,7 @@ onMounted(() => {
 	//  .catch(error => console.error('Error:', error));
 	
 	// PUSH new match onto database
-	const postData = {
+	/* const postData = {
 		player1Score: 11,
 		player2Score: 1,
 		player1: 2,
@@ -52,7 +52,7 @@ onMounted(() => {
 	})
 	 .then(response => response.json())
 	 .then(data => console.log(data))
-	 .catch(error => console.error('Error:', error));
+	 .catch(error => console.error('Error:', error)); */
 
 	// // UPDATE match
 	// const postData = {

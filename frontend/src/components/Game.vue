@@ -556,40 +556,86 @@ canvas {
 }
 
 .playButton {
-	padding: 30px;
+	padding: 12px;
+	width: 150px;
+	height: 110px;
+	font-size: x-small;
 	z-index: 0;
 	position: absolute;
 	top: 50%;
 	transform: translate(-50%, -50%);
 	display: flex;
 	align-items: center;
+	border-radius: 12px;
+	justify-content: center;
+	border: 0px;
+}
+
+.playButton:hover {
+	color: white;
+	background-color: black;
+	border: 0px;
+	border-radius: 0px;
 }
 
 #classicPlayButton {
-	left: 30%;
+	left: 27%;
 }
 
 #upgradePlayButton {
-	left: 70%
+	left: 73%
 }
 
 #pinkPlayButton {
+	justify-content: center;
+	width: 90px;
+	height: 70px;
 	left: 25%;
 	background-color: rgb(255, 212, 233);
 }
 
+#pinkPlayButton:hover {
+	color: rgb(255, 212, 233);
+	background-color: black;
+	border-radius: 0px;
+}
+
 #bluePlayButton {
+	justify-content: center;
+	width: 90px;
+	height: 70px;
 	left: 50%;
 	background-color: rgb(171, 171, 255);
 }
 
+#bluePlayButton:hover {
+	color: rgb(171, 171, 255);
+	background-color: black;
+	border-radius: 0px;
+}
+
 #greenPlayButton {
+	justify-content: center;
+	width: 90px;
+	height: 70px;
 	left: 75%;
 	background-color: rgb(136, 193, 136);
 }
 
+#greenPlayButton:hover {
+	color: rgb(136, 193, 136);
+	background-color: black;
+	border-radius: 0px;
+}
+
 #waitingPlayButton {
-	left: 50%
+	left: 50%;
+	border-radius: 8px;
+	border-color: black;
+}
+
+#waitingPlayButton:hover {
+	pointer-events: none;
 }
 
 .stupid-container {

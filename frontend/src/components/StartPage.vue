@@ -1,23 +1,29 @@
 <script setup lang="ts">
-// import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
 
-// const router = useRouter();
+const router = useRouter();
 
-async function startAuth() {
-  
-  try {
+onMounted(() => {
+	checkIfRedirect();
+})
+
+async function checkIfRedirect() {
+	try {
     const response = await fetch("http://localhost:3000/auth/isAuthenticated");
     const data = await response.text();
     console.log(data);
     if (data == 'true') {
-      // router.push('/play');
+      router.push('/play');
       console.log("already authenticated");
       return;
     }
   } catch (error) {
     console.error("checking session storage failed", error);
   }
-  
+};
+
+async function startAuth() {
   try {
     const response = await fetch('http://localhost:3000/auth/init');
     const data = await response.text();
@@ -36,24 +42,20 @@ async function startAuth() {
 </script>
 
 <template>
-	<p id="score">
-		Score: 3000p
-	</p>
+	<!-- <p id="score">
+	Score: 3000p
+	</p> -->
 	<section class="logo">
 		Ping&#160;&#160;&#160;&#160;&#160;&#160;&#160; <br>
 		Pang <br>
 		&#160;&#160;&#160;&#160;&#160;&#160;&#160;Pong
 	</section>
 	<!-- <a href="https://api."> -->
-		<div @click="startAuth" class="buttonLogin">
-			Login
-		</div>
+		<button @click="startAuth" class="buttonLogin">
+			Log in
+		</button>
 	<!-- </a> -->
     <RouterLink class="link-skipp-login" to="/play">Skip Login</RouterLink>
-	<p class="copyrightFooter"> <!-- put this outside of router view maybe? -->
-		&#169; The PingPangPong Company 2023 <br>
-		All rights reserved
-	</p>
 </template>
 
 <script lang="ts">
@@ -109,22 +111,18 @@ img {
 	margin: 20vh auto 0 auto;
 }
 
-    div.buttonLogin {
-      display: block;
-      margin: 10vh auto 0 auto;
-      width: 100px;
-      border: 1px solid white;
-      text-align: center;
-      padding: 10px 20px;
-    }
-
-.copyrightFooter {
-	font-size: var(--font-size-sm);
-	position: fixed;
-	bottom: 0;
+button.buttonLogin {
 	display: block;
-	left: 30vw;
-	width: 40vw;
+	margin: 10vh auto 0 auto;
+	border: 2px solid white;
+	text-align: center;
+	padding: 10px 20px;
+	transition: 0.3s;
+}
+
+button.buttonLogin:hover {
+	background-color: white;
+	color: black;
 }
 
 .leaderboard {
