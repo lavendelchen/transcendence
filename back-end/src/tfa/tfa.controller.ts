@@ -36,6 +36,29 @@ export class TfaController {
     return { message: 'TFA enabled for the user.', user: updatedUser };
   }
 
+  @Post('disableTfa/:userId')
+  async disableTfa(@Param('userId') userId: number) {
+    // Retrieve the user from the database
+    const user = await this.userService.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    // Check if TFA is already disabled for the user
+    if (!user.is2FActive) {
+      return { message: 'TFA is already disabled for the user.' };
+    }
+
+    // Update the user record in the database to disable TFA
+    const updatedUser = await this.userService.update(userId, {
+      is2FActive: false,
+      secretOf2FA: null,
+    });
+
+    return { message: 'TFA disabled for the user.', user: updatedUser };
+  }
+
   @Post('verifyTfa')
   async verifyTfa(@Body() body: { userId: number, otp: string }) {
     const { userId, otp } = body;
@@ -60,7 +83,7 @@ export class TfaController {
     const isValid = this.tfaService.verifyTfaToken(otp, user.secretOf2FA);
 
     if (isValid) {
-      return { message: 'TFA OTP is valid.' };
+      return { message: 'TFA OTP is valid.' }; // this will be replaced with a redirection to play-page
     } else {
       return { message: 'TFA OTP is invalid.' };
     }
