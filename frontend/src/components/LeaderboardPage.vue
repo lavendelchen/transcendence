@@ -52,7 +52,7 @@
 				.then(data => {
 					this.players = data
 		
-					this.players.sort((a: any, b: any) => a.wonMatchesCount + b.wonMatchesCount);
+					this.players.sort((a: any, b: any) => b.wonMatchesCount - a.wonMatchesCount );
 
 					this.players.forEach((player, index) => {
 			        	player.rank = index + 1;
