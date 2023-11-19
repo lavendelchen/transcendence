@@ -7,6 +7,7 @@ import StartPage from './components/StartPage.vue'
 import PlayPage from './components/PlayPage.vue'
 import LeaderboardPage from './components/LeaderboardPage.vue'
 import Prompt from './components/Prompt.vue'
+import OTP from './components/OTP.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -15,6 +16,7 @@ const router = createRouter({
         { path: '/play', component: PlayPage },
         { path: '/leaderboard', component: LeaderboardPage },
 		{ path: '/prompt', component: Prompt },
+		{ path: '/OTP', component: OTP },
         { path: '/', redirect: '/start'} 
     ]
 })
