@@ -9,7 +9,7 @@ import { onMounted } from 'vue'
 let webSocket: WebSocket;
 onMounted(() => {
 	try {
-		webSocket = new WebSocket("ws://localhost:9000"); // use the port for your chat server!! if you can't find it ask me
+		webSocket = new WebSocket('ws://' + import.meta.env.VITE_CURRENT_HOST + ':9000'); // use the port for your chat server!! if you can't find it ask me
 
 		webSocket.addEventListener('open', (event) => {
 			console.log("connection established");

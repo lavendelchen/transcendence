@@ -33,6 +33,8 @@ services:
   frontend-container:
     container_name: frontend-container
     build: ./frontend
+    environment:
+      - VITE_CURRENT_HOST=${CURRENT_HOST}
     ports:
       - "5173:5173"
     volumes:

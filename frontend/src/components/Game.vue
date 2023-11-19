@@ -272,7 +272,7 @@ function connectToServer(): void {
 	gameState.value = WAITING;
 	waitingButtonText.value = "Connecting to server...";
 	try {
-		webSocket = new WebSocket("ws://localhost:5174");
+		webSocket = new WebSocket('ws://' + import.meta.env.VITE_CURRENT_HOST + ':5174');
 		
 		webSocket.addEventListener('open', (event) => {
 			const authMsg = {

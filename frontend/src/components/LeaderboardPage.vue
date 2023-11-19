@@ -47,7 +47,7 @@
 			}
 		},
 		mounted() {
-			fetch('http://localhost:3000/user/leaderboard') // do we need to sort them?
+			fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/leaderboard') // do we need to sort them?
 				.then(response => response.json())
 				.then(data => {
 					this.players = data

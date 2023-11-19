@@ -11,7 +11,7 @@ import { onMounted } from 'vue'
 
 onMounted(() => {
 	// GET specific user
-	fetch('http://localhost:3000/user/1')
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1')
 	.then(response => response.json())
 	.then(data => {
 		console.log("User:")
@@ -23,7 +23,7 @@ onMounted(() => {
 	// const postData = {
 	//  pseudo: 'bitch',
 	// };
-	// fetch('http://localhost:3000/user/1', {
+	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1', {
 	// 	method: 'POST',
 	// 	headers: {
 	// 		'Content-Type': 'application/json'
@@ -43,7 +43,7 @@ onMounted(() => {
 		winner: 2,
 		loser: 3
 	};
-	fetch('http://localhost:3000/match', {
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/match', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -59,7 +59,7 @@ onMounted(() => {
 	// 	player1Score: 1000,
 	// 	player2Score: 200
 	// };
-	// fetch('http://localhost:3000/match/5', {
+	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/match/5', {
 	// 	method: 'POST',
 	// 	headers: {
 	// 		'Content-Type': 'application/json'
@@ -71,7 +71,7 @@ onMounted(() => {
 	//  .catch(error => console.error('Error:', error));
 
 	// // DELETE match
-	// fetch('http://localhost:3000/match/5', {
+	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/match/5', {
 	// 	method: 'DELETE'
 	// })
 	// .then(response => console.log(response))

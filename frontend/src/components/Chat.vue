@@ -101,7 +101,7 @@ messageToSend = {
 
 onMounted(() => {
 	try {
-		webSocket = new WebSocket("ws://localhost:9000");
+		webSocket = new WebSocket('ws://' + import.meta.env.VITE_CURRENT_HOST + ':9000');
 
 		webSocket.addEventListener('open', (event) => {
 			console.log("connection established");
@@ -195,7 +195,7 @@ function messageContainerScrollToBottom() {
 // }
 
 function checkAuthenticated() { // svenja: not sure how this function works with the session/cookie. but i kinda get it i guess
-   fetch('http://localhost:3000/auth/isAuthenticated', {
+   fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/isAuthenticated', {
         method: 'GET',
         credentials: 'include',
     })

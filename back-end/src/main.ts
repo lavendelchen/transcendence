@@ -17,7 +17,7 @@ async function bootstrap() {
   // setup session
   app.use(
     cors({
-      origin: 'http://localhost:5173',  // Replace with the origin of your frontend application
+      origin: '*',  // Replace with the origin of your frontend application
       credentials: true,
     }),
     session({

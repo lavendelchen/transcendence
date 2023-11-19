@@ -54,7 +54,7 @@ let tfaSecret = ref("");
 let tfaMsg = ref("Enable Two-Factor Authentication")
 
 onMounted(() => {
-	fetch('http://localhost:3000/tfa/isTfaEnabled/1') //ID
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/isTfaEnabled/1') //ID
 	.then(response => response.json())
 	.then(data => {
 		console.log(data)
@@ -71,7 +71,7 @@ function tfaDone() {
 }
 
 function enableTFA() {
-	fetch('http://localhost:3000/tfa/enableTfa/1', { // ADD ID
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/enableTfa/1', { // ADD ID
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -156,7 +156,7 @@ async function submit(event: any) {
 	else {
 		console.error("How did we get here??")
 	}
-	fetch('http://localhost:3000/user/1', { // ADD ID
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1', { // ADD ID
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
