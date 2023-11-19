@@ -1,21 +1,23 @@
 <template>
 	<h1>Leaderboard</h1>
-	<p v-if="players[0].avatar">
-		<span id="img"></span>
+	<p v-if="players.length > 0">
+		<span id="rank">Rank</span>
 		<span id="pseudo">Name</span>
+		<span id="img"></span>
 		<span id="legend">Wins</span>
 		<span id="legend">Losses</span>
 		<span id="legend">Total Games</span>
 		<span id="legend">Points made</span>
 		<span id="legend">Points lost</span>
 	</p>
-	<div id="leaderboardBox" v-if="players[0].avatar">
-		<p v-for="player in players" :key="player.id" class="leaderboardEntries">
-			<img id="img" :src="player.avatar" alt="Player Avatar"> <!-- make hyperlink? -->
+	<div id="leaderboardBox" v-if="players.length > 0">
+		<p v-for="player in players" :key="player.rank" class="leaderboardEntries">
+			<span id="rank">{{ player.rank }}</span>
 			<span id="pseudo">{{ player.pseudo }}</span>
-			<span id="wonGames">{{ player.wonGames }}</span>
-			<span id="lostGames">{{ player.lostGames }}</span>
-			<span id="playedGames">{{ player.playedGames }}</span>
+			<img id="img" :src="player.avatar" alt="Player Avatar"> <!-- make hyperlink? -->
+			<span id="wonGames">{{ player.wonMatchesCount }}</span>
+			<span id="lostGames">{{ player.lostMatchesCount }}</span>
+			<span id="playedGames">{{ player.matchesCount }}</span>
 			<span id="pointsMade">{{ player.pointsMade }}</span>
 			<span id="pointsLost">{{ player.pointsLost }}</span>
 		</p>
@@ -26,32 +28,40 @@
 </template>
 
 <script lang="ts">
+	interface Player {
+	  avatar: string;
+	  id: number;
+	  lostMatchesCount: number;
+	  matchesCount: number;
+	  pointsLost: number;
+	  pointsMade: number;
+	  pseudo: string;
+	  wonMatchesCount: number;
+	  rank?: number; // Add the rank property
+	}
+
 	export default {
 		data() {
 			return {
-				players: [ {
-					id: -1,
-					pseudo: "",
-					avatar: "",
-					wonGames: 0,
-					lostGames: 0,
-					playedGames: 0,
-					pointsMade: 0,
-					pointsLost: 0
-				} ]
+				players: [] as Player[]
 			}
 		},
 		mounted() {
-			fetch('http://localhost:3000/players') // do we need to sort them?
+			fetch('http://localhost:3000/user/leaderboard') // do we need to sort them?
 				.then(response => response.json())
 				.then(data => {
 					this.players = data
-					// this.players.forEach((player, index) => {
-						// if (player.pseudo.length > 17) {
-							// player.pseudo = player.pseudo.slice(0, 17)
-							// player.pseudo += "..."
-						// }
-					// })
+		
+					this.players.sort((a: any, b: any) => a.wonMatchesCount + b.wonMatchesCount);
+
+					this.players.forEach((player, index) => {
+			        	player.rank = index + 1;
+				
+						if (player.pseudo.length > 17) {
+							player.pseudo = player.pseudo.slice(0, 17)
+							player.pseudo += "..."
+						}
+			        });
 				})
 				.catch(error => console.log(error.message))
 		}
@@ -67,7 +77,7 @@
 }
 
 #leaderboardBox {
-	height: 70vh;
+	height: 50vh;
 	overflow: scroll;
 }
 
@@ -82,7 +92,17 @@ span {
 	border-radius: 50%;
 	display: inline-block;
 	vertical-align: middle;
-	padding: 2vw; /* vw or fixed? */
+	margin-right: 2vw;
+	margin-top: 0.8vw;	
+	margin-bottom: 0.8vw;
+}
+
+
+#rank {
+	margin-left: 30px;
+	width: 5vw;
+	font-size: var(--font-size-base);
+	color:rgb(204, 163, 112);
 }
 
 #legend {
@@ -90,7 +110,7 @@ span {
 }
 
 #pseudo {
-	width: 30vw;
+	width: 25vw;
 }
 
 #wonGames {

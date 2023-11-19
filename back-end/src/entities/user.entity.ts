@@ -30,25 +30,38 @@ export class User {
     @Column({ length: 60, nullable: true })
     secretOf2FA?: string;
 
-    @Column({ type: 'float', default: 0 })
-    xp: number;
-
-    @Column({ type: 'int', default: 0 })
-    ratio: number;
-
+	@Column({ type: 'int', default: 0 })
+    matchesCount: number;
+	
+	@Column({ type: 'int', default: 0 })
+    wonMatchesCount: number;
+	
+	@Column({ type: 'int', default: 0 })
+    lostMatchesCount: number;
+	
+	@Column({ type: 'int', default: 0 })
+    pointsMade: number;
+	
+	@Column({ type: 'int', default: 0 })
+    pointsLost: number;
+	
 	//entity relationships ...
-
-    @OneToMany(() => Match, match => match.userHome)
-    homeMatches: Match[];
-
-    @OneToMany(() => Match, match => match.userForeign)
-    foreignMatches: Match[];
-
-    @OneToMany(() => Match, match => match.winner)
-    wonMatches: Match[];
 
     @OneToMany(() => Channels, channel => channel.owner)
     owned: Channels[];
+    
+    @OneToMany(() => Match, match => match.player1)
+    player1Matches: Match[];
+	
+    @OneToMany(() => Match, match => match.player2)
+    player2Matches: Match[];
+	
+    @OneToMany(() => Match, match => match.winner)
+    wonMatches: Match[];
+
+	@OneToMany(() => Match, match => match.loser)
+    lostMatches: Match[];
+
 
     @ManyToMany(type => Channels)
     @JoinTable({

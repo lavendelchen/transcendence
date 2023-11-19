@@ -11,10 +11,27 @@ export class UserController {
         return this.userService.findAll();
     }
 
+	@Get('/leaderboard')
+    findAllLeaderboard(): Promise<User[]> {
+        return this.userService.findAllLeaderboard();
+    }
+
     @Get(':id')
     findOne(@Param('id') id: number): Promise<User> {
         return this.userService.findOne(id);
     }
+
+    @Get(':id/secret')
+    findSecret(@Param('id') id: number): Promise<User> {
+        return this.userService.findSecret(id);
+    }
+
+	// @Get(':id/won-matches')
+  	// async getWonMatches(@Param('id') id: number) {
+  	//   const user = await this.userService.findOne(id);
+	//   console.log(user);
+  	// 	return this.userService.getWonMatches(user.id);
+  	// }
 
     @Post()
     create(@Body() userData: Partial<User>): Promise<User> {
@@ -23,7 +40,8 @@ export class UserController {
 
     @Post(':id')
     updateOrCreate(@Param('id') id: number, @Body() userData: Partial<User>): Promise<User> {
-        return this.userService.updateOrCreate(id, userData);
+        console.log(userData);
+		return this.userService.updateOrCreate(id, userData);
     }
 
     @Put(':id')

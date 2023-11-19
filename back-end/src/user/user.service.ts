@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { Match } from '../entities/match.entity';
 
 @Injectable()
 export class UserService {
@@ -12,14 +13,29 @@ export class UserService {
 
 	findAll(): Promise<User[]> {
 		return this.userRepository.find({
-			select: ['fortytwo_id', 'pseudo', 'email']
+			select: ['id', 'fortytwo_id', 'pseudo', 'email']
+		});
+	}
+
+	findAllLeaderboard(): Promise<User[]> {
+		return this.userRepository.find({
+			select: [
+				'id',
+				'pseudo',
+				'avatar',
+				'wonMatchesCount',
+				'lostMatchesCount',
+				'matchesCount',
+				'pointsMade',
+				'pointsLost'
+			]
 		});
 	}
 
 	findOne(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
-			select: ['fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'xp', 'homeMatches', 'foreignMatches']
+			select: ['fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches']
 		});
 	}
 
@@ -34,6 +50,28 @@ export class UserService {
 		  throw new Error('User not found');
 		}
 	  }
+	findSecret(id: number): Promise<User> {
+		return this.userRepository.findOne({
+			where: { id },
+			select: ['secretOf2FA', 'is2FActive']
+		});
+	}
+
+// 	async getWonMatches(userId: number): Promise<Match[]> {
+//     // Find the user by ID along with the wonMatches relationship
+//     const user = await this.userRepository.findOne({
+// 		where: { id: userId },
+// 		relations: ['wonMatches'],
+// 	});
+  
+//     if (!user) {
+//       // Handle the case where the user is not found
+//       // You can throw an exception or handle it according to your application's logic
+//       throw new Error('User not found');
+//     }
+
+//     return user.wonMatches;
+//   }
 
     create(userData: Partial<User>): Promise<User> {
         const user = this.userRepository.create(userData);
