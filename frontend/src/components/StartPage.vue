@@ -55,7 +55,6 @@ async function startAuth() {
 			Log in
 		</button>
 	<!-- </a> -->
-    <RouterLink class="link-skipp-login" to="/play">Skip Login</RouterLink>
 </template>
 
 <script lang="ts">
