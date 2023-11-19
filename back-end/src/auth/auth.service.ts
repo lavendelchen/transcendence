@@ -26,6 +26,7 @@ export class AuthService {
 		params.append('response_type', 'code');
 		return url + params;
 	}
+	
 	async successAuth(code: string) {
 		// Check if the code is undefined or empty
 		if (!code) {
