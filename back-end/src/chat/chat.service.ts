@@ -4,9 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { IMessage } from 'src/chat/properties';
 import { Server } from 'ws';
 import { roomConnections } from '../chat/properties';
+import { ChatServiceBase } from './chat.servicebase';
 
 @Injectable()
-export class ChatService {
+export class ChatService extends ChatServiceBase {
   private chatHistory: IMessage[] = [];
 
   async processMessage(data: IMessage, server: Server): Promise<string> {
@@ -40,4 +41,5 @@ export class ChatService {
       connection.send(message);
     }
   }
+  
 }

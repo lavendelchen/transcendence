@@ -3,7 +3,7 @@
 import { Server, Socket } from 'ws';
 import { ChatService } from 'src/chat/chat.service';
 import { Injectable } from '@nestjs/common';
-import { IMessage } from 'src/chat/properties';
+import { IMessage, IChannel } from 'src/chat/properties';
 import {
   ConnectedSocket, //wird spaeter fuer join un dque gebraucht
   MessageBody,
@@ -48,6 +48,13 @@ export class WSocketGateway implements OnGatewayInit {
     // this.server.emit('chatHistory', chatHistory);
   }
 
+
+  @SubscribeMessage('create')
+  async addChat(
+    @MessageBody() data: IChannel,
+  ): Promise<string[]> {
+    return await this.chatService.addChat(data);
+  }
 
   handleConnection(client: WebSocket, ...args: any[]) {
     console.log('Client connected: ', (client as any)._socket.remoteAddress);

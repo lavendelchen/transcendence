@@ -33,7 +33,7 @@ import { WSocketModule } from '../wsocket/wsocket.module';
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DB'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<boolean>('POSTGRES_SYNC', false), // if DB_SYNC is true, the database is created again on each launch from TypeORM
+        synchronize: configService.get<boolean>('POSTGRES_SYNC', true), // if DB_SYNC is true, the database is created again on each launch from TypeORM
       }),
     }),
     AuthModule,
