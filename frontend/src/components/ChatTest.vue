@@ -68,7 +68,7 @@ sendChannel = {
 	},
 	type: EChannelType.PRIVATE,
 	title: "Room number one"
-}
+};
 let sendMessage: IMessage;
 sendMessage = {
 	user: {
@@ -86,7 +86,7 @@ sendMessage = {
 	},
 	input: "this is my message",
 	room: "Room number one"
-}
+};
 function message() {
 	console.log("sendMessage:", sendMessage);
 	const msg = {
@@ -101,9 +101,8 @@ function join() {
 	console.log("sendChannel:", sendChannel);
 	const msg = {
 		event: "join",
-		data: {
+		data:
 			sendChannel
-		}
 	}
 	webSocket.send(JSON.stringify(msg));
 };
@@ -111,9 +110,8 @@ function create() {
   try {
     const msg = {
       event: "create",
-      data: {
+      data: 
         sendChannel,
-      },
     };
     console.log("Sending message:", msg);
     webSocket.send(JSON.stringify(msg));
