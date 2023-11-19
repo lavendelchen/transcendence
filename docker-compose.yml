@@ -21,8 +21,9 @@ services:
     env_file:
       - .env
     ports:
-      - "3000:3000"
-      - "5174:5174"
+      - "3000:3000" # general/api
+      - "5174:5174" # game server
+      - "9000:9000" # chat server
     volumes:
       - ./back-end:/app
       - /app/node_modules

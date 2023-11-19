@@ -9,10 +9,9 @@ import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { FriendModule } from './friend/friend.module';
 import { MatchModule } from './match/match.module';
-import { ChannelModule } from './channel/channel.module';
-import { MessageModule } from './message/message.module';
 import { AppController } from './app.controller';
 import { TfaModule } from './tfa/tfa.module';
+import { WSocketModule } from '../wsocket/wsocket.module';
 
 @Module({
   imports: [
@@ -43,8 +42,7 @@ import { TfaModule } from './tfa/tfa.module';
     UserModule,
     FriendModule,
     MatchModule,
-    ChannelModule,
-    MessageModule,
+    WSocketModule,
   ],
   controllers: [AppController],
 })

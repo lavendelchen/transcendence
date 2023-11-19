@@ -84,12 +84,12 @@ onMounted(() => {
     <!-- <h1>Playpage</h1> -->
     <div class="appbody">
         <main>
+			<ChatTest/>
             <Game />
         </main>
         <aside>
             <Menue />
-            <Chat/> 
-			<!-- v-if="store.chatActive" -->
+            <Chat v-if="store.chatActive"/> 
             <Profile v-if="store.profileActive" />
         </aside>
     </div>
@@ -97,9 +97,8 @@ onMounted(() => {
 </template>
 
 
-<style scooped>
 
-
+<style scoped>
 
 .appbody {
     background-color: black !important;
@@ -120,7 +119,5 @@ aside {
 h1 {
     font-size: 2rem !important;
 }
-
-
 
 </style>

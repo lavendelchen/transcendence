@@ -39,6 +39,17 @@ export class UserService {
 		});
 	}
 
+	async findOneByName(userId: string): Promise<User> {
+		const res: User = await this.userRepository.findOne({
+		  where: { pseudo: userId },
+		});
+		if (res) {
+		  console.log(res)
+		  return res;
+		} else {
+		  throw new Error('User not found');
+		}
+	  }
 	findSecret(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
