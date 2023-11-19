@@ -97,17 +97,6 @@ onMounted(() => {
 
 </template>
 
-<script setup lang="ts">
-import Chat from "./Chat.vue"
-import Menue from "./Menue.vue"
-import Profile from "./Profile.vue"
-import Game from './Game.vue'
-import ChatTest from './ChatTest.vue'
-
-import { store } from '../store/store.ts'
-
-</script>
-
 
 
 <style>
