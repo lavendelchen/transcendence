@@ -54,8 +54,8 @@ interface IChannel {
 let sendChannel: IChannel;
 sendChannel = {
 	user: {
-		id: userID,
-		name: userName,
+		id: 83414,
+		name: "hngo",
 		intraname: userName,
 		twoFAenabled: true,
 		image: "this is an image",
@@ -88,6 +88,7 @@ sendMessage = {
 	room: "Room number one"
 }
 function message() {
+	console.log("sendMessage:", sendMessage);
 	const msg = {
 		event: "message",
 		data: {
@@ -97,6 +98,7 @@ function message() {
 	webSocket.send(JSON.stringify(msg));
 };
 function join() {
+	console.log("sendChannel:", sendChannel);
 	const msg = {
 		event: "join",
 		data: {
@@ -106,13 +108,18 @@ function join() {
 	webSocket.send(JSON.stringify(msg));
 };
 function create() {
-	const msg = {
-		event: "create",
-		data: {
-			sendChannel
-		}
-	}
-	webSocket.send(JSON.stringify(msg));
+  try {
+    const msg = {
+      event: "create",
+      data: {
+        sendChannel,
+      },
+    };
+    console.log("Sending message:", msg);
+    webSocket.send(JSON.stringify(msg));
+  } catch (error) {
+    console.error("Error sending message:", error);
+  }
 };
 </script>
 

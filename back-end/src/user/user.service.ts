@@ -28,6 +28,7 @@ export class UserService {
 		  where: { pseudo: userId },
 		});
 		if (res) {
+		  console.log(res)
 		  return res;
 		} else {
 		  throw new Error('User not found');
