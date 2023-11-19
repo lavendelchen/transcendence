@@ -27,21 +27,34 @@ export class AuthController {
     console.log('Success Auth Result:', result); // Log the result of successAuth
     req.session.dataAuthCode = result;
     req.session.dataAuthenticated = "true";
+    req.session.userID = result.userID;
     console.log(req.session);
-    console.log(req.sessionID);
+    console.log(req.userID);
     console.log(req.session.dataAuthenticated);
     return res.redirect('http://localhost:5173/play'); // redirect to playpage
   }
 
   @Get('isAuthenticated')
-  checkAuthentication(@Req() req: Request) {
+  async checkAuthentication(@Req() req: Request) {
     console.log(req.session.dataAuthenticated);
     console.log(req.session);
-    console.log(req.sessionID);
-    if (req.session && req.session.dataAuthenticated)
-      return  (true);
-    else
-      return (false);
-  }
+    console.log(req.userID);
 
+    if (req.session && req.session.dataAuthenticated) {
+      // If user is authenticated, check if TFA is enabled
+      const userId = req.session.userId; // You need to adjust this based on how you store the user ID in the session
+      const isTfaEnabledResponse = await this.isTfaEnabled(userId);
+
+      if (isTfaEnabledResponse.isTfaEnabled) {
+        console.log('TFA is enabled for the user.');
+        return true;
+      } else {
+        console.log('TFA is not enabled for the user.');
+        return false;
+      }
+    } else {
+      // If user is not authenticated, return false
+      return false;
+    }
+  }
 }

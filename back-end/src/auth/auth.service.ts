@@ -97,9 +97,12 @@ export class AuthService {
 			avatar: userResponse.image.versions.medium,
 		  };
 		  // Save or Update user in database
-		  await this.userService.saveOrUpdate(transformedUserData);
+		  const user = await this.userService.saveOrUpdate(transformedUserData);
 
-		  return tokenResponse.access_token;
+		  return {
+			accessToken: tokenResponse.access_token,
+			userID: user.id
+		  };
 		} catch (error) {
 		  throw new ForbiddenException('Authorization failed: ' + error.message);
 		}
