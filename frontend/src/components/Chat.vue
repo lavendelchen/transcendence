@@ -1,67 +1,178 @@
+<template class="chat">
+
+<div class="chat">
+    <h3>Chat</h3>
+    <div class="messages_container" id="messages_container">
+            <Message v-for="message in text_array" :message_name="message.message_name" :message_content="message.message_content" :from_myself="message.from_myself"/>
+    </div>
+    <div class="controls">
+        <textarea
+			id="chat_textarea"
+			name="chat_message"
+			cols="auto" rows="auto"
+			@keydown="handleEnter"
+		></textarea>
+        <button @click="addMessageToChat" >send</button>
+    </div>
+</div>
+
+</template>
+
 <script setup lang="ts">
+
 import Message from './Message.vue'
-import {ref} from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 
-async function checkAuthenticated() {
-    const response = await fetch('http://localhost:3000/auth/isAuthenticated', {
-        method: 'GET',
-        credentials: 'include',
-    });
-    const data = await response.text();
-    console.log("buttoncheck: " + data);
-}
+const	userName = "ANITA_" + Math.round(Math.random()*100); // change later
+const	userID = Math.round(Math.random()*10); // change later
 
-let text_array = ref([
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:false},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:false},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true}
+let text_array = ref([ // later get written text messages from this chat
+    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true},
+    {message_name: "chatter", message_content: "Lorem Ipsum", from_myself: false},
+    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true},
+    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true},
+    {message_name: "chatter", message_content: "If you’re like me and you have the debilitating habit of beating yourself up over things, look yourself in the mirror and just go “I am young and I am allowed to make mistakes. It’s not that serious.” Bc it really isn’t. It is not that serious at all. This is not our second time living. We did not have a rehearsal for what the correct way to live is. This is our first time and we are allowed to stumble. It’s fine. It’s not that serious. ", from_myself: false},
+	{message_name: "chatter", message_content: "Lorem Ipsum", from_myself: false},
+	{message_name: "chatter", message_content: "Lorem Ipsum", from_myself: false},
+    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true}
 ]);
 
-// function addMessage() {
-    // const newID = Date.now();
-    // text_array.value.push(newID);
-// }
+let webSocket: WebSocket;
 
-var socket = new WebSocket('ws://localhost:8080/message');
-
-socket.onopen = (ev) => {
-    console.log('Socket opened: ', ev);
+enum EChannelType {
+	PRIVATE,
+	PUBLIC
+}
+interface IUser {
+	id?: number | undefined;
+	name: string | undefined;
+	intraname: string | undefined;
+	twoFAenabled: boolean;
+	image: string | undefined;
+	token?: string | undefined;
+	activeChats: string[];
+}
+interface IMessage {
+	user: IUser;
+	input: string;
+	room: string;
+}
+interface IChannel {
+	user: IUser;
+	type: EChannelType;
+	title: string;
+}
+let channelToSend: IChannel;
+channelToSend = {
+	user: {
+		id: userID,
+		name: userName,
+		intraname: userName,
+		twoFAenabled: true,
+		image: "this is an image",
+		token: "bla bla bla",
+		activeChats: [
+			"chat1",
+			"chat2",
+			"chat3"
+		]
+	},
+	type: EChannelType.PRIVATE,
+	title: "Room number one"
 };
-socket.onmessage = (m) => {
-    let message = JSON.parse(m.data);
-    console.log('Message:', message);
+let messageToSend: IMessage;
+messageToSend = {
+	user: {
+		id: userID,
+		name: userName,
+		intraname: userName,
+		twoFAenabled: true,
+		image: "this is an image",
+		token: "bla bla bla",
+		activeChats: [
+			"chat1",
+			"chat2",
+			"chat3"
+		]
+	},
+	input: "this is my message",
+	room: "Room number one"
+};
+
+onMounted(() => {
+	try {
+		webSocket = new WebSocket("ws://localhost:9000");
+
+		webSocket.addEventListener('open', (event) => {
+			console.log("connection established");
+		});
+		webSocket.addEventListener('message', handleSocketMessages);
+		webSocket.addEventListener('close', (event) => {
+			console.log("connection closed");
+		});
+		webSocket.addEventListener('error', (event) => {
+			console.error(event);
+		});
+	}
+	catch (error) {
+		console.error(error);
+	}
+})
+
+function handleSocketMessages(event: MessageEvent<any>) {
+	const message = JSON.parse(event.data);
+	console.log('Message:', message);
+
     const newItem = {
-        message_name: JSON.parse(m.data.message_Name),
-        message_content: JSON.parse(m.data.message.message_content),
+        message_name: message.message_Name,
+        message_content: message.message_content,
         from_myself: false
     }
     text_array.value.push(newItem);
 
-};
-socket.onclose = (ev) => {
-    console.log('Socket closed: ', ev);
-};
-
-const sendMessage = () => {
-    // socket.send(
-    // JSON.stringify(
-        // {
-            // type: 'create', 
-            // path: 'message', 
-            // data: {
-                // message_name: 'Nico',
-                // message_content: 'Das ist eine Testnachricht'
-            // }
-        // }
-    // )
-// )
+	// switch (message.event) {
+	// 	case 'caseOne':
+	// 		break;
+	// }
 }
 
-function getUserName() {
-    return "Nico";
+function handleEnter(event: KeyboardEvent) {
+	if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        addMessageToChat();
+    }
+}
+
+function addMessageToChat() {
+    const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
+    if (newChatMessage.value == '')
+        return;
+
+    const newItem = {
+        message_name: userName,
+        message_content: newChatMessage.value,
+        from_myself: true,
+    }
+    text_array.value.push(newItem);
+
+    sendMessage(newChatMessage.value);
+
+    newChatMessage.value = '';
+	nextTick(() => messageContainerScrollToBottom());
+    //checkAuthenticated();
+}
+
+function sendMessage(input: string) {
+	messageToSend.input = input
+
+	webSocket.send(
+		JSON.stringify(
+			{
+				event: 'message',
+				data: messageToSend
+			}
+		)
+	);
 }
 
 function messageContainerScrollToBottom() {
@@ -74,42 +185,28 @@ function messageContainerScrollToBottom() {
         console.log("aftert Scroll Height: " + container.scrollHeight);
         console.log("after ScrollTop: " + container.scrollTop);
     } else {
-        console.error("Elemnt with ID message_container could not be found");
+        console.error("Element with ID message_container could not be found");
     }
 }
 
-function addMessageToChat() {
-    const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
-    if (newChatMessage.value == '')
-        return;
-    const newItem = {
-        message_name: getUserName(),
-        message_content: newChatMessage.value,
-        from_myself: true,
-    }
-    text_array.value.push(newItem);
-    newChatMessage.value = '';
-    sendMessage();
-    messageContainerScrollToBottom();
-    checkAuthenticated();
+// function addMessage() { //svenja: ??
+//     const newID = Date.now();
+//     text_array.value.push(newID);
+// }
+
+function checkAuthenticated() { // svenja: not sure how this function works with the session/cookie. but i kinda get it i guess
+   fetch('http://localhost:3000/auth/isAuthenticated', {
+        method: 'GET',
+        credentials: 'include',
+    })
+	.then(response => response.json())
+	.then(data => {
+		console.log("buttoncheck: " + data);
+	})
+    .catch(error => console.error('Error:', error));
 }
 
 </script>
-
-<template class="chat">
-<div class="chat">
-    <h3>Chat</h3>
-    <div class="messages_container" id="messages_container">
-            <Message v-for="message in text_array" :message_name="message.message_name" :message_content="message.message_content" :from_myself="message.from_myself"/>
-         
-    </div>
-    <div class="controls">
-        <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto"></textarea>
-        <button @click="addMessageToChat" >send</button>
-    </div>
-</div>
-
-</template>
 
 <style scoped>
 

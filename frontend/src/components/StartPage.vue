@@ -116,7 +116,12 @@ button.buttonLogin {
 	margin: 10vh auto 0 auto;
 	border: 2px solid white;
 	text-align: center;
-	padding: 10px 20px;
+	font-size: var(--font-size-base);
+	/* //padding: 2vh 6vw; */
+	padding-left: min(60px, 6vw);
+	padding-right: min(60px, 6vw);
+	padding-bottom: min(20px, 6vw);
+	padding-top: min(20px, 6vw);
 	transition: 0.3s;
 }
 

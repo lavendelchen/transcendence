@@ -22,24 +22,12 @@ export class WSocketGateway implements OnGatewayInit {
   server: Server;
 
   @SubscribeMessage('message')
-  async handleMessage(@MessageBody() data: any): Promise<void> {
+  async handleMessage(@MessageBody() data: IMessage): Promise<void> {
     console.log('received message');
+	console.log(data);
     // this may be provisory but somehow I could not process the data directly
     try {
-      const convertedReceivedData: IMessage = {
-        user: {
-          id: data.sendMessage.user.id,
-          name: data.sendMessage.user.name,
-          intraname: data.sendMessage.user.intraname,
-          twoFAenabled: data.sendMessage.user.twoFAenabled,
-          image: data.sendMessage.user.image,
-          token: data.sendMessage.user.token,
-          activeChats: data.sendMessage.user.activeChats,
-        },
-        input: data.sendMessage.input,
-        room: data.sendMessage.room,
-      };
-      await this.chatService.processMessage(convertedReceivedData, this.server);
+      await this.chatService.processMessage(data, this.server);
     } catch (error) {
       console.error('Error processing message:', error);
     }

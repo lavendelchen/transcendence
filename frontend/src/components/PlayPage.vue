@@ -89,8 +89,7 @@ onMounted(() => {
         </main>
         <aside>
             <Menue />
-            <Chat/> 
-			<!-- v-if="store.chatActive" -->
+            <Chat v-if="store.chatActive"/> 
             <Profile v-if="store.profileActive" />
         </aside>
     </div>

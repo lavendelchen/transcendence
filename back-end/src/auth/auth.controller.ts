@@ -35,6 +35,7 @@ export class AuthController {
 
   @Get('isAuthenticated')
   checkAuthentication(@Req() req: Request) {
+	console.log("--------------REQ END--------------------\n\n")
     console.log(req.session.dataAuthenticated);
     console.log(req.session);
     console.log(req.sessionID);
