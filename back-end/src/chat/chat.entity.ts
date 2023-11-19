@@ -9,7 +9,7 @@ import {
   Unique,
 } from 'typeorm';
 
-import { User } from '../users/users.entity';
+import { User } from '../entities/user.entity';
 import { EChannelType } from './properties';
 
 @Entity('channels')

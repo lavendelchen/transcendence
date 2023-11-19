@@ -23,6 +23,17 @@ export class UserService {
 		});
 	}
 
+	async findOneByName(userId: string): Promise<User> {
+		const res: User = await this.userRepository.findOne({
+		  where: { pseudo: userId },
+		});
+		if (res) {
+		  return res;
+		} else {
+		  throw new Error('User not found');
+		}
+	  }
+
     create(userData: Partial<User>): Promise<User> {
         const user = this.userRepository.create(userData);
         return this.userRepository.save(user);

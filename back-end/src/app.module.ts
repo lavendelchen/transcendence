@@ -9,8 +9,6 @@ import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { FriendModule } from './friend/friend.module';
 import { MatchModule } from './match/match.module';
-import { ChannelModule } from './channel/channel.module';
-import { MessageModule } from './message/message.module';
 import { AppController } from './app.controller';
 import { TfaModule } from './tfa/tfa.module';
 import { WSocketModule } from '../wsocket/wsocket.module';
@@ -35,7 +33,7 @@ import { WSocketModule } from '../wsocket/wsocket.module';
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DB'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<boolean>('POSTGRES_SYNC', true), // if DB_SYNC is true, the database is created again on each launch from TypeORM
+        synchronize: configService.get<boolean>('POSTGRES_SYNC', false), // if DB_SYNC is true, the database is created again on each launch from TypeORM
       }),
     }),
     AuthModule,
@@ -44,8 +42,6 @@ import { WSocketModule } from '../wsocket/wsocket.module';
     UserModule,
     FriendModule,
     MatchModule,
-    ChannelModule,
-    MessageModule,
     WSocketModule,
   ],
   controllers: [AppController],

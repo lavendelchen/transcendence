@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Match } from './match.entity';
-import { Channel } from './channel.entity';
-import { Message } from './message.entity';
-import { ChannelAdmin } from './channel_admin.entity';
+import { Channels } from '../chat/chat.entity';
+
+
 
 @Entity()
 export class User {
@@ -37,8 +37,6 @@ export class User {
     ratio: number;
 
 	//entity relationships ...
-	@OneToMany(() => Message, message => message.creator)
-    messages: Message[];
 
     @OneToMany(() => Match, match => match.userHome)
     homeMatches: Match[];
@@ -49,9 +47,24 @@ export class User {
     @OneToMany(() => Match, match => match.winner)
     wonMatches: Match[];
 
-    @OneToMany(() => Channel, channel => channel.owner)
-    ownedChannels: Channel[];
+    @OneToMany(() => Channels, channel => channel.owner)
+    owned: Channels[];
 
-    @OneToMany(() => ChannelAdmin, channelAdmin => channelAdmin.user)
-    adminChannels: ChannelAdmin[];
+    @ManyToMany(type => Channels)
+    @JoinTable({
+      name: "channel_subscription",
+      joinColumn: {
+          name: "user",
+          referencedColumnName: "id"
+      },
+      inverseJoinColumn: {
+          name: "channel",
+          referencedColumnName: "id"
+      }
+    })
+    channels: Channels[];
+
+
+    // @OneToMany(() => ChannelAdmin, channelAdmin => channelAdmin.user)
+    // adminChannels: ChannelAdmin[];
 }
