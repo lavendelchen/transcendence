@@ -1,8 +1,6 @@
-// wsocket.gateway.ts
-
 import { Server, Socket } from 'ws';
 import { ChatService } from 'src/chat/chat.service';
-import { ChatDAO } from '../src/chat/chat.dao';
+import { ChatDAO } from 'src/chat/chat.dao';
 import { Injectable } from '@nestjs/common';
 import { IMessage, IChannel, currentConnections, IChatUser } from 'src/chat/properties';
 import {
@@ -58,10 +56,4 @@ export class WSocketGateway implements OnGatewayInit {
   ): Promise<string[]> {
     return await this.chatService.addChat(data);
   }
-
-  // @SubscribeMessage('history')
-  // async getRawChannelMessages(@MessageBody() data: string): Promise<void> {
-  //   // channelId = chatDao.getChannelByTitle(data);
-  //   return await this.chatService.getRawChannelMessages(data);
-  // }
 }

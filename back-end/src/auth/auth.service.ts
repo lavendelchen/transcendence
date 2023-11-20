@@ -26,6 +26,7 @@ export class AuthService {
 		params.append('response_type', 'code');
 		return url + params;
 	}
+
 	async successAuth(code: string) {
 		// Check if the code is undefined or empty
 		if (!code) {
@@ -87,8 +88,8 @@ export class AuthService {
 				username: userResponse.login,
 				image: userResponse.image.versions.medium,
 			};
-
 			console.log('USER DATA:', userData);
+
 			const transformedUserData = {
 				fortytwo_id: userResponse.id,
 				email: userResponse.email,
@@ -96,9 +97,12 @@ export class AuthService {
 				avatar: userResponse.image.versions.medium,
 			};
 			// Save or Update user in database
-			await this.userService.saveOrUpdate(transformedUserData);
+			const user = await this.userService.saveOrUpdate(transformedUserData);
 
-			return { token: tokenResponse.access_token, userData: transformedUserData };
+			return {
+				accessToken: tokenResponse.access_token,
+				userID: user.id
+			};
 		} catch (error) {
 			throw new ForbiddenException('Authorization failed: ' + error.message);
 		}

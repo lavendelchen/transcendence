@@ -14,22 +14,31 @@ async function checkAuthenticated() {
 }
 
 async function getUserData() {
-    const response = await fetch('http://localhost:3000/auth/userData', {
+    const response = await fetch('http://localhost:3000/auth/whoIam', {
         method: 'GET',
         credentials: 'include',
     });
-    const userData = await response.json();
+    const userData = JSON.parse(await response.text());
     return userData;
 }
 
 let text_array = ref([
     { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
-    { message_name: "test", message_content: "Lorem Ipsum", from_myself: false },
-    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
-    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
-    { message_name: "test", message_content: "Lorem Ipsum", from_myself: false },
-    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true }
 ]);
+
+async function updateChatHistoryDisplay(channelName: string) {
+    const response = await fetch(`http://localhost:3000/chat/history/${channelName}`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+    let rawMessages = await response.json();
+
+    text_array.value = rawMessages.map((rawMessage: string) => {
+        let [message_name, message_content] = rawMessage.split(': ');
+        let from_myself = true;
+        return { message_name, message_content, from_myself };
+    });
+}
 
 interface IChatUser {
     id: number;
@@ -63,32 +72,24 @@ let socket: WebSocket;
 
 onMounted(() => {
     socket = new WebSocket("ws://localhost:9000/chat");
+
     socket.addEventListener('open', (event) => {
         console.log("connection established");
         const authMsg = {
             event: 'connect',
             data: {
-                id: (getUserData() as any).fortytwo_id, // gjupys ID
+                id: (getUserData() as any).id, // gjupys ID
             }
         };
         socket.send(JSON.stringify(authMsg));
     });
-    // socket.onmessage = (m) => {
-    //     let message = JSON.parse(m.data);
-    //     console.log('Message:', message);
-    //     const newItem = {
-    //         message_name: JSON.parse(m.data.message_Name),
-    //         message_content: JSON.parse(m.data.message.message_content),
-    //         from_myself: false
-    //     }
-    //     text_array.value.push(newItem);
-    // };
+
     socket.addEventListener('close', (event) => {
         console.log("connection closed");
         const authMsg = {
             event: 'disconnect',
             data: {
-                id: (getUserData() as any).fortytwo_id,
+                id: (getUserData() as any).id,
             }
         };
         socket.send(JSON.stringify(authMsg));
@@ -100,10 +101,9 @@ onMounted(() => {
 });
 
 function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
-    console.log("userData: " + userData)
     const newItem: IMessage = {
         user: {
-            id: userData.fortytwo_id,
+            id: userData.id,
             name: userData.pseudo,
             twoFAenabled: true,
             image: userData.avatar,
@@ -121,20 +121,6 @@ function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
     return newItem;
 }
 
-// function updateChatHistory() {
-//     // Fetch the raw channel messages
-//     let rawMessages = await getRawChannelMessages(channelId);
-
-//     // Update the text_array ref
-//     text_array.value = rawMessages.map(rawMessage => {
-//         // Parse the raw message into a message object
-//         let [message_name, message_content] = rawMessage.split(': ');
-//         let from_myself = /* determine if the message was sent by the current user */;
-
-//         return { message_name, message_content, from_myself };
-//     });
-// }
-
 function sendMessageToServer(newItem: IMessage) {
     const msg = {
         event: "message",
@@ -151,7 +137,7 @@ async function addMessageToChat() {
     const userData = await getUserData();
     const newItem = createIMessage(newChatMessage, userData);
     sendMessageToServer(newItem);
-    // text_array.value.push(newItem);
+    updateChatHistoryDisplay("Room number one")
     newChatMessage.value = '';
     messageContainerScrollToBottom();
 }
