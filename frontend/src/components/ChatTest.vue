@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
 	<button @click="message">'message'</button>
 	<button @click="join">'join'</button>
 	<button @click="create">'create'</button>
@@ -144,4 +144,4 @@ function create() {
 button {
 	margin: 40px;
 }
-</style>
+</style> -->

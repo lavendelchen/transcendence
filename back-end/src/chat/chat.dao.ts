@@ -129,9 +129,6 @@ export class ChatDAO {
     if (!channel) {
       throw new Error('Channel not found');
     }
-
-    console.log(channel.users); // Log the User object
-
     return channel.users;
   }
 }

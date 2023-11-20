@@ -18,7 +18,7 @@ async function getUserData() {
         method: 'GET',
         credentials: 'include',
     });
-    const userData = await response.text();
+    const userData = await response.json();
     return userData;
 }
 
@@ -121,19 +121,19 @@ function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
     return newItem;
 }
 
-function updateChatHistory() {
-    // Fetch the raw channel messages
-    let rawMessages = await getRawChannelMessages(channelId);
+// function updateChatHistory() {
+//     // Fetch the raw channel messages
+//     let rawMessages = await getRawChannelMessages(channelId);
 
-    // Update the text_array ref
-    text_array.value = rawMessages.map(rawMessage => {
-        // Parse the raw message into a message object
-        let [message_name, message_content] = rawMessage.split(': ');
-        let from_myself = /* determine if the message was sent by the current user */;
+//     // Update the text_array ref
+//     text_array.value = rawMessages.map(rawMessage => {
+//         // Parse the raw message into a message object
+//         let [message_name, message_content] = rawMessage.split(': ');
+//         let from_myself = /* determine if the message was sent by the current user */;
 
-        return { message_name, message_content, from_myself };
-    });
-}
+//         return { message_name, message_content, from_myself };
+//     });
+// }
 
 function sendMessageToServer(newItem: IMessage) {
     const msg = {
@@ -143,12 +143,12 @@ function sendMessageToServer(newItem: IMessage) {
     socket.send(JSON.stringify(msg));
 }
 
-function addMessageToChat() {
+async function addMessageToChat() {
     const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
     if (newChatMessage.value == '')
         return;
     checkAuthenticated();
-    const userData = getUserData();
+    const userData = await getUserData();
     const newItem = createIMessage(newChatMessage, userData);
     sendMessageToServer(newItem);
     // text_array.value.push(newItem);

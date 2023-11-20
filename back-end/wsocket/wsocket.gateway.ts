@@ -44,7 +44,7 @@ export class WSocketGateway implements OnGatewayInit {
 
   @SubscribeMessage('message')
   async handleMessage(@MessageBody() data: IMessage): Promise<void> {
-    console.log('received message');
+    console.log('received message: ', data);
     try {
       await this.chatService.processMessage(data, this.server);
     } catch (error) {

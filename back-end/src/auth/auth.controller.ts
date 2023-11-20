@@ -29,18 +29,18 @@ export class AuthController {
     req.session.dataAuthCode = result.token;
     req.session.dataAuthenticated = "true";
     req.session.transformedUserData = result.userData;
-    console.log(req.session);
-    console.log(req.sessionID);
-    console.log(req.session.dataAuthenticated);
-    console.log(req.session.transformedUserData);
+    // console.log(req.session);
+    // console.log(req.sessionID);
+    // console.log(req.session.dataAuthenticated);
+    // console.log(req.session.transformedUserData);
     return res.redirect('http://localhost:5173/play'); // redirect to playpage
   }
 
   @Get('isAuthenticated')
   checkAuthentication(@Req() req: Request) {
-    console.log(req.session.dataAuthenticated);
-    console.log(req.session);
-    console.log(req.sessionID);
+    // console.log(req.session.dataAuthenticated);
+    // console.log(req.session);
+    // console.log(req.sessionID);
     if (req.session && req.session.dataAuthenticated)
       return (true);
     else
@@ -50,7 +50,6 @@ export class AuthController {
   @Get('userData')
   async getUserData(@Req() req: Request) {
     const userData = req.session.transformedUserData
-    console.log('user data: ', req.session.transformedUserData)
     return userData;
   }
 

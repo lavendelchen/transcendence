@@ -5,7 +5,7 @@ import Chat from "./Chat.vue"
 import Menue from "./Menue.vue"
 import Profile from "./Profile.vue"
 import Game from './Game.vue'
-import ChatTest from './ChatTest.vue'
+// import ChatTest from './ChatTest.vue'
 
 import { store } from '../store/store.ts'
 import { onMounted } from 'vue'
@@ -85,7 +85,7 @@ onMounted(() => {
 	<!-- <h1>Playpage</h1> -->
 	<div class="appbody">
 		<main>
-			<ChatTest />
+			<!-- <ChatTest /> -->
 			<Game />
 		</main>
 		<aside>
