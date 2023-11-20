@@ -1,11 +1,15 @@
 export interface IUser {
   id?: number | undefined;
   name: string | undefined;
-  intraname: string | undefined;
   twoFAenabled: boolean;
   image: string | undefined;
   token?: string | undefined;
   activeChats: string[];
+}
+
+export interface IChatUser {
+  id: number;
+  socket?: WebSocket;
 }
 
 export interface IMessage {
@@ -25,5 +29,4 @@ export interface IChannel {
   title: string;
 }
 
-
-export const roomConnections: Record<string, WebSocket[]> = {};
+export const currentConnections: IChatUser[] = [];

@@ -2,8 +2,9 @@
 
 import { Server, Socket } from 'ws';
 import { ChatService } from 'src/chat/chat.service';
+import { ChatDAO } from '../src/chat/chat.dao';
 import { Injectable } from '@nestjs/common';
-import { IMessage, IChannel } from 'src/chat/properties';
+import { IMessage, IChannel, currentConnections, IChatUser } from 'src/chat/properties';
 import {
   ConnectedSocket, //wird spaeter fuer join un dque gebraucht
   MessageBody,
@@ -21,33 +22,35 @@ export class WSocketGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
 
+  afterInit(server: any): any {
+    console.log('WebSocket server initialized!');
+  }
+
+  @SubscribeMessage('connect')
+  addChatUser(client: Socket, message: IChatUser) {
+    console.log('Client connected: ', (client as any)._socket.remoteAddress);
+    const newChatUser: IChatUser = {
+      id: message.id,
+      socket: client,
+    }
+    currentConnections[message.id] = newChatUser;
+  }
+
+  @SubscribeMessage('disconnect')
+  removeChatUser(client: Socket, message: IChatUser) {
+    console.log('Client disconnected: ', (client as any)._socket.remoteAddress);
+    delete currentConnections[message.id];
+  }
+
   @SubscribeMessage('message')
-  async handleMessage(@MessageBody() data: any): Promise<void> {
+  async handleMessage(@MessageBody() data: IMessage): Promise<void> {
     console.log('received message');
-    // this may be provisory but somehow I could not process the data directly
     try {
-      const convertedReceivedData: IMessage = {
-        user: {
-          id: data.sendMessage.user.id,
-          name: data.sendMessage.user.name,
-          intraname: data.sendMessage.user.intraname,
-          twoFAenabled: data.sendMessage.user.twoFAenabled,
-          image: data.sendMessage.user.image,
-          token: data.sendMessage.user.token,
-          activeChats: data.sendMessage.user.activeChats,
-        },
-        input: data.sendMessage.input,
-        room: data.sendMessage.room,
-      };
-      await this.chatService.processMessage(convertedReceivedData, this.server);
+      await this.chatService.processMessage(data, this.server);
     } catch (error) {
       console.error('Error processing message:', error);
     }
-    // Broadcast the updated chat history to all connected clients
-    // const chatHistory = await this.chatService.getChatHistory();
-    // this.server.emit('chatHistory', chatHistory);
   }
-
 
   @SubscribeMessage('create')
   async addChat(
@@ -56,12 +59,9 @@ export class WSocketGateway implements OnGatewayInit {
     return await this.chatService.addChat(data);
   }
 
-  handleConnection(client: WebSocket, ...args: any[]) {
-    console.log('Client connected: ', (client as any)._socket.remoteAddress);
-    // Additional logic for handling new connections...
-  }
-
-  afterInit(server: any): any {
-    console.log('WebSocket server initialized!');
-  }
+  // @SubscribeMessage('history')
+  // async getRawChannelMessages(@MessageBody() data: string): Promise<void> {
+  //   // channelId = chatDao.getChannelByTitle(data);
+  //   return await this.chatService.getRawChannelMessages(data);
+  // }
 }

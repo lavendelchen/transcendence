@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Match } from './match.entity';
-import { Channels } from '../chat/chat.entity';
+import { Channels } from './chat.entity';
 
 
 
@@ -30,50 +30,50 @@ export class User {
     @Column({ length: 60, nullable: true })
     secretOf2FA?: string;
 
-	@Column({ type: 'int', default: 0 })
+    @Column({ type: 'int', default: 0 })
     matchesCount: number;
-	
-	@Column({ type: 'int', default: 0 })
+
+    @Column({ type: 'int', default: 0 })
     wonMatchesCount: number;
-	
-	@Column({ type: 'int', default: 0 })
+
+    @Column({ type: 'int', default: 0 })
     lostMatchesCount: number;
-	
-	@Column({ type: 'int', default: 0 })
+
+    @Column({ type: 'int', default: 0 })
     pointsMade: number;
-	
-	@Column({ type: 'int', default: 0 })
+
+    @Column({ type: 'int', default: 0 })
     pointsLost: number;
-	
-	//entity relationships ...
+
+    //entity relationships ...
 
     @OneToMany(() => Channels, channel => channel.owner)
     owned: Channels[];
-    
+
     @OneToMany(() => Match, match => match.player1)
     player1Matches: Match[];
-	
+
     @OneToMany(() => Match, match => match.player2)
     player2Matches: Match[];
-	
+
     @OneToMany(() => Match, match => match.winner)
     wonMatches: Match[];
 
-	@OneToMany(() => Match, match => match.loser)
+    @OneToMany(() => Match, match => match.loser)
     lostMatches: Match[];
 
 
     @ManyToMany(type => Channels)
     @JoinTable({
-      name: "channel_subscription",
-      joinColumn: {
-          name: "user",
-          referencedColumnName: "id"
-      },
-      inverseJoinColumn: {
-          name: "channel",
-          referencedColumnName: "id"
-      }
+        name: "channel_subscription",
+        joinColumn: {
+            name: "user",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: {
+            name: "channel",
+            referencedColumnName: "id"
+        }
     })
     channels: Channels[];
 

@@ -9,8 +9,8 @@ import {
   Unique,
 } from 'typeorm';
 
-import { User } from '../entities/user.entity';
-import { EChannelType } from './properties';
+import { User } from './user.entity';
+import { EChannelType } from '../chat/properties';
 
 @Entity('channels')
 @Unique(['title'])

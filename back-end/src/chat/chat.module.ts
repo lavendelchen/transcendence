@@ -3,7 +3,7 @@ import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { Channels, Messages } from './chat.entity';
+import { Channels, Messages } from '../entities/chat.entity';
 import { UserService } from '../user/user.service';
 import { ChatDAO } from './chat.dao';
 
@@ -13,4 +13,4 @@ import { ChatDAO } from './chat.dao';
   controllers: [ChatController],
   exports: [ChatService],
 })
-export class ChatModule {}
+export class ChatModule { }

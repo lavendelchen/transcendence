@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { create } from 'domain';
 import Message from './Message.vue'
-import {ref} from 'vue';
+import { ref } from 'vue';
+import { onMounted } from 'vue'
 
 async function checkAuthenticated() {
     const response = await fetch('http://localhost:3000/auth/isAuthenticated', {
@@ -11,57 +13,147 @@ async function checkAuthenticated() {
     console.log("buttoncheck: " + data);
 }
 
-let text_array = ref([
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:false},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:false},
-        {message_name: "test", message_content:"Lorem Ipsum", from_myself:true}
-]);
-
-// function addMessage() {
-    // const newID = Date.now();
-    // text_array.value.push(newID);
-// }
-
-var socket = new WebSocket('ws://localhost:8080/message');
-
-socket.onopen = (ev) => {
-    console.log('Socket opened: ', ev);
-};
-socket.onmessage = (m) => {
-    let message = JSON.parse(m.data);
-    console.log('Message:', message);
-    const newItem = {
-        message_name: JSON.parse(m.data.message_Name),
-        message_content: JSON.parse(m.data.message.message_content),
-        from_myself: false
-    }
-    text_array.value.push(newItem);
-
-};
-socket.onclose = (ev) => {
-    console.log('Socket closed: ', ev);
-};
-
-const sendMessage = () => {
-    // socket.send(
-    // JSON.stringify(
-        // {
-            // type: 'create', 
-            // path: 'message', 
-            // data: {
-                // message_name: 'Nico',
-                // message_content: 'Das ist eine Testnachricht'
-            // }
-        // }
-    // )
-// )
+async function getUserData() {
+    const response = await fetch('http://localhost:3000/auth/userData', {
+        method: 'GET',
+        credentials: 'include',
+    });
+    const userData = await response.text();
+    return userData;
 }
 
-function getUserName() {
-    return "Nico";
+let text_array = ref([
+    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
+    { message_name: "test", message_content: "Lorem Ipsum", from_myself: false },
+    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
+    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
+    { message_name: "test", message_content: "Lorem Ipsum", from_myself: false },
+    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true }
+]);
+
+interface IChatUser {
+    id: number;
+    socket?: WebSocket;
+}
+interface IUser {
+    id?: number | undefined;
+    name: string | undefined;
+    twoFAenabled: boolean;
+    image: string | undefined;
+    token?: string | undefined;
+    activeChats: string[];
+}
+interface IMessage {
+    user: IUser;
+    input: string;
+    room: string;
+    from_myself?: boolean;
+}
+enum EChannelType {
+    PRIVATE,
+    PUBLIC
+}
+interface IChannel {
+    user: IUser;
+    type: EChannelType;
+    title: string;
+}
+
+let socket: WebSocket;
+
+onMounted(() => {
+    socket = new WebSocket("ws://localhost:9000/chat");
+    socket.addEventListener('open', (event) => {
+        console.log("connection established");
+        const authMsg = {
+            event: 'connect',
+            data: {
+                id: (getUserData() as any).fortytwo_id, // gjupys ID
+            }
+        };
+        socket.send(JSON.stringify(authMsg));
+    });
+    // socket.onmessage = (m) => {
+    //     let message = JSON.parse(m.data);
+    //     console.log('Message:', message);
+    //     const newItem = {
+    //         message_name: JSON.parse(m.data.message_Name),
+    //         message_content: JSON.parse(m.data.message.message_content),
+    //         from_myself: false
+    //     }
+    //     text_array.value.push(newItem);
+    // };
+    socket.addEventListener('close', (event) => {
+        console.log("connection closed");
+        const authMsg = {
+            event: 'disconnect',
+            data: {
+                id: (getUserData() as any).fortytwo_id,
+            }
+        };
+        socket.send(JSON.stringify(authMsg));
+    });
+
+    socket.addEventListener('error', (event) => {
+        console.error(event);
+    });
+});
+
+function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
+    console.log("userData: " + userData)
+    const newItem: IMessage = {
+        user: {
+            id: userData.fortytwo_id,
+            name: userData.pseudo,
+            twoFAenabled: true,
+            image: userData.avatar,
+            token: "bla bla bla",
+            activeChats: [
+                "chat1",
+                "chat2",
+                "chat3"
+            ]
+        },
+        input: newChatMessage.value,
+        room: "Room number one",
+        from_myself: true,
+    }
+    return newItem;
+}
+
+function updateChatHistory() {
+    // Fetch the raw channel messages
+    let rawMessages = await getRawChannelMessages(channelId);
+
+    // Update the text_array ref
+    text_array.value = rawMessages.map(rawMessage => {
+        // Parse the raw message into a message object
+        let [message_name, message_content] = rawMessage.split(': ');
+        let from_myself = /* determine if the message was sent by the current user */;
+
+        return { message_name, message_content, from_myself };
+    });
+}
+
+function sendMessageToServer(newItem: IMessage) {
+    const msg = {
+        event: "message",
+        data: newItem
+    }
+    socket.send(JSON.stringify(msg));
+}
+
+function addMessageToChat() {
+    const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
+    if (newChatMessage.value == '')
+        return;
+    checkAuthenticated();
+    const userData = getUserData();
+    const newItem = createIMessage(newChatMessage, userData);
+    sendMessageToServer(newItem);
+    // text_array.value.push(newItem);
+    newChatMessage.value = '';
+    messageContainerScrollToBottom();
 }
 
 function messageContainerScrollToBottom() {
@@ -74,45 +166,29 @@ function messageContainerScrollToBottom() {
         console.log("aftert Scroll Height: " + container.scrollHeight);
         console.log("after ScrollTop: " + container.scrollTop);
     } else {
-        console.error("Elemnt with ID message_container could not be found");
+        console.error("Element with ID message_container could not be found");
     }
 }
 
-function addMessageToChat() {
-    const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
-    if (newChatMessage.value == '')
-        return;
-    const newItem = {
-        message_name: getUserName(),
-        message_content: newChatMessage.value,
-        from_myself: true,
-    }
-    text_array.value.push(newItem);
-    newChatMessage.value = '';
-    sendMessage();
-    messageContainerScrollToBottom();
-    checkAuthenticated();
-}
 
 </script>
 
 <template class="chat">
-<div class="chat">
-    <h3>Chat</h3>
-    <div class="messages_container" id="messages_container">
-            <Message v-for="message in text_array" :message_name="message.message_name" :message_content="message.message_content" :from_myself="message.from_myself"/>
-         
-    </div>
-    <div class="controls">
-        <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto"></textarea>
-        <button @click="addMessageToChat" >send</button>
-    </div>
-</div>
+    <div class="chat">
+        <h3>Chat</h3>
+        <div class="messages_container" id="messages_container">
+            <Message v-for="message in text_array" :message_name="message.message_name"
+                :message_content="message.message_content" :from_myself="message.from_myself" />
 
+        </div>
+        <div class="controls">
+            <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto"></textarea>
+            <button @click="addMessageToChat">send</button>
+        </div>
+    </div>
 </template>
 
 <style scoped>
-
 @import "../assets/base.css";
 
 
@@ -130,7 +206,6 @@ div.chat {
     grid-template-rows: 80px auto 80px;
     grid-column-gap: 0px;
     grid-row-gap: 10px
-    
 }
 
 h3 {
@@ -183,7 +258,5 @@ button {
 button:active {
     margin-top: 8px;
 }
-
-
 </style>
 

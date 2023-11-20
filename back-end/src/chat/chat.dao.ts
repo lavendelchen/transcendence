@@ -1,4 +1,4 @@
-import { Channels, Messages } from './chat.entity';
+import { Channels, Messages } from '../entities/chat.entity';
 import { User } from '../entities/user.entity';
 import { Connection, Repository } from 'typeorm';
 import { Injectable, Inject } from '@nestjs/common';
@@ -17,7 +17,7 @@ export class ChatDAO {
     private connection: Connection,  // typeorm connection: replaced DATA_SOURCE from Philippe's code
     @Inject(UserService)
     private userService: UserService,
-  ) {}
+  ) { }
 
 
   public async getChannelByTitle(title: string): Promise<Channels> {
@@ -66,6 +66,31 @@ export class ChatDAO {
     }
   }
 
+  public async saveMessageToChannel(message: IMessage): Promise<void> {
+    await this.messsageRepo.save(
+      this.messsageRepo.create({
+        sender: await this.userService.findOneByName(message.user.name),
+        channel: await this.getChannelByTitle(message.room),
+        content: message.input,
+      }),
+    );
+  }
+
+  public async getChannelMessages(channelId: number): Promise<Messages[]> {
+    return await this.messsageRepo
+      .createQueryBuilder('message')
+      .innerJoinAndSelect('message.sender', 'sender')
+      .where('message.channel = :id', { id: channelId })
+      .orderBy('message.id', 'ASC')
+      .getMany();
+  }
+
+  public async getRawChannelMessages(channelId: number): Promise<string[]> {
+    return (await this.getChannelMessages(channelId)).map((item) => {
+      return `${item.sender.pseudo}: ${item.content}`;
+    });
+  }
+
   public async getUserChannels(userId: number): Promise<Channels[]> {
     return await this.channelRepo
       .createQueryBuilder('channel')
@@ -85,15 +110,28 @@ export class ChatDAO {
       .leftJoinAndSelect('channel.owner', 'owner')
       .where('channel.title = :title', { title })
       .getOne();
-  
+
     if (!channel) {
       throw new Error('Channel not found');
     }
-  
+
     console.log(channel.owner); // Log the User object
-  
+
     return channel.owner;
   }
-  //updateUserRole
-  //getMessagesFiltert
+
+  public async getUsersInChannel(title: string): Promise<User[]> {
+    const channel = await this.channelRepo.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.users', 'users')
+      .where('channel.title = :title', { title })
+      .getOne();
+
+    if (!channel) {
+      throw new Error('Channel not found');
+    }
+
+    console.log(channel.users); // Log the User object
+
+    return channel.users;
+  }
 }

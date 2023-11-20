@@ -9,7 +9,7 @@ const FileStoreSession = FilesStore(session);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   //enable WebSockets
   app.useWebSocketAdapter(new WsAdapter(app));
 
