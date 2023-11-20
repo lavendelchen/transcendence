@@ -33,7 +33,7 @@ export class AuthController {
     req.session.dataAuthenticated = "true";
     req.session.userID = result.userID;
     console.log(req.session);
-    console.log(req.userID);
+    console.log(req.session.userID);
     console.log(req.session.dataAuthenticated);
     return res.redirect('http://localhost:5173/play'); // redirect to playpage
   }
@@ -42,11 +42,11 @@ export class AuthController {
   async checkAuthentication(@Req() req: Request) {
     console.log(req.session.dataAuthenticated);
     console.log(req.session);
-    console.log(req.userID);
+    console.log(req.session.userID);
 
     if (req.session && req.session.dataAuthenticated) {
       // Fetch user details from the database
-      const userId = req.session.userId;
+      const userId = req.session.userID;
       const user = await this.userService.findOne(userId);
 
       if (!user) {
@@ -73,9 +73,9 @@ export class AuthController {
   }
 
 	@Get('whoIam')
-  checkWhoIam(@Req() req: Request) {
-    if (req.session && req.session.dataAuthenticated)
-			return this.userService.findOne(req.userID);
+	async checkWhoIam(@Req() req: Request) {
+		if (req.session && req.session.dataAuthenticated)
+			return await this.userService.findOne(req.session.userID);
 		else
 			// User is not authenticated
 			return {};
