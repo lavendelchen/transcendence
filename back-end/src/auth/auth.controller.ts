@@ -2,6 +2,7 @@ import { Controller, Get, Query, Res, Req } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
+import { UserService } from '../user/user.service';
 
 //declare session type becuase of typescript
 declare module 'express-session' {
@@ -13,7 +14,10 @@ declare module 'express-session' {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+  ) {}
 
   @Get('init')
   async initAuth() {
@@ -41,20 +45,39 @@ export class AuthController {
     console.log(req.userID);
 
     if (req.session && req.session.dataAuthenticated) {
-      // If user is authenticated, check if TFA is enabled
-      const userId = req.session.userId; // You need to adjust this based on how you store the user ID in the session
-      const isTfaEnabledResponse = await this.isTfaEnabled(userId);
+      // Fetch user details from the database
+      const userId = req.session.userId;
+      const user = await this.userService.findOne(userId);
 
-      if (isTfaEnabledResponse.isTfaEnabled) {
-        console.log('TFA is enabled for the user.');
-        return true;
-      } else {
-        console.log('TFA is not enabled for the user.');
+      if (!user) {
+        console.log('User not found');
         return false;
       }
+			if (user.is2FActive) {
+				// Check if TFA is authenticated
+				if (user.is2FAuthenticated) {
+					console.log('User is TFA authenticated.');
+					return true;
+				} else {
+					console.log('User is not TFA authenticated.');
+					return false;
+				}
+			} else {
+				return true;
+			}
     } else {
       // If user is not authenticated, return false
+      console.log('User is not authenticated.');
       return false;
     }
   }
+
+	@Get('whoIam')
+  checkWhoIam(@Req() req: Request) {
+    if (req.session && req.session.dataAuthenticated)
+			return this.userService.findOne(req.userID);
+		else
+			// User is not authenticated
+			return {};
+	}
 }
