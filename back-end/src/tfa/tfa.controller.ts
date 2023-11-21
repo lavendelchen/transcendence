@@ -78,6 +78,7 @@ export class TfaController {
     if (isValid) {
         // Update is2FAuthenticated in the user entity
         await this.userService.update(userId, { is2FAuthenticated: true });
+		console.log(user.is2FAuthenticated)
         return { message: 'TFA OTP is valid.' };
     } else {
         // Optionally, reset is2FAuthenticated if OTP is invalid
