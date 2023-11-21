@@ -14,7 +14,7 @@ export class ChatDAO {
     private channelRepo: Repository<Channels>,
     @InjectRepository(Messages)
     private messsageRepo: Repository<Messages>,
-    private connection: Connection,  // typeorm connection: replaced DATA_SOURCE from Philippe's code
+    private connection: Connection,
     @Inject(UserService)
     private userService: UserService,
   ) { }

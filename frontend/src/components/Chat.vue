@@ -56,7 +56,6 @@ interface IChannel {
 onMounted(async () => {
     const userData = await getUserData();
     updateChatHistoryDisplay("Room number one", userData.pseudo);
-
     try {
         socket = new WebSocket('ws://localhost:9000');
 
