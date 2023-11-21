@@ -27,7 +27,7 @@ export class ChatService extends ChatServiceBase {
   ) {
     try {
       const msg = `${data.user}:${data.input}`;
-      this.broadcastToRoom(data.room, msg)
+      this.broadcastToRoom(data, msg)
       await this.chatDao.saveMessageToChannel(data);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
@@ -35,14 +35,20 @@ export class ChatService extends ChatServiceBase {
   }
 
   // UTILS
-  private async broadcastToRoom(room: string, msg: string) {
-    const usersInRoom = await this.chatDao.getUsersInChannel(room);
+  private async broadcastToRoom(data: IMessage, msg: string) {
+    const usersInRoom = await this.chatDao.getUsersInChannel(data.room);
+
+    const msg_to_client = {
+      event: "message",
+      data: msg
+    }
+
     for (const user of usersInRoom) {
       for (const connection of currentConnections) {
         if (connection) {
-          if (connection.id === user.id) {
+          if (connection.id === user.id && connection.id != data.user.id) {
             try {
-              connection.socket.send(msg);
+              connection.socket.send(JSON.stringify(msg_to_client));
             }
             catch (error) {
               console.error('Error sending message:', error.message.split('\n')[0]);

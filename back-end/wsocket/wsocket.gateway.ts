@@ -24,20 +24,19 @@ export class WSocketGateway implements OnGatewayInit {
     console.log('WebSocket server initialized!');
   }
 
-  @SubscribeMessage('connect')
-  addChatUser(client: Socket, message: IChatUser) {
-    console.log('Client connected: ', (client as any)._socket.remoteAddress);
-    const newChatUser: IChatUser = {
-      id: message.id,
-      socket: client,
-    }
-    currentConnections[message.id] = newChatUser;
+  handleDisconnect(client: WebSocket, ...args: any[]) {
+    console.log('Client disconnected: ', (client as any)._socket.remoteAddress);
+    // remove from currentConnections
   }
 
-  @SubscribeMessage('disconnect')
-  removeChatUser(client: Socket, message: IChatUser) {
-    console.log('Client disconnected: ', (client as any)._socket.remoteAddress);
-    delete currentConnections[message.id];
+  @SubscribeMessage('connect')
+  addChatUser(client: Socket, data: IChatUser) {
+    console.log('Client connected: ', (client as any)._socket.remoteAddress);
+    const newChatUser: IChatUser = {
+      id: data.id,
+      socket: client,
+    }
+    currentConnections[data.id] = newChatUser;
   }
 
   @SubscribeMessage('message')

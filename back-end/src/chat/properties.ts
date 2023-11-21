@@ -1,6 +1,6 @@
 export interface IUser {
   id?: number | undefined;
-  name: string | undefined;
+  name: string;
   twoFAenabled: boolean;
   image: string | undefined;
   token?: string | undefined;
@@ -20,7 +20,8 @@ export interface IMessage {
 
 export enum EChannelType {
   PRIVATE,
-  PUBLIC
+  PUBLIC,
+  DM
 }
 
 export interface IChannel {

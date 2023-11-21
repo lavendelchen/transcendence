@@ -1,5 +1,6 @@
-import { Controller, Get, HttpCode, Param } from '@nestjs/common';
+import { Controller, Get, Put, HttpCode, Param } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import { currentConnections } from './properties';
 import { IMessage } from './properties';
 
 
@@ -17,7 +18,6 @@ export class ChatController {
 
   @Get('history/:channelName')
   async getChatHistory(@Param('channelName') channelName: string): Promise<string[]> {
-    console.log(channelName)
     return await this.chatService.getChatHistory(channelName);
   }
 }

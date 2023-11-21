@@ -4,41 +4,9 @@ import Message from './Message.vue'
 import { ref } from 'vue';
 import { onMounted } from 'vue'
 
-async function checkAuthenticated() {
-    const response = await fetch('http://localhost:3000/auth/isAuthenticated', {
-        method: 'GET',
-        credentials: 'include',
-    });
-    const data = await response.text();
-    console.log("buttoncheck: " + data);
-}
-
-async function getUserData() {
-    const response = await fetch('http://localhost:3000/auth/whoIam', {
-        method: 'GET',
-        credentials: 'include',
-    });
-    const userData = JSON.parse(await response.text());
-    return userData;
-}
-
 let text_array = ref([
     { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
 ]);
-
-async function updateChatHistoryDisplay(channelName: string, userName: string) {
-    const response = await fetch(`http://localhost:3000/chat/history/${channelName}`, {
-        method: 'GET',
-        credentials: 'include',
-    });
-    let rawMessages = await response.json();
-
-    text_array.value = rawMessages.map((rawMessage: string) => {
-        let [message_name, message_content] = rawMessage.split(': ');
-        let from_myself = (userName == message_name);
-        return { message_name, message_content, from_myself };
-    });
-}
 
 interface IChatUser {
     id: number;
@@ -46,7 +14,7 @@ interface IChatUser {
 }
 interface IUser {
     id?: number | undefined;
-    name: string | undefined;
+    name: string;
     twoFAenabled: boolean;
     image: string | undefined;
     token?: string | undefined;
@@ -70,7 +38,10 @@ interface IChannel {
 
 let socket: WebSocket;
 
-onMounted(() => {
+onMounted(async () => {
+    const userData = await getUserData();
+    updateChatHistoryDisplay("Room number one", userData.pseudo);
+
     socket = new WebSocket("ws://localhost:9000/chat");
 
     socket.addEventListener('open', (event) => {
@@ -86,19 +57,49 @@ onMounted(() => {
 
     socket.addEventListener('close', (event) => {
         console.log("connection closed");
-        const authMsg = {
-            event: 'disconnect',
-            data: {
-                id: (getUserData() as any).id,
-            }
-        };
-        socket.send(JSON.stringify(authMsg));
     });
 
     socket.addEventListener('error', (event) => {
         console.error(event);
     });
+
+    socket.addEventListener('message', (event) => {
+        console.log('client socket listener: ', event)
+
+    });
 });
+
+async function checkAuthenticated() {
+    const response = await fetch('http://localhost:3000/auth/isAuthenticated', {
+        method: 'GET',
+        credentials: 'include',
+    });
+    const data = await response.text();
+    console.log("buttoncheck: " + data);
+}
+
+async function getUserData() {
+    const response = await fetch('http://localhost:3000/auth/whoIam', {
+        method: 'GET',
+        credentials: 'include',
+    });
+    const userData = JSON.parse(await response.text());
+    return userData;
+}
+
+async function updateChatHistoryDisplay(channelName: string, userName: string) {
+    const response = await fetch(`http://localhost:3000/chat/history/${channelName}`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+    let rawMessages = await response.json();
+
+    text_array.value = rawMessages.map((rawMessage: string) => {
+        let [message_name, message_content] = rawMessage.split(': ');
+        let from_myself = (userName == message_name);
+        return { message_name, message_content, from_myself };
+    });
+}
 
 function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
     const newItem: IMessage = {
@@ -116,7 +117,6 @@ function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
         },
         input: newChatMessage.value,
         room: "Room number one",
-        from_myself: true,
     }
     return newItem;
 }
@@ -129,6 +129,14 @@ function sendMessageToServer(newItem: IMessage) {
     socket.send(JSON.stringify(msg));
 }
 
+async function pushToTextArray(newItem: IMessage) {
+    text_array.value.push({
+        message_name: newItem.user.name,
+        message_content: newItem.input,
+        from_myself: true,
+    });
+}
+
 async function addMessageToChat() {
     const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
     if (newChatMessage.value == '')
@@ -137,7 +145,7 @@ async function addMessageToChat() {
     const userData = await getUserData();
     const newItem = createIMessage(newChatMessage, userData);
     sendMessageToServer(newItem);
-    updateChatHistoryDisplay("Room number one", userData.pseudo);
+    pushToTextArray(newItem)
     newChatMessage.value = '';
     messageContainerScrollToBottom();
 }
