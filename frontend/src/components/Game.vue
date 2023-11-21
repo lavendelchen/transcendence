@@ -568,7 +568,7 @@ canvas {
 	align-items: center;
 	border-radius: 12px;
 	justify-content: center;
-	border: 0px;
+	border: 1px solid white;
 }
 
 .playButton:hover {
@@ -583,7 +583,7 @@ canvas {
 }
 
 #upgradePlayButton {
-	left: 73%
+	left: 73%;
 }
 
 #pinkPlayButton {
@@ -632,6 +632,7 @@ canvas {
 	left: 50%;
 	border-radius: 8px;
 	border-color: black;
+	border: 1px solid white;
 }
 
 #waitingPlayButton:hover {

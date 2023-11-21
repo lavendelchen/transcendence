@@ -113,6 +113,8 @@ onMounted(() => {
 		webSocket.addEventListener('error', (event) => {
 			console.error(event);
 		});
+
+		messageContainerScrollToBottom()
 	}
 	catch (error) {
 		console.error(error);
@@ -241,6 +243,7 @@ h3 {
 .messages_container {
     margin: 0px 10px;
     overflow-y: scroll;
+	white-space: pre-line;
 }
 
 .controls {
