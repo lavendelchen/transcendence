@@ -7,6 +7,8 @@ import * as cors from 'cors';
 
 const FileStoreSession = FilesStore(session);
 
+const allowedOrigins = ['http://' + process.env.CURRENT_HOST + ':5173', 'http://localhost:5173']
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -17,7 +19,7 @@ async function bootstrap() {
   // setup session
   app.use(
     cors({
-      origin: '*',  // Replace with the origin of your frontend application
+      origin: allowedOrigins, // Replace with the origin of your frontend application
       credentials: true,
     }),
     session({

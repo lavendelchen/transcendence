@@ -8,9 +8,15 @@ import Game from './Game.vue'
 // import ChatTest from './ChatTest.vue'
 
 import { store } from '../store/store.ts'
+import { authGuard } from '../utils/authGuard.ts'
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 onMounted(() => {
+	// authGuard(router)
+
 	// GET specific user
 	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1')
 	.then(response => response.json())
