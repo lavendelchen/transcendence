@@ -26,7 +26,7 @@ let text_array = ref([
     { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
 ]);
 
-async function updateChatHistoryDisplay(channelName: string) {
+async function updateChatHistoryDisplay(channelName: string, userName: string) {
     const response = await fetch(`http://localhost:3000/chat/history/${channelName}`, {
         method: 'GET',
         credentials: 'include',
@@ -35,7 +35,7 @@ async function updateChatHistoryDisplay(channelName: string) {
 
     text_array.value = rawMessages.map((rawMessage: string) => {
         let [message_name, message_content] = rawMessage.split(': ');
-        let from_myself = true;
+        let from_myself = (userName == message_name);
         return { message_name, message_content, from_myself };
     });
 }
@@ -137,7 +137,7 @@ async function addMessageToChat() {
     const userData = await getUserData();
     const newItem = createIMessage(newChatMessage, userData);
     sendMessageToServer(newItem);
-    updateChatHistoryDisplay("Room number one")
+    updateChatHistoryDisplay("Room number one", userData.pseudo);
     newChatMessage.value = '';
     messageContainerScrollToBottom();
 }
