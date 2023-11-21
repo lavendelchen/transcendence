@@ -7,7 +7,12 @@ import * as cors from 'cors';
 
 const FileStoreSession = FilesStore(session);
 
-const allowedOrigins = ['http://' + process.env.CURRENT_HOST + ':5173', 'http://localhost:5173']
+const allowedOrigins = [
+	'http://' + process.env.CURRENT_HOST + ':5173',
+	'http://localhost:5173',
+	'http://' + process.env.CURRENT_HOST + ':3000',
+	'http://localhost:3000',
+]
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

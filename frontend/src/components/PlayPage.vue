@@ -1,7 +1,7 @@
 
 
 <script setup lang="ts">
-import Chat from "./Chat.vue"
+import Chat from "./chat/Chat.vue"
 import Menue from "./Menue.vue"
 import Profile from "./Profile.vue"
 import Game from './Game.vue'

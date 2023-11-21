@@ -17,7 +17,7 @@ defineProps({
 
 <style scoped>
 
-@import "../assets/base.css";
+@import "../../assets/base.css";
 .message {
     background-color: white;
     color: black;
