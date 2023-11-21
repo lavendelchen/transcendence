@@ -1,30 +1,23 @@
 <template class="chat">
-
-<div class="chat">
-    <h3>Chat</h3>
-    <div class="messages_container" id="messages_container">
+    <div class="chat">
+        <h3>Chat</h3>
+        <div class="messages_container" id="messages_container">
             <Message v-for="message in text_array" :message_name="message.message_name"
-				:message_content="message.message_content" :from_myself="message.from_myself"/>
+                :message_content="message.message_content" :from_myself="message.from_myself" />
+        </div>
+        <div class="controls">
+            <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto" @keydown="handleEnter"></textarea>
+            <button @click="addMessageToChat">send</button>
+        </div>
     </div>
-    <div class="controls">
-        <textarea
-			id="chat_textarea"
-			name="chat_message"
-			cols="auto" rows="auto"
-			@keydown="handleEnter"
-		></textarea>
-        <button @click="addMessageToChat" >send</button>
-    </div>
-</div>
-
 </template>
 
 <script setup lang="ts">
 import Message from './Message.vue'
 import { ref, onMounted, nextTick } from 'vue';
 
-const	userName = "ANITA_" + Math.round(Math.random()*100); // change later
-const	userID = Math.round(Math.random()*10); // change later
+const userName = "ANITA_" + Math.round(Math.random() * 100); // change later
+const userID = Math.round(Math.random() * 10); // change later
 
 let text_array = ref([ // later get written text messages from this chat
     { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
@@ -48,94 +41,57 @@ interface IMessage {
     user: IUser;
     input: string;
     room: string;
-    from_myself?: boolean; //???
+    from_myself?: boolean;
 }
 enum EChannelType {
-	PRIVATE,
-	PUBLIC
+    PRIVATE,
+    PUBLIC
 }
 interface IChannel {
-	user: IUser;
-	type: EChannelType;
-	title: string;
+    user: IUser;
+    type: EChannelType;
+    title: string;
 }
-let messageToSend: IMessage;
-messageToSend = {
-	user: {
-		id: userID,
-		name: userName,
-		twoFAenabled: true,
-		image: "this is an image",
-		token: "bla bla bla",
-		activeChats: [
-			"chat1",
-			"chat2",
-			"chat3"
-		]
-	},
-	input: "this is my message",
-	room: "Room number one"
-};
-let channelToSend: IChannel;
-channelToSend = {
-	user: {
-		id: userID,
-		name: userName,
-		twoFAenabled: true,
-		image: "this is an image",
-		token: "bla bla bla",
-		activeChats: [
-			"chat1",
-			"chat2",
-			"chat3"
-		]
-	},
-	type: EChannelType.PRIVATE,
-	title: "Room number one"
-};
 
 onMounted(async () => {
-	const userData = await getUserData();
+    const userData = await getUserData();
     updateChatHistoryDisplay("Room number one", userData.pseudo);
 
-	try {
-		socket = new WebSocket('ws://localhost:9000');
+    try {
+        socket = new WebSocket('ws://localhost:9000');
 
-		socket.addEventListener('open', (event) => {
-    	    console.log("connection established");
-    	    const authMsg = {
-    	        event: 'connect',
-    	        data: {
-    	            id: (getUserData() as any).id, // gjupys ID
-    	        }
-    	    };
-    	    socket.send(JSON.stringify(authMsg));
-    	});
+        socket.addEventListener('open', (event) => {
+            console.log("connection established");
+            const authMsg = {
+                event: 'connect',
+                data: {
+                    id: (getUserData() as any).id
+                }
+            };
+            socket.send(JSON.stringify(authMsg));
+        });
 
-		socket.addEventListener('close', (event) => {
-    	    console.log("connection closed");
-    	});
+        socket.addEventListener('close', (event) => {
+            console.log("connection closed");
+        });
 
-    	socket.addEventListener('error', (event) => {
-    	    console.error(event);
-    	});
+        socket.addEventListener('error', (event) => {
+            console.error(event);
+        });
 
-		socket.addEventListener('message', (event) => {
-    	    console.log('client socket listener: ', event)
-    	});
-
-		messageContainerScrollToBottom()
-	}
-	catch (error) {
-		console.error("ws error: " + error);
-	}
+        socket.addEventListener('message', (event) => {
+            console.log('client socket listener: ', event)
+        });
+    }
+    catch (error) {
+        console.error("ws error: " + error);
+    }
 })
 
 async function addMessageToChat() {
     const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
     if (newChatMessage.value == '')
         return;
-    checkAuthenticated();
     const userData = await getUserData();
     const newItem = createIMessage(newChatMessage, userData);
     sendMessageToServer(newItem);
@@ -145,22 +101,10 @@ async function addMessageToChat() {
 }
 
 function handleEnter(event: KeyboardEvent) {
-	if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         addMessageToChat();
     }
-}
-
-function checkAuthenticated() {
-    fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/isAuthenticated', {
-        method: 'GET',
-        credentials: 'include',
-    })
-	.then(response => response.json())
-	.then(data => {
-		console.log("buttoncheck: " + data);
-	})
-    .catch(error => console.error('Error:', error));
 }
 
 async function getUserData() {
@@ -184,6 +128,7 @@ async function updateChatHistoryDisplay(channelName: string, userName: string) {
         let from_myself = (userName == message_name);
         return { message_name, message_content, from_myself };
     });
+    nextTick(() => messageContainerScrollToBottom());
 }
 
 function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
@@ -269,7 +214,7 @@ h3 {
 .messages_container {
     margin: 0px 10px;
     overflow-y: scroll;
-	white-space: pre-line;
+    white-space: pre-line;
 }
 
 .controls {

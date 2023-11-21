@@ -5,7 +5,6 @@ import Chat from "./Chat.vue"
 import Menue from "./Menue.vue"
 import Profile from "./Profile.vue"
 import Game from './Game.vue'
-// import ChatTest from './ChatTest.vue'
 
 import { store } from '../store/store.ts'
 import { onMounted } from 'vue'
@@ -13,12 +12,12 @@ import { onMounted } from 'vue'
 onMounted(() => {
 	// GET specific user
 	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1')
-	.then(response => response.json())
-	.then(data => {
-		console.log("User:")
-		console.log(data)
-	})
-	.catch(error => console.error('Error:', error));
+		.then(response => response.json())
+		.then(data => {
+			console.log("User:")
+			console.log(data)
+		})
+		.catch(error => console.error('Error:', error));
 
 	// // CHANGE specific user data
 	// const postData = {
@@ -82,25 +81,23 @@ onMounted(() => {
 </script>
 
 <template>
-    <!-- <h1>Playpage</h1> -->
-    <div class="appbody">
-        <main>
+	<!-- <h1>Playpage</h1> -->
+	<div class="appbody">
+		<main>
 			<!-- <ChatTest/> -->
-            <Game />
-        </main>
-        <aside>
-            <Menue />
-            <Chat v-if="store.chatActive"/> 
-            <Profile v-if="store.profileActive" />
-        </aside>
-    </div>
-
+			<Game />
+		</main>
+		<aside>
+			<Menue />
+			<Chat v-if="store.chatActive" />
+			<Profile v-if="store.profileActive" />
+		</aside>
+	</div>
 </template>
 
 
 
 <style scoped>
-
 .appbody {
 	background-color: black !important;
 	display: grid;
