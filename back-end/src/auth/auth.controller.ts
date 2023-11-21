@@ -36,18 +36,41 @@ export class AuthController {
     console.log(req.session);
     console.log(req.session.userID);
     console.log(req.session.dataAuthenticated);
-    return res.redirect('http://' + process.env.CURRENT_HOST + ':5173/play'); // redirect to playpage
+    return res.redirect('http://' + process.env.CURRENT_HOST + ':5173/prompt'); // redirect to playpage
   }
 
   @Get('isAuthenticated')
-  checkAuthentication(@Req() req: Request) {
-    // console.log(req.session.dataAuthenticated);
-    // console.log(req.session);
-    // console.log(req.sessionID);
-    if (req.session && req.session.dataAuthenticated)
-      return (true);
-    else
-      return (false);
+  async checkAuthentication(@Req() req: Request) {
+    console.log(req.session.dataAuthenticated);
+    console.log(req.session);
+    console.log(req.session.userID);
+
+    if (req.session && req.session.dataAuthenticated) {
+      // Fetch user details from the database
+      const userId = req.session.userID;
+      const user = await this.userService.findOne(userId);
+
+      if (!user) {
+        console.log('User not found');
+        return false;
+      }
+      if (user.is2FActive) {
+        // Check if TFA is authenticated
+        if (user.is2FAuthenticated) {
+            console.log('User is TFA authenticated.');
+            return true;
+          } else {
+            console.log('User is not TFA authenticated.');
+            return false;
+        }
+      } else {
+          return true;
+      }
+    } else {
+      // If user is not authenticated, return false
+      console.log('User is not authenticated.');
+      return false;
+    }
   }
 
   @Get('whoIam')
