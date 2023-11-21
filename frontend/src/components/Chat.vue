@@ -1,14 +1,19 @@
 <template class="chat">
     <div class="chat">
         <h3>Chat</h3>
-        <div class="messages_container" id="messages_container">
+
+        <div class="messages_container" id="messages_container" v-if="chatActive">
             <Message v-for="message in text_array" :message_name="message.message_name"
                 :message_content="message.message_content" :from_myself="message.from_myself" />
         </div>
-        <div class="controls">
+        <div class="controls" v-if="chatActive">
             <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto" @keydown="handleEnter"></textarea>
             <button @click="addMessageToChat">send</button>
         </div>
+
+		<div v-if="!chatActive">hello</div>
+			
+
     </div>
 </template>
 
@@ -16,6 +21,7 @@
 import Message from './Message.vue'
 import { ref, onMounted, nextTick } from 'vue';
 
+let chatActive = ref(false);
 const userName = "ANITA_" + Math.round(Math.random() * 100); // change later
 const userID = Math.round(Math.random() * 10); // change later
 
