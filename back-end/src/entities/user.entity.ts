@@ -27,6 +27,9 @@ export class User {
     @Column({ type: 'boolean', default: false })
     is2FActive: boolean;
 
+	@Column({ type: 'boolean', default: false })
+    is2FAuthenticated: boolean;
+
     @Column({ length: 60, nullable: true })
     secretOf2FA?: string;
 
