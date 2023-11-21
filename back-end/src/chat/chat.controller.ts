@@ -2,12 +2,14 @@ import { Controller, Get, Put, HttpCode, Param } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { currentConnections } from './properties';
 import { IMessage } from './properties';
+import { ChatDAO } from './chat.dao';
 
 
 @Controller('chat')
 export class ChatController {
   constructor(
     private chatService: ChatService,
+    private chatDao: ChatDAO,
   ) { }
 
   @Get('test-connection')
@@ -19,5 +21,10 @@ export class ChatController {
   @Get('history/:channelName')
   async getChatHistory(@Param('channelName') channelName: string): Promise<string[]> {
     return await this.chatService.getChatHistory(channelName);
+  }
+
+  @Get('channels/:userId')
+  async getUserChannels(@Param('userId') userId: number): Promise<string[]> {
+    return await this.chatDao.getRawUserChannels(userId);
   }
 }
