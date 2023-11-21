@@ -3,7 +3,8 @@
 <div class="chat">
     <h3>Chat</h3>
     <div class="messages_container" id="messages_container">
-            <Message v-for="message in text_array" :message_name="message.message_name" :message_content="message.message_content" :from_myself="message.from_myself"/>
+            <Message v-for="message in text_array" :message_name="message.message_name"
+				:message_content="message.message_content" :from_myself="message.from_myself"/>
     </div>
     <div class="controls">
         <textarea
@@ -19,7 +20,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Message from './Message.vue'
 import { ref, onMounted, nextTick } from 'vue';
 
@@ -27,65 +27,43 @@ const	userName = "ANITA_" + Math.round(Math.random()*100); // change later
 const	userID = Math.round(Math.random()*10); // change later
 
 let text_array = ref([ // later get written text messages from this chat
-    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true},
-    {message_name: "chatter", message_content: "Lorem Ipsum", from_myself: false},
-    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true},
-    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true},
-    {message_name: "chatter", message_content: "If you’re like me and you have the debilitating habit of beating yourself up over things, look yourself in the mirror and just go “I am young and I am allowed to make mistakes. It’s not that serious.” Bc it really isn’t. It is not that serious at all. This is not our second time living. We did not have a rehearsal for what the correct way to live is. This is our first time and we are allowed to stumble. It’s fine. It’s not that serious. ", from_myself: false},
-	{message_name: "chatter", message_content: "Lorem Ipsum", from_myself: false},
-	{message_name: "chatter", message_content: "Lorem Ipsum", from_myself: false},
-    {message_name: userName, message_content: "Lorem Ipsum", from_myself: true}
+    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
 ]);
 
-let webSocket: WebSocket;
+let socket: WebSocket;
 
+interface IChatUser {
+    id: number;
+    socket?: WebSocket;
+}
+interface IUser {
+    id?: number | undefined;
+    name: string;
+    twoFAenabled: boolean;
+    image: string | undefined;
+    token?: string | undefined;
+    activeChats: string[];
+}
+interface IMessage {
+    user: IUser;
+    input: string;
+    room: string;
+    from_myself?: boolean; //???
+}
 enum EChannelType {
 	PRIVATE,
 	PUBLIC
-}
-interface IUser {
-	id?: number | undefined;
-	name: string | undefined;
-	intraname: string | undefined;
-	twoFAenabled: boolean;
-	image: string | undefined;
-	token?: string | undefined;
-	activeChats: string[];
-}
-interface IMessage {
-	user: IUser;
-	input: string;
-	room: string;
 }
 interface IChannel {
 	user: IUser;
 	type: EChannelType;
 	title: string;
 }
-let channelToSend: IChannel;
-channelToSend = {
-	user: {
-		id: userID,
-		name: userName,
-		intraname: userName,
-		twoFAenabled: true,
-		image: "this is an image",
-		token: "bla bla bla",
-		activeChats: [
-			"chat1",
-			"chat2",
-			"chat3"
-		]
-	},
-	type: EChannelType.PRIVATE,
-	title: "Room number one"
-};
 let messageToSend: IMessage;
 messageToSend = {
 	user: {
 		id: userID,
 		name: userName,
-		intraname: userName,
 		twoFAenabled: true,
 		image: "this is an image",
 		token: "bla bla bla",
@@ -98,44 +76,72 @@ messageToSend = {
 	input: "this is my message",
 	room: "Room number one"
 };
+let channelToSend: IChannel;
+channelToSend = {
+	user: {
+		id: userID,
+		name: userName,
+		twoFAenabled: true,
+		image: "this is an image",
+		token: "bla bla bla",
+		activeChats: [
+			"chat1",
+			"chat2",
+			"chat3"
+		]
+	},
+	type: EChannelType.PRIVATE,
+	title: "Room number one"
+};
 
-onMounted(() => {
+onMounted(async () => {
+	const userData = await getUserData();
+    updateChatHistoryDisplay("Room number one", userData.pseudo);
+
 	try {
-		webSocket = new WebSocket('ws://' + import.meta.env.VITE_CURRENT_HOST + ':9000');
+		socket = new WebSocket('ws://localhost:9000');
 
-		webSocket.addEventListener('open', (event) => {
-			console.log("connection established");
-		});
-		webSocket.addEventListener('message', handleSocketMessages);
-		webSocket.addEventListener('close', (event) => {
-			console.log("connection closed");
-		});
-		webSocket.addEventListener('error', (event) => {
-			console.error(event);
-		});
+		socket.addEventListener('open', (event) => {
+    	    console.log("connection established");
+    	    const authMsg = {
+    	        event: 'connect',
+    	        data: {
+    	            id: (getUserData() as any).id, // gjupys ID
+    	        }
+    	    };
+    	    socket.send(JSON.stringify(authMsg));
+    	});
+
+		socket.addEventListener('close', (event) => {
+    	    console.log("connection closed");
+    	});
+
+    	socket.addEventListener('error', (event) => {
+    	    console.error(event);
+    	});
+
+		socket.addEventListener('message', (event) => {
+    	    console.log('client socket listener: ', event)
+    	});
 
 		messageContainerScrollToBottom()
 	}
 	catch (error) {
-		console.error(error);
+		console.error("ws error: " + error);
 	}
 })
 
-function handleSocketMessages(event: MessageEvent<any>) {
-	const message = JSON.parse(event.data);
-	console.log('Message:', message);
-
-    const newItem = {
-        message_name: message.message_Name,
-        message_content: message.message_content,
-        from_myself: false
-    }
-    text_array.value.push(newItem);
-
-	// switch (message.event) {
-	// 	case 'caseOne':
-	// 		break;
-	// }
+async function addMessageToChat() {
+    const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
+    if (newChatMessage.value == '')
+        return;
+    checkAuthenticated();
+    const userData = await getUserData();
+    const newItem = createIMessage(newChatMessage, userData);
+    sendMessageToServer(newItem);
+    pushToTextArray(newItem)
+    newChatMessage.value = '';
+    nextTick(() => messageContainerScrollToBottom());
 }
 
 function handleEnter(event: KeyboardEvent) {
@@ -145,36 +151,75 @@ function handleEnter(event: KeyboardEvent) {
     }
 }
 
-function addMessageToChat() {
-    const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
-    if (newChatMessage.value == '')
-        return;
-
-    const newItem = {
-        message_name: userName,
-        message_content: newChatMessage.value,
-        from_myself: true,
-    }
-    text_array.value.push(newItem);
-
-    sendMessage(newChatMessage.value);
-
-    newChatMessage.value = '';
-	nextTick(() => messageContainerScrollToBottom());
-    //checkAuthenticated();
+function checkAuthenticated() {
+    fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/isAuthenticated', {
+        method: 'GET',
+        credentials: 'include',
+    })
+	.then(response => response.json())
+	.then(data => {
+		console.log("buttoncheck: " + data);
+	})
+    .catch(error => console.error('Error:', error));
 }
 
-function sendMessage(input: string) {
-	messageToSend.input = input
+async function getUserData() {
+    const response = await fetch('http://localhost:3000/auth/whoIam', {
+        method: 'GET',
+        credentials: 'include',
+    });
+    const userData = JSON.parse(await response.text());
+    return userData;
+}
 
-	webSocket.send(
-		JSON.stringify(
-			{
-				event: 'message',
-				data: messageToSend
-			}
-		)
-	);
+async function updateChatHistoryDisplay(channelName: string, userName: string) {
+    const response = await fetch(`http://localhost:3000/chat/history/${channelName}`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+    let rawMessages = await response.json();
+
+    text_array.value = rawMessages.map((rawMessage: string) => {
+        let [message_name, message_content] = rawMessage.split(': ');
+        let from_myself = (userName == message_name);
+        return { message_name, message_content, from_myself };
+    });
+}
+
+function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
+    const newItem: IMessage = {
+        user: {
+            id: userData.id,
+            name: userData.pseudo,
+            twoFAenabled: true,
+            image: userData.avatar,
+            token: "bla bla bla",
+            activeChats: [
+                "chat1",
+                "chat2",
+                "chat3"
+            ]
+        },
+        input: newChatMessage.value,
+        room: "Room number one",
+    }
+    return newItem;
+}
+
+function sendMessageToServer(newItem: IMessage) {
+    const msg = {
+        event: "message",
+        data: newItem
+    }
+    socket.send(JSON.stringify(msg));
+}
+
+async function pushToTextArray(newItem: IMessage) {
+    text_array.value.push({
+        message_name: newItem.user.name,
+        message_content: newItem.input,
+        from_myself: true,
+    });
 }
 
 function messageContainerScrollToBottom() {
@@ -191,27 +236,9 @@ function messageContainerScrollToBottom() {
     }
 }
 
-// function addMessage() { //svenja: ??
-//     const newID = Date.now();
-//     text_array.value.push(newID);
-// }
-
-function checkAuthenticated() { // svenja: not sure how this function works with the session/cookie. but i kinda get it i guess
-   fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/isAuthenticated', {
-        method: 'GET',
-        credentials: 'include',
-    })
-	.then(response => response.json())
-	.then(data => {
-		console.log("buttoncheck: " + data);
-	})
-    .catch(error => console.error('Error:', error));
-}
-
 </script>
 
 <style scoped>
-
 @import "../assets/base.css";
 
 
@@ -229,7 +256,6 @@ div.chat {
     grid-template-rows: 80px auto 80px;
     grid-column-gap: 0px;
     grid-row-gap: 10px
-    
 }
 
 h3 {
@@ -283,7 +309,5 @@ button {
 button:active {
     margin-top: 8px;
 }
-
-
 </style>
 

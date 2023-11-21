@@ -1,11 +1,15 @@
 export interface IUser {
   id?: number | undefined;
-  name: string | undefined;
-  intraname: string | undefined;
+  name: string;
   twoFAenabled: boolean;
   image: string | undefined;
   token?: string | undefined;
   activeChats: string[];
+}
+
+export interface IChatUser {
+  id: number;
+  socket?: WebSocket;
 }
 
 export interface IMessage {
@@ -16,7 +20,8 @@ export interface IMessage {
 
 export enum EChannelType {
   PRIVATE,
-  PUBLIC
+  PUBLIC,
+  DM
 }
 
 export interface IChannel {
@@ -25,5 +30,4 @@ export interface IChannel {
   title: string;
 }
 
-
-export const roomConnections: Record<string, WebSocket[]> = {};
+export const currentConnections: IChatUser[] = [];

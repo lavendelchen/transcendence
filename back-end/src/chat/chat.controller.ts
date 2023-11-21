@@ -1,5 +1,6 @@
-import { Controller, Get, HttpCode, Body, Post } from '@nestjs/common';
+import { Controller, Get, Put, HttpCode, Param } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import { currentConnections } from './properties';
 import { IMessage } from './properties';
 
 
@@ -7,7 +8,7 @@ import { IMessage } from './properties';
 export class ChatController {
   constructor(
     private chatService: ChatService,
-  ) {}
+  ) { }
 
   @Get('test-connection')
   @HttpCode(200)
@@ -15,4 +16,8 @@ export class ChatController {
     return 'Connection successful!';
   }
 
+  @Get('history/:channelName')
+  async getChatHistory(@Param('channelName') channelName: string): Promise<string[]> {
+    return await this.chatService.getChatHistory(channelName);
+  }
 }

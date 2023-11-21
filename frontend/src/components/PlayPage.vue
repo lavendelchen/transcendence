@@ -5,6 +5,7 @@ import Chat from "./Chat.vue"
 import Menue from "./Menue.vue"
 import Profile from "./Profile.vue"
 import Game from './Game.vue'
+// import ChatTest from './ChatTest.vue'
 
 import { store } from '../store/store.ts'
 import { onMounted } from 'vue'
@@ -33,7 +34,7 @@ onMounted(() => {
 	//  .then(response => response.json())
 	//  .then(data => console.log(data))
 	//  .catch(error => console.error('Error:', error));
-	
+
 	// PUSH new match onto database
 	/* const postData = {
 		player1Score: 11,
@@ -84,7 +85,7 @@ onMounted(() => {
     <!-- <h1>Playpage</h1> -->
     <div class="appbody">
         <main>
-			<ChatTest/>
+			<!-- <ChatTest/> -->
             <Game />
         </main>
         <aside>
@@ -101,23 +102,22 @@ onMounted(() => {
 <style scoped>
 
 .appbody {
-    background-color: black !important;
-    display: grid;
-    grid-template-columns: auto 30vw;
-    grid-template-rows: 1fr;
-    grid-column-gap: 20px;
-    /* height: 100%; */
+	background-color: black !important;
+	display: grid;
+	grid-template-columns: auto 30vw;
+	grid-template-rows: 1fr;
+	grid-column-gap: 20px;
+	/* height: 100%; */
 }
 
 aside {
-    width: 30vw;
-    max-width: 400px;
-    height: 100%;
-    /* max-width: 500px; */
+	width: 30vw;
+	max-width: 400px;
+	height: 100%;
+	/* max-width: 500px; */
 }
 
 h1 {
-    font-size: 2rem !important;
+	font-size: 2rem !important;
 }
-
 </style>

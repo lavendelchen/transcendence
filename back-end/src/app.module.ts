@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { GameserverModule } from './gameserver/gameserver.module';
 import { join } from 'path';
 import { UserModule } from './user/user.module';
+import { ChatModule } from './chat/chat.module';
 import { FriendModule } from './friend/friend.module';
 import { MatchModule } from './match/match.module';
 import { AppController } from './app.controller';
@@ -27,17 +28,18 @@ import { WSocketModule } from '../wsocket/wsocket.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('POSTGRES_HOST'),
-        port: configService.get<number>('POSTGRES_PORT'),
-        username: configService.get<string>('POSTGRES_USER'),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
-        database: configService.get<string>('POSTGRES_DB'),
+        host: configService.get('POSTGRES_HOST'),
+        port: configService.get('POSTGRES_PORT'),
+        username: configService.get('POSTGRES_USER'),
+        password: configService.get('POSTGRES_PASSWORD'),
+        database: configService.get('POSTGRES_DB'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<boolean>('POSTGRES_SYNC', true), // if DB_SYNC is true, the database is created again on each launch from TypeORM
+        synchronize: configService.get('POSTGRES_SYNC', true), // if DB_SYNC is true, the database is created again on each launch from TypeORM
       }),
     }),
+    ChatModule,
     AuthModule,
-	GameserverModule,
+    GameserverModule,
     TfaModule,
     UserModule,
     FriendModule,
