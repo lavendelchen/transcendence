@@ -52,7 +52,7 @@ export class WSocketGateway implements OnGatewayInit {
   @SubscribeMessage('create')
   async addChat(
     @MessageBody() data: IChannel,
-  ): Promise<string[]> {
-    return await this.chatService.addChat(data);
+  ): Promise<void> {
+    await this.chatService.addChat(data);
   }
 }
