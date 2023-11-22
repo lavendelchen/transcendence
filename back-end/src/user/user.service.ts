@@ -35,7 +35,7 @@ export class UserService {
 	findOne(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
-			select: ['id', 'fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches']
+			select: ['id', 'fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches', 'is2FAuthenticated']
 		});
 	}
 
@@ -52,7 +52,7 @@ export class UserService {
 	findSecret(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
-			select: ['secretOf2FA', 'is2FActive']
+			select: ['secretOf2FA', 'is2FActive', 'is2FAuthenticated']
 		});
 	}
 
