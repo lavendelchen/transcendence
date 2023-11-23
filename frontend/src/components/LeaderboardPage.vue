@@ -97,7 +97,6 @@ span {
 	margin-bottom: 0.8vw;
 }
 
-
 #rank {
 	margin-left: 30px;
 	width: 5vw;
