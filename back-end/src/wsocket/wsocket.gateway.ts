@@ -1,8 +1,8 @@
 import { Server, Socket } from 'ws';
 import { ChatService } from 'src/chat/chat.service';
-import { ChatDAO } from 'src/chat/chat.dao';
-import { Injectable } from '@nestjs/common';
-import { IMessage, IChannel, currentConnections, IChatUser } from 'src/chat/properties';
+import { Inject } from '@nestjs/common';
+import { Injectable, forwardRef } from '@nestjs/common';
+import { IMessage, IChannel, IChatUser } from 'src/chat/properties';
 import {
   ConnectedSocket, //wird spaeter fuer join un dque gebraucht
   MessageBody,
@@ -15,18 +15,26 @@ import {
 @Injectable()
 @WebSocketGateway(9000, { cors: { origin: '*', methods: ['GET', 'POST'] } })
 export class WSocketGateway implements OnGatewayInit {
-  constructor(private chatService: ChatService) { }
+  constructor(
+    @Inject(forwardRef(() => ChatService))
+    private chatService: ChatService,
+  ) { }
+
+  private currentConnections: IChatUser[] = [];
 
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: any): any {
+  afterInit(): any {
     console.log('WebSocket server initialized!');
   }
 
   handleDisconnect(client: WebSocket, ...args: any[]) {
     console.log('Client disconnected: ', (client as any)._socket.remoteAddress);
-    // remove from currentConnections
+    const index = this.currentConnections.findIndex((connection) => connection.socket === client);
+    if (index !== -1) {
+      this.currentConnections.splice(index, 1);
+    }
   }
 
   @SubscribeMessage('connect')
@@ -36,7 +44,7 @@ export class WSocketGateway implements OnGatewayInit {
       id: data.id,
       socket: client,
     }
-    currentConnections[data.id] = newChatUser;
+    this.currentConnections.push(newChatUser);
   }
 
   @SubscribeMessage('message')
@@ -54,5 +62,10 @@ export class WSocketGateway implements OnGatewayInit {
     @MessageBody() data: IChannel,
   ): Promise<void> {
     await this.chatService.addChat(data);
+  }
+
+  // UTILS
+  public getCurrentConnections(): IChatUser[] {
+    return this.currentConnections;
   }
 }

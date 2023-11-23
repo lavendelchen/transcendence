@@ -64,7 +64,7 @@ onMounted(async () => {
             const authMsg = {
                 event: 'connect',
                 data: {
-                    id: (getUserData() as any).id
+                    id: (userData.id)
                 }
             };
             socket.send(JSON.stringify(authMsg));

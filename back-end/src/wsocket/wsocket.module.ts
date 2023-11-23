@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ChatModule } from 'src/chat/chat.module';
 import { WSocketGateway } from './wsocket.gateway';
-import { ChatDAO } from '../chat/chat.dao';
-
+import { ChatServiceBase } from 'src/chat/chat.servicebase';
+import { forwardRef } from '@nestjs/common';
 
 @Module({
-  imports: [ChatModule],
-  providers: [WSocketGateway]
+  imports: [forwardRef(() => ChatModule)],
 })
 export class WSocketModule { }
 
