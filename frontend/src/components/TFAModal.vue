@@ -60,5 +60,7 @@
 
 	#secret{
 		color: white;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: var(--font-size-md);
 	}
 </style>

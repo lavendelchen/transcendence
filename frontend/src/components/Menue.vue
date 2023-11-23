@@ -3,19 +3,30 @@ import { store } from '../store/store.ts';
 
     function chatButtonClicked() {
         console.log('button clicked')
-        store.profileActive = false;
-        store.chatActive = true;
+		if (store.chatActive == false) {
+        	store.profileActive = false;
+        	store.chatActive = true;
+		}
+		else {
+			store.profileActive = false;
+        	store.chatActive = false;
+		}
     }
     
     function profileButtonClicked() {
         console.log('button clicked')
-        store.chatActive = false;
-        store.profileActive = true;
+        if (store.profileActive == false) {
+        	store.profileActive = true;
+        	store.chatActive = false;
+		}
+		else {
+			store.profileActive = false;
+        	store.chatActive = false;
+		}
     }
     
     function logoutButtonClicked() {
         console.log('button clicked')
-
     }
 
 </script>

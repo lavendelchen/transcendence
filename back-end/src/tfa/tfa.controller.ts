@@ -22,7 +22,7 @@ export class TfaController {
     // Check if TFA is already enabled for the user
     if (user.is2FActive)
     	return { isTfaEnabled: true };
-	else 
+	else
 		return { isTfaEnabled: false };
   }
 
@@ -99,9 +99,14 @@ export class TfaController {
     const isValid = this.tfaService.verifyTfaToken(otp, user.secretOf2FA);
 
     if (isValid) {
-      return { message: 'TFA OTP is valid.' }; // this will be replaced with a redirection to play-page
+        // Update is2FAuthenticated in the user entity
+        await this.userService.update(userId, { is2FAuthenticated: true });
+		console.log(user.is2FAuthenticated)
+        return { message: 'TFA OTP is valid.' };
     } else {
-      return { message: 'TFA OTP is invalid.' };
+        // Optionally, reset is2FAuthenticated if OTP is invalid
+        await this.userService.update(userId, { is2FAuthenticated: false });
+        return { message: 'TFA OTP is invalid.' };
     }
   }
 }
@@ -110,4 +115,3 @@ export class TfaController {
 
 
 //curl -X POST -H "Content-Type: application/json" -d '{"secret": "your_secret_here"}' http://localhost:3000/tfa/generateOtp
-

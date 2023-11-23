@@ -8,6 +8,7 @@ import PlayPage from './components/PlayPage.vue'
 import LeaderboardPage from './components/LeaderboardPage.vue'
 import Prompt from './components/Prompt.vue'
 import OTP from './components/OTP.vue'
+import RouteGuard from './components/RouteGuard.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -17,10 +18,10 @@ const router = createRouter({
         { path: '/leaderboard', component: LeaderboardPage },
 		{ path: '/prompt', component: Prompt },
 		{ path: '/OTP', component: OTP },
+		{ path: '/not-allowed', component: RouteGuard },
         { path: '/', redirect: '/start'} 
     ]
 })
-
 
 const app = createApp(App)
 app.use(router)
