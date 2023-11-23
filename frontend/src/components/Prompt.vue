@@ -30,6 +30,7 @@
 
 <script setup lang="ts">
 import TFAModal from './TFAModal.vue'
+import { whoIam } from '../utils/whoIam.ts'
 
 import { useRouter } from 'vue-router';
 import { ref, onUpdated, onMounted } from 'vue'
@@ -54,6 +55,8 @@ let tfaSecret = ref("");
 let tfaMsg = ref("Enable Two-Factor Authentication")
 
 onMounted(() => {
+	console.log(whoIam())
+
 	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/isTfaEnabled/1') //ID
 	.then(response => response.json())
 	.then(data => {

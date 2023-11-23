@@ -4,10 +4,23 @@
 			{{ channel.name }}
 		</div>
 	</div>
+	<div class="controls">
+		<button @click="showModal = true">Create new chat</button>
+		<div class="commands">
+			<p>input commands (nothing happening yet)</p>
+			<!-- input NOT WORKING YET -->
+			<input> 
+		</div>
+	</div>
+
+	<CreateChatModal v-if="showModal" @close="showModal = false"/>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import CreateChatModal from './CreateChatModal.vue'
+
+let showModal = ref(false);
 
 let channels = ref([
 	{ id: 1, name: 'channel_1' },
@@ -45,13 +58,16 @@ onMounted(() => {
 <style scoped>
 
 .channels {
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
 	width: 100%;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: scroll;
 }
 .channel {
-	border-top: 2px solid black;
-    background-color: rgb(193, 193, 193);
-    color: black;
+	border: 1px solid white;
+    background-color: black;
+    color: white;
     font-size: var(--font-size-sm);
 	box-sizing: border-box;
     width: 100%;
@@ -59,12 +75,44 @@ onMounted(() => {
 	padding-bottom: 10px;
     padding-left: 10px;
     display: block;
-    margin: 0;
+    margin: 0px;
     text-align: left;
 	text-overflow: ellipsis;
 	overflow: hidden;
 
 	cursor: pointer;
+}
+
+.controls {
+	display: flex;
+	margin: 0;
+	height: 100%;
+}
+
+button {
+	font-size: var(--font-size-tiny);
+	height: 100%;
+	flex-grow: 1;
+}
+
+.commands {
+	font-size: var(--font-size-tiny);
+	margin-left: 10px;
+}
+
+p {
+	text-align: left;
+	margin-top: 10px;
+	margin-bottom: 0px;
+}
+
+input {
+	margin-top: 10px;
+	margin-right: 10px;
+	font-family: 'textfont';
+	text-transform: uppercase;
+	font-size: var(--font-size-tiny);
+	height: 20px;
 }
 
 </style>

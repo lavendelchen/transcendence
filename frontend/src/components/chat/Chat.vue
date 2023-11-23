@@ -1,5 +1,5 @@
 <template class="chat">
-    <div class="chat">
+    <div class="chat" :style="{ 'grid-row-gap': chatActive ? '10px' : '0px' }">
 		<img v-if="chatActive" src="https://static.thenounproject.com/png/1507912-200.png" alt="leave"
 			@click="leaveChannel">
         <h3> {{ chatHeader }}</h3>
@@ -79,12 +79,12 @@ h3 {
 img {
 	background-color: white;
 	position: absolute;
-	width: 40px;
-	height: 40px;
+	width: 30px;
+	height: 30px;
 	object-fit: cover;
 	border-radius: 8px;
-	margin-left: 1vw;
-	margin-top: 1vw;
+	margin-left: 0.5vw;
+	margin-top: 0.5vw;
 
 	cursor: pointer;
 }
