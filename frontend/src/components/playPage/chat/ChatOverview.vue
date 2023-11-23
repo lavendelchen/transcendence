@@ -5,7 +5,7 @@
 		</div>
 	</div>
 	<div class="controls">
-		<button @click="showModal = true">Create new chat</button>
+		<button @click="showModal = true">Create new chat (not working yet)</button>
 		<div class="commands">
 			<p>input commands (nothing happening yet)</p>
 			<!-- input NOT WORKING YET -->
@@ -17,8 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeMount } from 'vue'
 import CreateChatModal from './CreateChatModal.vue'
+import { whoIam, User } from '../../../utils/whoIam.ts'
+
+let user: User | null
 
 let showModal = ref(false);
 
@@ -44,13 +47,21 @@ let channels = ref([
 
 ])
 
-onMounted(() => {
-	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/chat/channels/1') // ADD ID!!
+async function getCurrUser() {
+	user = await whoIam()
+}
+
+onBeforeMount(() => {
+	getCurrUser().then( () => 
+		fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/chat/channels/' + user?.id)
+	)
 	.then(response => response.json())
 	.then(data => {
+		console.log("channels:")
 		console.log(data)
+		// assign the received data to channels array (i haven't done it yet since i can't create channels yet so i can't really test -svenja)
 	})
-	.catch(error => console.log(error.message))
+	.catch(error => console.error("ChatOverview Error:" + error.message))
 })
 
 </script>

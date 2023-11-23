@@ -37,7 +37,7 @@
 	  pointsMade: number;
 	  pseudo: string;
 	  wonMatchesCount: number;
-	  rank?: number; // Add the rank property
+	  rank?: number;
 	}
 
 	export default {
@@ -47,7 +47,7 @@
 			}
 		},
 		mounted() {
-			fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/leaderboard') // do we need to sort them?
+			fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/leaderboard')
 				.then(response => response.json())
 				.then(data => {
 					this.players = data

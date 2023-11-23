@@ -23,13 +23,14 @@
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
 	</div>
 	<p id="opponentMsg" v-if="opponentName" :style="{ 'visibility': visibility, 'width': gameWidth + 'px' }">
-		Opponent: {{ opponentName }}
+		Opponent: <span>{{ opponentName }}</span>
 	</p>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, Ref, computed } from 'vue';
 import fontUrl from '/fonts/Pixeled.ttf';
+import { whoIam, User } from '../../utils/whoIam.ts'
 
 let canvasFont: FontFace;
 
@@ -134,8 +135,8 @@ const ball = {
 	velocityY: 0 * gameSize
 };
 
-const playerName = "ANITA_" + Math.round(Math.random() * 100);
-const playerID = Math.round(Math.random() * 10);
+let playerName: string;
+let playerID: number;
 let webSocket: WebSocket;
 
 function atWindowResize(timeout = 300) {
@@ -226,19 +227,27 @@ function upgradeGame(color: number): void {
 	connectToServer();
 };
 
-function connectToServer(): void {
-
+async function connectToServer() {
 	gameState.value = WAITING;
 	waitingButtonText.value = "Connecting to server...";
+
+	const user = await whoIam();
+	if (!user) {
+		waitingButtonText.value = "There was a problem with you user authentication :(";
+		return Promise<void>;
+	}
+	playerName = user.pseudo;
+	playerID = user.id;
+
 	try {
-		webSocket = new WebSocket('ws://localhost:5174');
+		webSocket = new WebSocket('ws://' + import.meta.env.VITE_CURRENT_HOST + ':5174');
 
 		webSocket.addEventListener('open', (event) => {
 			const authMsg = {
 				event: 'authenticate',
 				data: {
-					name: playerName, // neeed client name!!!!! -> auth/session/cookies
-					ID: playerID // neeed client name!!!!! -> auth/session/cookies
+					name: playerName,
+					ID: playerID
 				}
 			};
 			webSocket.send(JSON.stringify(authMsg));
@@ -602,5 +611,13 @@ canvas {
 	position: relative;
 	width: 100%;
 	height: 100%;
+}
+
+#opponentMsg {
+	color: rgb(115, 115, 115);
+}
+
+span {
+	color: white;
 }
 </style>

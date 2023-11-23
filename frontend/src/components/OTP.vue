@@ -21,9 +21,24 @@
 	
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref, onUpdated } from 'vue'
+import { ref, onUpdated, onBeforeMount } from 'vue'
+import { whoIam, User } from '../utils/whoIam.ts'
 
 const router = useRouter();
+
+let user: User | null
+
+onBeforeMount(() => {
+	getCurrUser()
+})
+
+async function getCurrUser() {
+	user = await whoIam()
+	if (!user)
+		router.push('/not-allowed')
+	if (!user?.is2FActive)
+		errorMsg.value = "enable TFA for this page to work and make sense."
+}
 
 let formData = ref({
 	otp: "",
@@ -39,6 +54,11 @@ let successMsg = ref("");
 async function submit(event: any) {
 	event.preventDefault();
 
+	if (!user?.is2FActive) {
+		errorMsg.value = "enable TFA for this page to work and make sense."
+		return;
+	}
+
 	if (!formData.value.otp) {
 		formErrors.value.otp = true
 		errorMsg.value = "please enter your one-time password"
@@ -48,11 +68,11 @@ async function submit(event: any) {
 	errorMsg.value = "";
 
 	var submitForm = {
-		userId: 1, // SET USER ID
+		userId: user.id,
 		otp: formData.value.otp
 	}
 
-	fetch('http://localhost:3000/tfa/verifyTfa', {
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/verifyTfa', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -77,7 +97,7 @@ async function submit(event: any) {
 					formData.value.otp = ""
 					return
 				case 'TFA OTP is valid.':
-					redirectUs("OTP verified! let's game :D")
+					redirectUs("OTP verified. let's game!")
 					return
 				default:
 					errorMsg.value = "Unprecedented error faced"
@@ -131,6 +151,8 @@ form label {
 input {
 	font-family: 'textfont';
 	text-transform: uppercase;
+	text-align: center;
+	padding-bottom: 5px;
 }
 
 h2 {

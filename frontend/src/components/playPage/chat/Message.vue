@@ -17,7 +17,7 @@ defineProps({
 
 <style scoped>
 
-@import "../../assets/base.css";
+@import "../../../assets/base.css";
 .message {
     background-color: white;
     color: black;
@@ -27,6 +27,10 @@ defineProps({
     display: block;
     margin-bottom: 20px;
     float: left;
+}
+
+.message_name {
+	color: rgb(80, 80, 80);
 }
 
 p {

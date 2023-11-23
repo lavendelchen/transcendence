@@ -1,0 +1,75 @@
+<script setup lang="ts">
+import { ref, onMounted, onBeforeMount } from 'vue'
+import { whoIam, User } from '../../utils/whoIam.ts'
+
+const user = ref<User>({
+	id: 0,
+	fortytwo_id: 0,
+	pseudo: "unknown",
+	email: "unkown",
+	avatar: "https://as2.ftcdn.net/v2/jpg/05/41/19/11/1000_F_541191198_O3s9TihGlfU58XP5oJXYaQ5y4rvuy7AK.jpg",
+	is2FActive: false,
+	is2FAuthenticated: false
+})
+
+onMounted(() => {
+	getCurrUser()
+})
+
+async function getCurrUser() {
+	const receive = await whoIam()
+	if (!receive)
+		return
+	user.value = receive
+	if (user.value.pseudo.length > 15) {
+		user.value.pseudo = user.value.pseudo.slice(0, 14)
+		user.value.pseudo += "..."
+	}
+}
+
+</script>
+
+<template>
+    <div class="profile">
+        <div class="hero">
+            <!-- <img src="../../assets/img/profileCircle.svg" alt="PROFILE PICTURE"> -->
+            <img :src="user.avatar" alt="PROFILE PICTURE">
+            <div>
+                <p id="name">{{ user.pseudo }}</p>
+            </div>
+        </div>
+    </div>
+    
+</template>
+
+<style scoped>
+
+    .profile {
+        padding: 10px;
+        border: 1px solid white;
+
+    }
+    .hero {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+		align-items: center;
+		overflow: hidden;
+    }
+	
+    img {
+		width: 100px;
+		height: 100px;
+		object-fit: cover;
+		border-radius: 50%;
+		vertical-align: middle;
+		margin: 5px;
+	}
+	
+	#name {
+		text-align: left;
+		padding-left: 10px;
+		max-width: 100%;
+		/* border: 1px solid white; */
+	}
+
+</style>

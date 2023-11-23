@@ -6,24 +6,26 @@ import Menue from "./Menue.vue"
 import Profile from "./Profile.vue"
 import Game from './Game.vue'
 
-import { store } from '../store/store.ts'
-import { authGuard } from '../utils/authGuard.ts'
-import { onMounted } from 'vue'
+import { store } from '../../store/store.ts'
+import { authGuard } from '../../utils/authGuard.ts'
+import { onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-onMounted(() => {
-	// authGuard(router)
+onBeforeMount(() => {
+	authGuard(router)
+})
 
+onMounted(() => {
 	// GET specific user
-	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1')
-		.then(response => response.json())
-		.then(data => {
-			console.log("User:")
-			console.log(data)
-		})
-		.catch(error => console.error('Error:', error));
+	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1')
+	// 	.then(response => response.json())
+	// 	.then(data => {
+	// 		console.log("User:")
+	// 		console.log(data)
+	// 	})
+	// 	.catch(error => console.error('Error:', error));
 
 	// // CHANGE specific user data
 	// const postData = {
