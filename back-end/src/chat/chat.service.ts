@@ -34,6 +34,19 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
+  // private async checkUserBlocked(conectionID: number) {
+  //   const user = await this.userService.
+  // }
+
+  private async checkUserBlocked(id: number, potentialBlockedUser: number) {
+    const data = await this.userService.findBlockedUser(id);
+    for (let i = 0; i < data.blockedUser.length; i++) {
+      if (data.blockedUser[i] === potentialBlockedUser)
+        return true;
+    }
+    return false;
+  }
+
   // UTILS
   private async broadcastToRoom(data: IMessage, msg: string) {
     const usersInRoom = await this.chatDao.getUsersInChannel(data.room);
@@ -46,7 +59,7 @@ export class ChatService extends ChatServiceBase {
     for (const user of usersInRoom) {
       for (const connection of currentConnections) {
         if (connection) {
-          if (connection.id === user.id && connection.id != data.user.id) {
+          if (connection.id === user.id && connection.id != data.user.id && !this.checkUserBlocked(connection.id, user.id)) {
             try {
               connection.socket.send(JSON.stringify(msg_to_client));
             }
@@ -60,3 +73,4 @@ export class ChatService extends ChatServiceBase {
   }
 
 }
+
