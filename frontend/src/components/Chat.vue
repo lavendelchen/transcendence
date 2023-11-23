@@ -55,7 +55,7 @@ interface IChannel {
 
 onMounted(async () => {
     const userData = await getUserData();
-    updateChatHistoryDisplay("Room number one", userData.pseudo);
+    updateChatHistoryDisplay("inner circle", userData.pseudo);
     try {
         socket = new WebSocket('ws://localhost:9000');
 
@@ -64,7 +64,7 @@ onMounted(async () => {
             const authMsg = {
                 event: 'connect',
                 data: {
-                    id: (getUserData() as any).id
+                    id: (userData.id)
                 }
             };
             socket.send(JSON.stringify(authMsg));
@@ -145,7 +145,7 @@ function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
             ]
         },
         input: newChatMessage.value,
-        room: "Room number one",
+        room: "inner circle",
     }
     return newItem;
 }

@@ -36,7 +36,7 @@ export class AuthController {
     console.log(req.session);
     console.log(req.session.userID);
     console.log(req.session.dataAuthenticated);
-    return res.redirect('http://' + process.env.CURRENT_HOST + ':5173/prompt'); // redirect to playpage
+    return res.redirect('http://' + process.env.CURRENT_HOST + ':5173/prompt'); // redirect to prompt
   }
 
   @Get('isAuthenticated')
