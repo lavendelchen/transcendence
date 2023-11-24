@@ -54,9 +54,9 @@ export class AppModule implements NestModule {
 		consumer.apply(AuthMiddleware).forRoutes(
 			'friend/:id',
 			'friend',
-			'match/:id',
-			'match',
 			'tfa/disableTfa/:userId',
+			{ path: 'match/:id', method: RequestMethod.POST },
+			{ path: 'match/:id', method: RequestMethod.DELETE },
 		);
 		consumer.apply(CheckUserOwnershipMiddleware).forRoutes(
 			'user/:id/secret',

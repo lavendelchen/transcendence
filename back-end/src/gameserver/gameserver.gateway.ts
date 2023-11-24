@@ -21,7 +21,7 @@ class Match {
 		Careful when changing, they might have equivalents in Game.vue that need to be the same */
 	player1Score =	0;
 	player2Score =	0;
-	pointsToWin =	11;
+	pointsToWin =	6;
 
 	framesPerSecond =	50;
 	baseBallSpeed =		8;
@@ -143,6 +143,9 @@ export class GameserverGateway {
 			won: false
 		}
 	};
+	private onlyOneGamePerPlayerMsg = {
+		event: "onlyOneGamePerPlayer",
+	};
 
 	handleConnection(client: Socket) {
 		console.log('New player connected');
@@ -182,6 +185,11 @@ export class GameserverGateway {
 		message: {
 			name: string
 			ID: number }) {
+		if (this.isPlayerAlreadyPlaying(message.ID)) {
+			client.send(JSON.stringify(this.onlyOneGamePerPlayerMsg));
+			return;
+		}
+		
 		const newPlayer: Player = {
 			socket: client,
 			name: message.name,
@@ -355,7 +363,25 @@ export class GameserverGateway {
 
 		match.sendToPlayer1(gameEndMsg1);
 		match.sendToPlayer2(gameEndMsg2);
-		// SEND MATCH DATA TO DATABASE
+		
+		const databaseMatch = {
+			player1Score: match.player1Score,
+			player2Score: match.player2Score,
+			player1: match.player1.ID,
+			player2: match.player2.ID,
+			winner: (result == match.PLAYER1_WIN) ? match.player1.ID : match.player2.ID,
+			loser: (result == match.PLAYER1_WIN) ? match.player2.ID : match.player1.ID
+		};
+		fetch('http://localhost:3000/match', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(databaseMatch)
+		})
+		 .then(response => response.json())
+		 .then(data => console.log(data))
+		 .catch(error => console.error('Error:', error));
 	}
 
 	sendNewScore(match: Match) {
@@ -445,4 +471,19 @@ export class GameserverGateway {
 		match.ball.velocityX = direction *	match.ball.speed * Math.cos(angleRad);
 		match.ball.velocityY = 				match.ball.speed * Math.sin(angleRad);
 	};
+
+	isPlayerAlreadyPlaying(playerID: number) {
+		if (this.queue.some(player => player.ID === playerID)) {
+			return true;
+		  }
+		
+		  if (this.ongoingMatches.some(match =>
+				match.player1.ID === playerID
+			||	match.player2.ID === playerID)) {
+			return true;
+		  }
+
+		return false;
+	}
+
 }

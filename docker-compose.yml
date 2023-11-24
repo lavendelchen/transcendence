@@ -49,7 +49,7 @@ services:
     depends_on:
       - db-container
     ports:
-      - "8080:8080" #does adminer need to communicate outside the docker containers?
+      - "8080:8080"
     networks:
       - transcendence-net
 
