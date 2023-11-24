@@ -12,7 +12,7 @@ import { FriendModule } from './friend/friend.module';
 import { MatchModule } from './match/match.module';
 import { AppController } from './app.controller';
 import { TfaModule } from './tfa/tfa.module';
-import { WSocketModule } from '../wsocket/wsocket.module';
+import { WSocketModule } from './wsocket/wsocket.module';
 
 @Module({
   imports: [

@@ -29,5 +29,3 @@ export interface IChannel {
   type: EChannelType;
   title: string;
 }
-
-export const currentConnections: IChatUser[] = [];
