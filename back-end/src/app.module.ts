@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 // import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { AuthMiddleware, CheckUserOwnershipMiddleware } from './auth/auth.middleware';
 import { GameserverModule } from './gameserver/gameserver.module';
 import { join } from 'path';
 import { UserModule } from './user/user.module';
@@ -48,4 +49,24 @@ import { WSocketModule } from './wsocket/wsocket.module';
   ],
   controllers: [AppController],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(AuthMiddleware).forRoutes(
+			'friend/:id',
+			'friend',
+			'match/:id',
+			'match',
+			'tfa/disableTfa/:userId',
+		);
+		consumer.apply(CheckUserOwnershipMiddleware).forRoutes(
+			'user/:id/secret',
+			{ path: 'user/:id', method: RequestMethod.POST },
+			{ path: 'user/:id', method: RequestMethod.PUT },
+			{ path: 'user/:id', method: RequestMethod.DELETE },
+			'tfa/isTfaEnabled/:userId',
+			'tfa/enableTfa/:userId',
+			'tfa/disableTfa/:userId',
+			'tfa/verifyTfa'
+		);
+	}
+}

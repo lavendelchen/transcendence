@@ -76,6 +76,7 @@ function tfaDone() {
 function enableTFA() {
 	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/enableTfa/' + user?.id, {
 		method: 'POST',
+		credentials: 'include',
 		headers: {
 			'Content-Type': 'application/json'
 		},
@@ -97,6 +98,7 @@ function enableTFA() {
 				return;
 			}
 		}
+		console.log("data: ")
 		console.log(data)
 		tfaSecret.value = data.user.secretOf2FA
 		errorMsg.value = ""
@@ -159,8 +161,9 @@ async function submit(event: any) {
 	else {
 		console.error("How did we get here??")
 	}
-	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/' + user?.id, { // ADD ID
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/' + user?.id, {
 		method: 'POST',
+		credentials: 'include',
 		headers: {
 			'Content-Type': 'application/json'
 		},

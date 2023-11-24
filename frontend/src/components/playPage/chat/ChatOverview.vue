@@ -53,7 +53,10 @@ async function getCurrUser() {
 
 onBeforeMount(() => {
 	getCurrUser().then( () => 
-		fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/chat/channels/' + user?.id)
+		fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/chat/channels/' + user?.id, {
+			method: 'GET',
+			credentials: 'include'
+		})
 	)
 	.then(response => response.json())
 	.then(data => {

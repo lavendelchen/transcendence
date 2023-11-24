@@ -74,6 +74,7 @@ async function submit(event: any) {
 
 	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/verifyTfa', {
 		method: 'POST',
+		credentials: 'include',
 		headers: {
 			'Content-Type': 'application/json'
 		},

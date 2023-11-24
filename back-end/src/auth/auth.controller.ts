@@ -81,5 +81,4 @@ export class AuthController {
       // User is not authenticated
       return {};
   }
-
 }
