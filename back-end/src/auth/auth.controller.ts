@@ -35,7 +35,7 @@ export class AuthController {
     req.session.userID = result.userID;
     // console.log(req.session);
     // console.log(req.session.userID);
-    // console.log(req.session.dataxAuthenticated);
+    // console.log(req.session.dataAuthenticated);
     return res.redirect('http://' + process.env.CURRENT_HOST + ':5173/prompt'); // redirect to prompt
   }
 
