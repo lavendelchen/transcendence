@@ -4,9 +4,19 @@ import { Injectable } from '@nestjs/common';
 import { IMessage } from 'src/chat/properties';
 import { Server } from 'ws';
 import { ChatServiceBase } from './chat.servicebase';
+import { UserService } from 'src/user/user.service';
+import { ChatDAO } from './chat.dao';
+import { WSocketGateway } from 'src/wsocket/wsocket.gateway';
 
 @Injectable()
 export class ChatService extends ChatServiceBase {
+    constructor(
+        public userService: UserService,
+        protected chatDao: ChatDAO,
+        protected wSocketGateway: WSocketGateway,
+    ) {
+        super(userService, chatDao, wSocketGateway);
+    }
 
   public async processMessage(data: IMessage, server: Server) {
     let check = data.input;
@@ -19,11 +29,26 @@ export class ChatService extends ChatServiceBase {
       case '/promote':
         this.promoteUser(data);
         break;
+			case '/ban':
+				this.banUser(data, server);
+				break;
       default:
         this.printMessage(data);
     }
   }
 
+	async banUser(data: IMessage, server: Server) {
+    let banned_name = data.input.split(' ')[1];
+    const user = await this.userService.findOneByName(banned_name);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    await this.userService.update(user.id, { isBanned: true });
+    await this.userService.update(user.id, { isAuthenticated: false });
+    console.log(`User ${user.pseudo} has been banned.`);
+  }
+	
   private async printMessage(data: IMessage) {
     try {
       const msg = `${data.user.name}:${data.input}`;

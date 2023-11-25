@@ -8,7 +8,6 @@ import { Request } from 'express';
 declare module 'express-session' {
   export interface SessionData {
     dataAuthCode: any;
-    dataAuthenticated: any;
     userID: any;
   }
 }
@@ -31,21 +30,20 @@ export class AuthController {
     const result = await this.authService.successAuth(code);
     // console.log('Success Auth Result:', result); // Log the result of successAuth
     req.session.dataAuthCode = result;
-    req.session.dataAuthenticated = "true";
     req.session.userID = result.userID;
+    await this.userService.update(result.userID, { isAuthenticated: true });
     // console.log(req.session);
     // console.log(req.session.userID);
-    // console.log(req.session.dataAuthenticated);
     return res.redirect('http://' + process.env.CURRENT_HOST + ':5173/prompt'); // redirect to prompt
   }
 
   @Get('isAuthenticated')
   async checkAuthentication(@Req() req: Request) {
-    // console.log(req.session.dataAuthenticated);
     // console.log(req.session);
     // console.log(req.session.userID);
 
-    if (req.session && req.session.dataAuthenticated) {
+	const isAuth = (await this.userService.findOne(req.session.userID)).isAuthenticated;
+    if (req.session && isAuth) {
       // Fetch user details from the database
       const userId = req.session.userID;
       const user = await this.userService.findOne(userId);
@@ -75,7 +73,8 @@ export class AuthController {
 
   @Get('whoIam')
   async checkWhoIam(@Req() req: Request) {
-    if (req.session && req.session.dataAuthenticated)
+	const isAuth = (await this.userService.findOne(req.session.userID)).isAuthenticated;
+    if (req.session && isAuth)
       return await this.userService.findOne(req.session.userID);
     else
       // User is not authenticated
