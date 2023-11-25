@@ -1,8 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { EChannelType, IChannel } from './properties';
 import { ChatDAO } from './chat.dao';
-
+import { WSocketGateway } from 'src/wsocket/wsocket.gateway';
 
 @Injectable()
 export class ChatServiceBase {
@@ -11,6 +11,8 @@ export class ChatServiceBase {
     protected userService: UserService,
     @Inject(ChatDAO)
     protected chatDao: ChatDAO,
+    @Inject(forwardRef(() => WSocketGateway))
+    protected wSocketGateway: WSocketGateway,
   ) { }
 
   public async addChat(chat: IChannel): Promise<string[]> {
@@ -22,6 +24,7 @@ export class ChatServiceBase {
     } catch (error) {
       console.log(`SYSTEM: ${error.message}`);
       return res;
+
     }
   }
 

@@ -1,37 +1,40 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { onMounted } from 'vue';
+import { onBeforeMount } from 'vue';
 
 const router = useRouter();
 
-onMounted(() => {
+onBeforeMount(() => {
 	checkIfRedirect();
 })
 
 async function checkIfRedirect() {
 	try {
-    const response = await fetch("http://" + import.meta.env.VITE_CURRENT_HOST + ":3000/auth/isAuthenticated");
-    const data = await response.text();
-    console.log(data);
-    if (data == 'true') {
-      router.push('/play');
-      console.log("already authenticated");
-      return;
-    }
-  } catch (error) {
-    console.error("checking session storage failed", error);
-  }
+		const response = await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/isAuthenticated', {
+        method: 'GET',
+        credentials: 'include',
+    });
+		const data = await response.text();
+		console.log(data);
+		if (data == 'true') {
+			router.push('/play');
+			console.log("already authenticated");
+			return;
+		}
+	} catch (error) {
+		console.error("checking session storage failed", error);
+	}
 };
 
 async function startAuth() {
-  try {
-    const response = await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/init');
-    const data = await response.text();
-    console.log(data);
-    window.location.href = data;
-  } catch (error) {
-    console.error("Init Authentication failed");
-  }
+	try {
+		const response = await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/init');
+		const data = await response.text();
+		console.log(data);
+		window.location.href = data;
+	} catch (error) {
+		console.error("Init Authentication failed");
+	}
 }
 
 // async function handleAuthCallback(code) {
@@ -43,17 +46,17 @@ async function startAuth() {
 
 <template>
 	<!-- <p id="score">
-	Score: 3000p
-	</p> -->
+			Score: 3000p
+			</p> -->
 	<section class="logo">
 		Ping&#160;&#160;&#160;&#160;&#160;&#160;&#160; <br>
 		Pang <br>
 		&#160;&#160;&#160;&#160;&#160;&#160;&#160;Pong
 	</section>
 	<!-- <a href="https://api."> -->
-		<button @click="startAuth" class="buttonLogin">
-			Log in
-		</button>
+	<button @click="startAuth" class="buttonLogin">
+		Log in
+	</button>
 	<!-- </a> -->
 </template>
 
@@ -75,7 +78,6 @@ export default {
 </script>
 
 <style scoped>
-
 a:link {
 	color: white;
 	text-decoration: none;

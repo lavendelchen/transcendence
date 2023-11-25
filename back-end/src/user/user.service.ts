@@ -115,4 +115,10 @@ export class UserService {
 
 	// async updateUserSoc
 
+	async findBlockedUser(id: number): Promise<User> {
+		return this.userRepository.findOne({
+			where: { id },
+			select: ['blockedUser']
+		})
+	}
 }

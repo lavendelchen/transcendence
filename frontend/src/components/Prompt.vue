@@ -30,9 +30,12 @@
 
 <script setup lang="ts">
 import TFAModal from './TFAModal.vue'
+import { whoIam, User } from '../utils/whoIam.ts'
 
 import { useRouter } from 'vue-router';
-import { ref, onUpdated, onMounted } from 'vue'
+import { ref, onUpdated, onBeforeMount } from 'vue'
+
+let user: User | null
 
 const router = useRouter();
 
@@ -53,17 +56,17 @@ let showModal = ref(false);
 let tfaSecret = ref("");
 let tfaMsg = ref("Enable Two-Factor Authentication")
 
-onMounted(() => {
-	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/isTfaEnabled/1') //ID
-	.then(response => response.json())
-	.then(data => {
-		console.log(data)
-		if (data.isTfaEnabled)
-			tfaMsg.value = 'TFA already enabled ✅'
-	})
-	.catch(error => console.error('Error:', error));
-
+onBeforeMount(() => {
+	setTFAmsg()
 })
+
+async function setTFAmsg() {
+	user = await whoIam()
+	if (!user)
+		router.push('/not-allowed')
+	else if (user.is2FActive)
+			tfaMsg.value = 'TFA already enabled ✅'
+}
 
 function tfaDone() {
 	showModal.value = false
@@ -71,7 +74,7 @@ function tfaDone() {
 }
 
 function enableTFA() {
-	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/enableTfa/1', { // ADD ID
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/tfa/enableTfa/' + user?.id, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -156,7 +159,7 @@ async function submit(event: any) {
 	else {
 		console.error("How did we get here??")
 	}
-	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1', { // ADD ID
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/' + user?.id, { // ADD ID
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'

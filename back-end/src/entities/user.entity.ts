@@ -48,6 +48,9 @@ export class User {
     @Column({ type: 'int', default: 0 })
     pointsLost: number;
 
+    @Column({ type: 'int', array: true, nullable: true })
+    blockedUser: number[] = [];
+
     //entity relationships ...
 
     @OneToMany(() => Channels, channel => channel.owner)

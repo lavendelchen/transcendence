@@ -1,14 +1,11 @@
 <template class="chat">
-    <div class="chat">
-        <h3>Chat</h3>
-        <div class="messages_container" id="messages_container">
-            <Message v-for="message in text_array" :message_name="message.message_name"
-                :message_content="message.message_content" :from_myself="message.from_myself" />
-        </div>
-        <div class="controls">
-            <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto" @keydown="handleEnter"></textarea>
-            <button @click="addMessageToChat">send</button>
-        </div>
+    <div class="messages_container" id="messages_container">
+        <Message v-for="message in text_array" :message_name="message.message_name"
+            :message_content="message.message_content" :from_myself="message.from_myself" />
+    </div>
+    <div class="controls">
+        <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto" @keydown="handleEnter"></textarea>
+        <button @click="addMessageToChat">send</button>
     </div>
 </template>
 
@@ -16,11 +13,10 @@
 import Message from './Message.vue'
 import { ref, onMounted, nextTick } from 'vue';
 
-const userName = "ANITA_" + Math.round(Math.random() * 100); // change later
-const userID = Math.round(Math.random() * 10); // change later
+const props = defineProps(['chat_id', 'chat_name'])
 
-let text_array = ref([ // later get written text messages from this chat
-    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
+let text_array = ref([
+    { message_name: "test", message_content: "chat history didn't load :(", from_myself: true },
 ]);
 
 let socket: WebSocket;
@@ -54,8 +50,10 @@ interface IChannel {
 }
 
 onMounted(async () => {
+	console.log(props.chat_id, props.chat_name)
+
     const userData = await getUserData();
-    updateChatHistoryDisplay("Room number one", userData.pseudo);
+    updateChatHistoryDisplay("inner circle", userData.pseudo);
     try {
         socket = new WebSocket('ws://localhost:9000');
 
@@ -64,7 +62,7 @@ onMounted(async () => {
             const authMsg = {
                 event: 'connect',
                 data: {
-                    id: (getUserData() as any).id
+                    id: (userData.id)
                 }
             };
             socket.send(JSON.stringify(authMsg));
@@ -107,7 +105,7 @@ function handleEnter(event: KeyboardEvent) {
 }
 
 async function getUserData() {
-    const response = await fetch('http://localhost:3000/auth/whoIam', {
+    const response = await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/whoIam', {
         method: 'GET',
         credentials: 'include',
     });
@@ -116,7 +114,7 @@ async function getUserData() {
 }
 
 async function updateChatHistoryDisplay(channelName: string, userName: string) {
-    const response = await fetch(`http://localhost:3000/chat/history/${channelName}`, {
+    const response = await fetch(`http://${import.meta.env.VITE_CURRENT_HOST}:3000/chat/history/${channelName}`, {
         method: 'GET',
         credentials: 'include',
     });
@@ -145,7 +143,7 @@ function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
             ]
         },
         input: newChatMessage.value,
-        room: "Room number one",
+        room: "inner circle",
     }
     return newItem;
 }
@@ -183,32 +181,7 @@ function messageContainerScrollToBottom() {
 </script>
 
 <style scoped>
-@import "../assets/base.css";
-
-
-div.chat {
-    height: 80vh;
-    width: 100%;
-    border: 0.2px solid lightgray;
-    position: relative;
-    right: 0;
-    top: 0;
-    margin-top: 2vh;
-    margin-right: 30px;
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: 80px auto 80px;
-    grid-column-gap: 0px;
-    grid-row-gap: 10px
-}
-
-h3 {
-    padding: 10px 10px 10px 10px;
-    border-radius: 6px;
-    height: 2rem;
-    width: auto;
-    margin: 10px 10px 10px 10px;
-}
+@import "../../../assets/base.css";
 
 .messages_container {
     margin: 0px 10px;
