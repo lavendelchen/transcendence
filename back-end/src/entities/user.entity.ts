@@ -33,6 +33,9 @@ export class User {
     @Column({ length: 60, nullable: true })
     secretOf2FA?: string;
 
+	@Column({ type: 'boolean', default: false })
+	isBanned: boolean;
+
     @Column({ type: 'int', default: 0 })
     matchesCount: number;
 
