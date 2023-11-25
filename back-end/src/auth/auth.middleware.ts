@@ -9,7 +9,7 @@ export class AuthMiddleware implements NestMiddleware {
 	) { }
 	async checkAuthentication(req: Request) {
 		const isAuth = (await this.userService.findOne(req.session.userID)).isAuthenticated;
-		console.log("isAuth middleware: " + isAuth)
+		//console.log("isAuth middleware: " + isAuth)
 		if (req.session && isAuth) {
 			// Fetch user details from the database
 			const userId = req.session.userID;

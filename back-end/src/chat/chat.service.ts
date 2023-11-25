@@ -20,15 +20,11 @@ export class ChatService extends ChatServiceBase {
 
   public async processMessage(data: IMessage, server: Server): Promise<string> {
 		let check = data.input;
-		console.log("DATA INPUT")
-		console.log(data.input)
-		console.log("DATA END")
 		if (data.input && data.input.indexOf(' ') !== -1)
 		  check = data.input.substring(0, data.input.indexOf(' '));
 		switch (check) {
 		  case '/ban':
       this.banUser(data, server);
-			//this.banUser(data, server);
 			break;
 		  default:
         await this.printMessage(data, server)
@@ -37,11 +33,7 @@ export class ChatService extends ChatServiceBase {
   }
 
   async banUser(data: IMessage, server: Server) {
-    console.log("this is the data.input")
-    console.log(data.input)
     let banned_name = data.input.split(' ')[1];
-    console.log("this is banned name")
-    console.log(banned_name)
     const user = await this.userService.findOneByName(banned_name);
     if (!user) {
         throw new Error('User not found');

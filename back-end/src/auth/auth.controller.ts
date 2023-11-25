@@ -42,7 +42,6 @@ export class AuthController {
     // console.log(req.session);
     // console.log(req.session.userID);
 	const isAuth = (await this.userService.findOne(req.session.userID)).isAuthenticated;
-	console.log("isAuth endpoint: " + isAuth)
     if (req.session && isAuth) {
       // Fetch user details from the database
       const userId = req.session.userID;

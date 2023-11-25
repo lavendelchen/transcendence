@@ -29,30 +29,23 @@ export class ChatDAO {
   }
 
   public async addUserToChannel(title: string, user: string): Promise<void> {
-	const channel: Channels = await this.getChannelByTitle(title);
-	const newUser: User = await this.userService.findOneByName(user);
+    const channel: Channels = await this.getChannelByTitle(title);
+    const newUser: User = await this.userService.findOneByName(user);
 
-	console.log("try addUsertochanel")
-	
-	if (newUser.isBanned) {
-	  console.log(`User ${newUser.pseudo} is banned and cannot be added to the channel.`);
-	  return; // or throw an error, depending on your application logic
-	}
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
 
-	const queryRunner = this.connection.createQueryRunner();
-	await queryRunner.connect();
-
-	try {
-	  await queryRunner.manager.query(
-		`INSERT INTO channel_subscription (channel, "user")
-		  VALUES (${channel.id}, ${newUser.id})
-		  ON CONFLICT (channel, "user") DO NOTHING;`,
-	  );
-	} catch (error) {
-	  console.error('Error adding user to channel:', error.message.split('\n')[0]);
-	} finally {
-	  await queryRunner.release();
-	}
+    try {
+      await queryRunner.manager.query(
+        `INSERT INTO channel_subscription (channel, "user")
+          VALUES (${channel.id}, ${newUser.id})
+          ON CONFLICT (channel, "user") DO NOTHING;`,
+      );
+    } catch (error) {
+      console.error('Error adding user to channel:', error.message.split('\n')[0]);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   public async saveChannel(channel: IChannel, user: string): Promise<void> {
