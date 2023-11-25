@@ -6,10 +6,14 @@
 		<span class="opponentScore">Opponent score</span>
 	</p>
 	<div class="matchesBox" v-if="player1Matches.length > 0">
-		<p class="match" v-for="match in player1Matches" :key="match.id">
+		<p class="match" v-for="match in player1Matches" :key="match.id"		>
 			<span class="opponent">{{ match.player2.pseudo}}</span>
-			<span class="yourScore">{{ match.player1Score }}</span>
-			<span class="opponentScore">{{ match.player2Score }}</span>
+			<span class="yourScore" 
+				:style="{ 'color': match.player1Score > match.player2Score ? 'rgb(41, 155, 33)' : 'rgb(205, 31, 31)' }"
+			>{{ match.player1Score }}</span>
+			<span class="opponentScore"
+				:style="{ 'color': match.player1Score > match.player2Score ? 'rgb(41, 155, 33)' : 'rgb(205, 31, 31)' }"
+			>{{ match.player2Score }}</span>
 		</p>
 	</div>
 	<h3 v-if="player1Matches.length > 0">Accepted matches</h3>
@@ -21,8 +25,12 @@
 	<div class="matchesBox" v-if="player2Matches.length > 0">
 		<p class="match" v-for="match in player2Matches" :key="match.id">
 			<span class="opponent">{{ match.player1.pseudo}}</span>
-			<span class="yourScore">{{ match.player2Score }}</span>
-			<span class="opponentScore">{{ match.player1Score }}</span>
+			<span class="yourScore" 
+				:style="{ 'color': match.player1Score < match.player2Score ? 'rgb(41, 155, 33)' : 'rgb(205, 31, 31)' }"
+			>{{ match.player2Score }}</span>
+			<span class="opponentScore"
+				:style="{ 'color': match.player1Score < match.player2Score ? 'rgb(41, 155, 33)' : 'rgb(205, 31, 31)' }"
+			>{{ match.player1Score }}</span>
 		</p>
 	</div>
 	<p  v-if="player1Matches.length <= 0 && player2Matches.length <= 0">
@@ -104,18 +112,21 @@ h3 {
 
 span {
 	display: inline-block;
+	overflow-y: hidden;
 }
 
 .opponent {
-		
+	width: 50%;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
 }
 
 .yourScore {
-	/* width: 10vw; */
+	width: 25%;
 }
 
 .opponentScore {
-	/* width: 10vw; */
+	width: 25%;
 }
 
 .header {

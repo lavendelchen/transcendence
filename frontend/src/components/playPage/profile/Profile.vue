@@ -44,12 +44,12 @@ const matchHistoryActive = ref(false);
             </div>
         </div>
 		<div class="profile-component">
-			<button class="profile-button" @click="settingsActive = !settingsActive">settings</button>
-			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
-		</div>
-		<div class="profile-component">
 			<button class="profile-button" @click="matchHistoryActive = !matchHistoryActive">match history</button>
 			<MatchHistory v-if="matchHistoryActive"/>
+		</div>
+		<div class="profile-component">
+			<button class="profile-button" @click="settingsActive = !settingsActive">settings</button>
+			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
 		</div>
     </div>
 </template>
