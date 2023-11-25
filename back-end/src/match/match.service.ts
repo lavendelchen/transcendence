@@ -28,7 +28,6 @@ export class MatchService {
 			relations: ['player1', 'player2', 'winner', 'loser'],
 		});
 
-		console.log(updatedMatch);
 		if (updatedMatch.winner.id == updatedMatch.player1.id) {
 			updatedMatch.player1.matchesCount++;
 			updatedMatch.player1.wonMatchesCount++;

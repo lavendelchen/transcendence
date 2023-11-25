@@ -27,23 +27,23 @@ export class AuthController {
 
   @Get()
   async successAuth(@Query('code') code: string, @Res() res: Response, @Req() req: Request) {
-    console.log('Received code:', code); // Log the received code
+    // console.log('Received code:', code); // Log the received code
     const result = await this.authService.successAuth(code);
-    console.log('Success Auth Result:', result); // Log the result of successAuth
+    // console.log('Success Auth Result:', result); // Log the result of successAuth
     req.session.dataAuthCode = result;
     req.session.dataAuthenticated = "true";
     req.session.userID = result.userID;
-    console.log(req.session);
-    console.log(req.session.userID);
-    console.log(req.session.dataAuthenticated);
+    // console.log(req.session);
+    // console.log(req.session.userID);
+    // console.log(req.session.dataAuthenticated);
     return res.redirect('http://' + process.env.CURRENT_HOST + ':5173/prompt'); // redirect to prompt
   }
 
   @Get('isAuthenticated')
   async checkAuthentication(@Req() req: Request) {
-    console.log(req.session.dataAuthenticated);
-    console.log(req.session);
-    console.log(req.session.userID);
+    // console.log(req.session.dataAuthenticated);
+    // console.log(req.session);
+    // console.log(req.session.userID);
 
     if (req.session && req.session.dataAuthenticated) {
       // Fetch user details from the database
@@ -81,5 +81,4 @@ export class AuthController {
       // User is not authenticated
       return {};
   }
-
 }

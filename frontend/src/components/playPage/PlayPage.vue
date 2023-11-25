@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import Chat from "./chat/Chat.vue"
 import Menue from "./Menue.vue"
-import Profile from "./Profile.vue"
+import Profile from "./profile/Profile.vue"
 import Game from './Game.vue'
 
 import { store } from '../../store/store.ts'
@@ -18,72 +18,6 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-	// GET specific user
-	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1')
-	// 	.then(response => response.json())
-	// 	.then(data => {
-	// 		console.log("User:")
-	// 		console.log(data)
-	// 	})
-	// 	.catch(error => console.error('Error:', error));
-
-	// // CHANGE specific user data
-	// const postData = {
-	//  pseudo: 'bitch',
-	// };
-	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/1', {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'Content-Type': 'application/json'
-	// 	},
-	// 	body: JSON.stringify(postData)
-	// })
-	//  .then(response => response.json())
-	//  .then(data => console.log(data))
-	//  .catch(error => console.error('Error:', error));
-
-	// PUSH new match onto database
-	/* const postData = {
-		player1Score: 11,
-		player2Score: 1,
-		player1: 2,
-		player2: 3,
-		winner: 2,
-		loser: 3
-	};
-	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/match', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(postData)
-	})
-	 .then(response => response.json())
-	 .then(data => console.log(data))
-	 .catch(error => console.error('Error:', error)); */
-
-	// // UPDATE match
-	// const postData = {
-	// 	player1Score: 1000,
-	// 	player2Score: 200
-	// };
-	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/match/5', {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'Content-Type': 'application/json'
-	// 	},
-	// 	body: JSON.stringify(postData)
-	// })
-	//  .then(response => response.json())
-	//  .then(data => console.log(data))
-	//  .catch(error => console.error('Error:', error));
-
-	// // DELETE match
-	// fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/match/5', {
-	// 	method: 'DELETE'
-	// })
-	// .then(response => console.log(response))
-	// .catch(error => console.error('Error:', error));
 })
 
 </script>
@@ -115,11 +49,26 @@ onMounted(() => {
 	/* height: 100%; */
 }
 
+@media screen and (max-width: 1000px) {
+	aside {
+		display: none !important;
+	}
+}
+
+@media screen and (min-width: 1000px) {
+
 aside {
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: clamp(3.125rem, 9.804vw - 2.39rem, 9.375rem) 1fr;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px; 
 	width: 30vw;
 	max-width: 400px;
-	height: 100%;
+	
 	/* max-width: 500px; */
+}
 }
 
 h1 {

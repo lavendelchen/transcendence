@@ -85,6 +85,7 @@ let gameState: Ref<number> = ref(BEFORE_GAME);
 const WON = 0;
 const LOST = 1;
 const DISCONNECT = 2;
+const ONLY_ONE_GAME_PER_PLAYER = 3;
 let gameResult = WON;
 
 const WHITE = 0;
@@ -233,7 +234,7 @@ async function connectToServer() {
 
 	const user = await whoIam();
 	if (!user) {
-		waitingButtonText.value = "There was a problem with you user authentication :(";
+		waitingButtonText.value = "There was a problem with you user authentication";
 		return Promise<void>;
 	}
 	playerName = user.pseudo;
@@ -313,6 +314,11 @@ function handleMessages(event: MessageEvent<any>) {
 
 		case 'gameEnd':
 			gameResult = message.data.won ? WON : LOST;
+			gameEnd();
+			break;
+
+		case 'onlyOneGamePerPlayer':
+			gameResult = ONLY_ONE_GAME_PER_PLAYER;
 			gameEnd();
 			break;
 	}
@@ -487,6 +493,8 @@ function drawEndMessage(): void {
 			message = "YOU HAVE LOST :("; break;
 		case DISCONNECT:
 			message = "connection error:"; break;
+		case ONLY_ONE_GAME_PER_PLAYER:
+			message = "ONLY ONE GAME AT"; break;
 		default:
 			message = "???";
 	}
@@ -494,6 +502,9 @@ function drawEndMessage(): void {
 	drawText(message, gameWidth.value / 2, gameHeight.value / 2);
 	if (gameResult === DISCONNECT) {
 		drawText("game terminated", gameWidth.value / 2, (gameHeight.value / 2) + (100 * gameSize));
+	}
+	else if (gameResult === ONLY_ONE_GAME_PER_PLAYER) {
+		drawText("A TIME ALLOWED", gameWidth.value / 2, (gameHeight.value / 2) + (100 * gameSize));
 	}
 };
 

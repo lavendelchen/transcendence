@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount } from 'vue'
-import { whoIam, User } from '../../utils/whoIam.ts'
+import { whoIam, User } from '../../../utils/whoIam.ts'
+import Settings from './Settings.vue'
+import MatchHistory from './MatchHistory.vue'
 
 const user = ref<User>({
 	id: 0,
@@ -27,6 +29,9 @@ async function getCurrUser() {
 	}
 }
 
+const settingsActive = ref(false);
+const matchHistoryActive = ref(false);
+
 </script>
 
 <template>
@@ -38,13 +43,21 @@ async function getCurrUser() {
                 <p id="name">{{ user.pseudo }}</p>
             </div>
         </div>
+		<div class="profile-component">
+			<button class="profile-button" @click="matchHistoryActive = !matchHistoryActive">match history</button>
+			<MatchHistory v-if="matchHistoryActive"/>
+		</div>
+		<div class="profile-component">
+			<button class="profile-button" @click="settingsActive = !settingsActive">settings</button>
+			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
+		</div>
     </div>
-    
 </template>
 
 <style scoped>
 
     .profile {
+		margin-top: 50px;
         padding: 10px;
         border: 1px solid white;
 
@@ -54,6 +67,7 @@ async function getCurrUser() {
         grid-template-columns: 1fr 2fr;
 		align-items: center;
 		overflow: hidden;
+		margin-bottom: 20px;
     }
 	
     img {
@@ -66,10 +80,25 @@ async function getCurrUser() {
 	}
 	
 	#name {
-		text-align: left;
+		text-align: center;
 		padding-left: 10px;
 		max-width: 100%;
 		/* border: 1px solid white; */
+	}
+
+	.profile-component {
+		border-top: 1px solid white;
+	}
+
+	.profile-button {
+		width: 90%;
+		font-size: var(--font-size-tiny);
+		border-width: 1px;
+		/* border: 0px; */
+		margin-top: 20px;
+		margin-bottom: 20px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 </style>

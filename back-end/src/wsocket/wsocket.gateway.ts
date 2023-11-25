@@ -45,11 +45,12 @@ export class WSocketGateway implements OnGatewayInit {
       socket: client,
     }
     this.currentConnections.push(newChatUser);
+    console.log(this.currentConnections);
   }
 
   @SubscribeMessage('message')
   async handleMessage(@MessageBody() data: IMessage): Promise<void> {
-    console.log('received message: ', data);
+    console.log('received message: ', data.input);
     try {
       await this.chatService.processMessage(data, this.server);
     } catch (error) {

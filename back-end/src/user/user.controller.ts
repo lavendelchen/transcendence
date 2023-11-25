@@ -26,12 +26,12 @@ export class UserController {
         return this.userService.findSecret(id);
     }
 
-	// @Get(':id/won-matches')
-  	// async getWonMatches(@Param('id') id: number) {
-  	//   const user = await this.userService.findOne(id);
-	//   console.log(user);
-  	// 	return this.userService.getWonMatches(user.id);
-  	// }
+	@Get(':id/matchHistory')
+  	async getMatches(@Param('id') id: number) {
+  	  const user = await this.userService.findOne(id);
+	  console.log(user);
+  		return this.userService.getMatches(user.id);
+  	}
 
     @Post()
     create(@Body() userData: Partial<User>): Promise<User> {

@@ -105,7 +105,7 @@ export class ChatDAO {
     });
   }
 
-  public async getChannelOwner(title: string): Promise<User> {
+  public async isChannelOwner(title: string, name: string): Promise<Boolean> {
     const channel = await this.channelRepo.createQueryBuilder('channel')
       .leftJoinAndSelect('channel.owner', 'owner')
       .where('channel.title = :title', { title })
@@ -115,9 +115,34 @@ export class ChatDAO {
       throw new Error('Channel not found');
     }
 
-    console.log(channel.owner); // Log the User object
+    return channel.owner.pseudo === name;
+  }
 
-    return channel.owner;
+  public async isChannelAdmin(title: string, name: string): Promise<Boolean> {
+    const channel = await this.channelRepo.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.administrators', 'administrators')
+      .where('channel.title = :title', { title })
+      .getOne();
+
+    if (!channel) {
+      throw new Error('Channel not found');
+    }
+
+    return channel.administrators.some((admin) => admin.pseudo === name);
+  }
+
+  public async removeUserFromChannel(title: string, userId: string): Promise<void> {
+    const channel: Channels = await this.getChannelByTitle(title);
+    const user: User = await this.userService.findOneByName(userId);
+    channel.users = channel.users.filter((u) => u.id !== user.id);
+    this.channelRepo.save(channel);
+  }
+
+  public async promoteUsertoChannelAdmin(title: string, userId: string): Promise<void> {
+    const channel: Channels = await this.getChannelByTitle(title);
+    const user: User = await this.userService.findOneByName(userId);
+    channel.administrators.push(user);
+    this.channelRepo.save(channel);
   }
 
   public async getUsersInChannel(title: string): Promise<User[]> {
