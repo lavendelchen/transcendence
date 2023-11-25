@@ -44,7 +44,7 @@ export class ChatService extends ChatServiceBase {
 
     for (const user of usersInRoom) {
       const connection = currentConnections.find(connection => connection.id === user.id);
-      if (connection) {
+      if (connection && connection.id !== data.user.id) {
         try {
           connection.socket.send(JSON.stringify(msg_to_client));
         }
