@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount } from 'vue'
 import { whoIam, User } from '../../utils/whoIam.ts'
+import Settings from './Settings.vue'
 
 const user = ref<User>({
 	id: 0,
@@ -27,6 +28,8 @@ async function getCurrUser() {
 	}
 }
 
+const settingsActive = ref(false);
+
 </script>
 
 <template>
@@ -38,8 +41,12 @@ async function getCurrUser() {
                 <p id="name">{{ user.pseudo }}</p>
             </div>
         </div>
+		<div class="settings">
+			<button id="settings-button" @click="settingsActive = !settingsActive">settings</button>
+			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
+		</div>
+		
     </div>
-    
 </template>
 
 <style scoped>
@@ -54,6 +61,7 @@ async function getCurrUser() {
         grid-template-columns: 1fr 2fr;
 		align-items: center;
 		overflow: hidden;
+		margin-bottom: 20px;
     }
 	
     img {
@@ -66,10 +74,25 @@ async function getCurrUser() {
 	}
 	
 	#name {
-		text-align: left;
+		text-align: center;
 		padding-left: 10px;
 		max-width: 100%;
 		/* border: 1px solid white; */
+	}
+
+	.settings {
+		border-top: 1px solid white;
+	}
+
+	#settings-button {
+		width: 90%;
+		font-size: var(--font-size-tiny);
+		border-width: 1px;
+		/* border: 0px; */
+		margin-top: 25px;
+		margin-bottom: 20px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 </style>

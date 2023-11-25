@@ -137,6 +137,7 @@ async function submit(event: any) {
 		imageLoadable = await isImageLoadable(formData.value.avatar);
   		if (!imageLoadable) {
   			formData.value.avatar = "";
+			formErrors.value.avatar = true;
 			errorMsg.value = "invalid profile picture link";
   			return;
 		}
@@ -188,7 +189,10 @@ async function submit(event: any) {
 
 function redirectUs(msg: string) {
 	successMsg.value = msg
-	setTimeout(() => router.push('/play'), 2500)
+	if (tfaMsg.value == 'TFA Enabled ✅' || tfaMsg.value == 'TFA already enabled ✅')
+		setTimeout(() => router.push('/otp'), 2000)
+	else
+		setTimeout(() => router.push('/play'), 2000)
 }
 
 onUpdated(() => {

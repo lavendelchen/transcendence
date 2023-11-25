@@ -1,7 +1,7 @@
 <template>
 	<div class="background" @click.self="closeModal">
 		<div class="modal"> <!-- :class="tfa" -->
-			<p id="msg" v-if="TFASecret != 'already'">This is your 2FA secret. You will need it next time you log in:</p>
+			<p id="msg" v-if="TFASecret != 'already'">This is your 2FA secret. Put it in <span>Google authenticator</span> or similar to get a one-time password for your next login:</p>
 			<p id="secret">{{ tfaMsg }}</p>
 		</div>
 	</div>
@@ -44,9 +44,10 @@
 	}
 	.background {
 		background: rgba(102, 96, 96, 0.7);
-		width: 100%;
-		height: 100%;
+		width: 100vw;
+		height: 100vh;
 		top: 0;
+		left: 0;
 		position: fixed;
 	}
 	h3 {
@@ -62,5 +63,9 @@
 		color: white;
 		font-family: Arial, Helvetica, sans-serif;
 		font-size: var(--font-size-md);
+	}
+
+	span {
+		color: white;
 	}
 </style>
