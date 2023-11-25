@@ -8,28 +8,23 @@ import { ChatServiceBase } from './chat.servicebase';
 @Injectable()
 export class ChatService extends ChatServiceBase {
 
-  public async processMessage(data: IMessage, server: Server): Promise<string> {
+  public async processMessage(data: IMessage, server: Server) {
     let check = data.input;
     if (data.input.indexOf(' ') != -1)
       check = data.input.substring(0, data.input.indexOf(' '));
     switch (check) {
       case '/kick':
-        this.kickUser(data, server);
+        this.kickUser(data);
         break;
       case '/promote':
-        this.promoteUser(data, server);
+        this.promoteUser(data);
         break;
       default:
-        this.printMessage(data, server);
+        this.printMessage(data);
     }
-    await this.printMessage(data, server)
-    return Promise.resolve('Message processed successfully.');
   }
 
-  private async printMessage(
-    data: IMessage,
-    server: Server,
-  ) {
+  private async printMessage(data: IMessage) {
     try {
       const msg = `${data.user}:${data.input}`;
       this.broadcastToRoom(data, msg)
@@ -39,7 +34,7 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
-  private async kickUser(data: IMessage, server: Server) {
+  private async kickUser(data: IMessage) {
     try {
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       // only channel admin or owner can kick
@@ -60,7 +55,7 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
-  private async promoteUser(data: IMessage, server: Server) {
+  private async promoteUser(data: IMessage) {
     try {
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       // only channel admin or owner can promote
