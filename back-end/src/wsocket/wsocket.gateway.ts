@@ -45,6 +45,7 @@ export class WSocketGateway implements OnGatewayInit {
       socket: client,
     }
     this.currentConnections.push(newChatUser);
+    console.log(this.currentConnections);
   }
 
   @SubscribeMessage('message')
