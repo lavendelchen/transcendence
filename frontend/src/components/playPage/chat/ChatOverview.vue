@@ -95,6 +95,12 @@ onBeforeMount(() => {
 	overflow: hidden;
 
 	cursor: pointer;
+	transition: 0.3s;
+}
+
+.channel:hover {
+	color: black;
+	background-color: white;
 }
 
 .controls {

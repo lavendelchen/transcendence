@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { Match } from '../entities/match.entity';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class UserService {
@@ -120,6 +121,14 @@ export class UserService {
 		return user;
 	}
 
-	// async updateUserSoc
+	async isImageLoadable(url: string): Promise<boolean> {
+		try {
+			const response = await fetch(url);
+			return response.ok;
+		} catch (error) {
+			return false;
+		}
+	}
 
+	// async updateUserSoc
 }

@@ -72,6 +72,7 @@ button:hover {
 	display: block;
 	left: 15vw;
 	width: 70vw;
+	z-index: -1;
 }
 
 </style>

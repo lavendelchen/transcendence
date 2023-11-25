@@ -77,7 +77,7 @@
 }
 
 #leaderboardBox {
-	height: 50vh;
+	max-height: 50vh;
 	overflow: scroll;
 }
 

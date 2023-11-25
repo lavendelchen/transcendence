@@ -23,7 +23,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<!-- <h1>Playpage</h1> -->
+	<h1>ping pang pong</h1>
 	<div class="appbody">
 		<main>
 			<!-- <ChatTest/> -->
@@ -40,6 +40,29 @@ onMounted(() => {
 
 
 <style scoped>
+
+h1 {
+	padding-bottom: 2vh;
+	/* border-bottom: 1px solid white; */
+}
+
+main {
+	/* margin-top: 130px; */
+	margin-top: 21.5px;
+}
+
+@media screen and (max-width: 992px) {
+	main {
+		margin-left: 4vw;
+	}
+}
+
+@media screen and (min-width: 992px) {
+	main {
+		margin-left: 20px;
+	}
+}
+
 .appbody {
 	background-color: black !important;
 	display: grid;
@@ -47,6 +70,14 @@ onMounted(() => {
 	grid-template-rows: 1fr;
 	grid-column-gap: 20px;
 	/* height: 100%; */
+	width: 100%;
+}
+
+aside {
+	position:absolute;
+	top: 10px;
+	justify-self: end;
+	margin-right: 20px;
 }
 
 @media screen and (max-width: 1000px) {
@@ -56,22 +87,17 @@ onMounted(() => {
 }
 
 @media screen and (min-width: 1000px) {
+	aside {
+		height: 100%;
+		width: 30vw;
+		max-width: 400px;
 
-aside {
-	height: 100%;
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: clamp(3.125rem, 9.804vw - 2.39rem, 9.375rem) 1fr;
-	grid-column-gap: 0px;
-	grid-row-gap: 0px; 
-	width: 30vw;
-	max-width: 400px;
-	
-	/* max-width: 500px; */
-}
+		/* max-width: 500px; */
+	}
 }
 
 h1 {
 	font-size: 2rem !important;
 }
+
 </style>

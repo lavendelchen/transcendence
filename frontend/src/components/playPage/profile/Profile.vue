@@ -3,6 +3,9 @@ import { ref, onMounted, onBeforeMount } from 'vue'
 import { whoIam, User } from '../../../utils/whoIam.ts'
 import Settings from './Settings.vue'
 import MatchHistory from './MatchHistory.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const user = ref<User>({
 	id: 0,
@@ -29,6 +32,10 @@ async function getCurrUser() {
 	}
 }
 
+function goToLeaderboard() {
+	router.push('/leaderboard')
+}
+
 const settingsActive = ref(false);
 const matchHistoryActive = ref(false);
 
@@ -36,6 +43,7 @@ const matchHistoryActive = ref(false);
 
 <template>
     <div class="profile">
+		<h3> profile </h3>
         <div class="hero">
             <!-- <img src="../../assets/img/profileCircle.svg" alt="PROFILE PICTURE"> -->
             <img :src="user.avatar" alt="PROFILE PICTURE">
@@ -48,6 +56,9 @@ const matchHistoryActive = ref(false);
 			<MatchHistory v-if="matchHistoryActive"/>
 		</div>
 		<div class="profile-component">
+			<button class="profile-button" id="leaderboard" @click="goToLeaderboard">leaderboard <span>⤴</span></button>
+		</div>
+		<div class="profile-component">
 			<button class="profile-button" @click="settingsActive = !settingsActive">settings</button>
 			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
 		</div>
@@ -56,11 +67,19 @@ const matchHistoryActive = ref(false);
 
 <style scoped>
 
+	h3 {
+    	padding: 0px 10px 10px 10px;
+    	height: 2rem;
+    	width: auto;
+    	margin: 10px 10px 10px 10px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
     .profile {
 		margin-top: 50px;
         padding: 10px;
         border: 1px solid white;
-
     }
     .hero {
         display: grid;
@@ -99,6 +118,19 @@ const matchHistoryActive = ref(false);
 		margin-bottom: 20px;
 		margin-left: auto;
 		margin-right: auto;
+	}
+
+	#leaderboard {
+		/* color: rgb(185, 185, 185); */
+		font-weight: 900;
+	}
+	#leaderboard:hover {
+		/* color: rgb(53, 53, 53); */
+	}
+	span {
+		top: 443px;
+		position: absolute;
+		font-size: var(--font-size-sm);
 	}
 
 </style>

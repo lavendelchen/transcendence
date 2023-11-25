@@ -44,7 +44,7 @@ function calculateGameSize(): number {
 	var gameSize: number;
 
 	if (window.innerWidth < 992) {
-		gameSize = 0.00095 * window.innerWidth;
+		gameSize = 0.0009 * window.innerWidth;
 		/* gameView = NARROW; */
 	}
 	else {
@@ -531,7 +531,6 @@ canvas {
 	image-rendering: pixelated;
 	display: block;
 	margin: auto;
-	margin-top: 30vh;
 }
 
 .playButton {
