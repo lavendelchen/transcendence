@@ -1,27 +1,14 @@
-<template class="chat">
-    <div class="chat">
-        <h3>Chat</h3>
-        <div class="messages_container" id="messages_container">
-            <Message v-for="message in text_array" :message_name="message.message_name"
-                :message_content="message.message_content" :from_myself="message.from_myself" />
-        </div>
-        <div class="controls">
-            <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto" @keydown="handleEnter"></textarea>
-            <button @click="addMessageToChat">send</button>
-        </div>
-    </div>
-</template>
 
 <script setup lang="ts">
 import Message from './Message.vue'
 import { ref, onMounted, nextTick } from 'vue';
+import { store } from '@/store/store'
 
-const userName = "ANITA_" + Math.round(Math.random() * 100); // change later
-const userID = Math.round(Math.random() * 10); // change later
+const props = defineProps(['chat_id', 'chat_name'])
 
-let text_array = ref([ // later get written text messages from this chat
-    { message_name: "test", message_content: "Lorem Ipsum", from_myself: true },
-]);
+// let text_array = ref([
+//     { message_name: "test", message_content: "chat history didn't load :(", from_myself: true },
+// ]);
 
 let socket: WebSocket;
 
@@ -54,6 +41,8 @@ interface IChannel {
 }
 
 onMounted(async () => {
+	console.log(props.chat_id, props.chat_name)
+
     const userData = await getUserData();
     updateChatHistoryDisplay("inner circle", userData.pseudo);
     try {
@@ -80,12 +69,31 @@ onMounted(async () => {
 
         socket.addEventListener('message', (event) => {
             console.log('client socket listener: ', event)
+            const messageContent = JSON.parse(event.data)
+            console.log('message: ', messageContent.data.split(':')[0])
+            console.log('message: ', messageContent.data.split(':')[1])
+            const splitedMessage = messageContent.data.split(':')
+            addServerMessageToChat(messageContent.data.split(':')[0], messageContent.data.split(':')[1])
+            
+
+
         });
     }
     catch (error) {
         console.error("ws error: " + error);
     }
 })
+
+async function addServerMessageToChat(name: string, message: string) {
+    store.chatArray.push({
+        message_name: name,
+        message_content: message,
+        from_myself: false,
+    });
+    console.log('text array ', store.chatArray)
+    console.log('tried to add chat message')
+    nextTick(() => messageContainerScrollToBottom());
+}
 
 async function addMessageToChat() {
     const newChatMessage = document.getElementById("chat_textarea") as HTMLTextAreaElement;
@@ -107,7 +115,7 @@ function handleEnter(event: KeyboardEvent) {
 }
 
 async function getUserData() {
-    const response = await fetch('http://localhost:3000/auth/whoIam', {
+    const response = await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/whoIam', {
         method: 'GET',
         credentials: 'include',
     });
@@ -116,13 +124,13 @@ async function getUserData() {
 }
 
 async function updateChatHistoryDisplay(channelName: string, userName: string) {
-    const response = await fetch(`http://localhost:3000/chat/history/${channelName}`, {
+    const response = await fetch(`http://${import.meta.env.VITE_CURRENT_HOST}:3000/chat/history/${channelName}`, {
         method: 'GET',
         credentials: 'include',
     });
     let rawMessages = await response.json();
 
-    text_array.value = rawMessages.map((rawMessage: string) => {
+    store.chatArray = rawMessages.map((rawMessage: string) => {
         let [message_name, message_content] = rawMessage.split(': ');
         let from_myself = (userName == message_name);
         return { message_name, message_content, from_myself };
@@ -159,7 +167,7 @@ function sendMessageToServer(newItem: IMessage) {
 }
 
 async function pushToTextArray(newItem: IMessage) {
-    text_array.value.push({
+    store.chatArray.push({
         message_name: newItem.user.name,
         message_content: newItem.input,
         from_myself: true,
@@ -169,12 +177,12 @@ async function pushToTextArray(newItem: IMessage) {
 function messageContainerScrollToBottom() {
     const container = document.getElementById("messages_container");
     if (container) {
-        console.log("before Scroll Height: " + container.scrollHeight);
-        console.log("before ScrollTop: " + container.scrollTop);
+        // console.log("before Scroll Height: " + container.scrollHeight);
+        // console.log("before ScrollTop: " + container.scrollTop);
         container.scrollTop = container.scrollHeight - container.clientHeight;
         container.scrollTop = container.scrollHeight - container.clientHeight;
-        console.log("aftert Scroll Height: " + container.scrollHeight);
-        console.log("after ScrollTop: " + container.scrollTop);
+        // console.log("aftert Scroll Height: " + container.scrollHeight);
+        // console.log("after ScrollTop: " + container.scrollTop);
     } else {
         console.error("Element with ID message_container could not be found");
     }
@@ -182,33 +190,19 @@ function messageContainerScrollToBottom() {
 
 </script>
 
+<template class="chat">
+    <div class="messages_container" id="messages_container">
+        <Message v-for="message in store.chatArray" :message_name="message.message_name"
+            :message_content="message.message_content" :from_myself="message.from_myself" />
+    </div>
+    <div class="controls">
+        <textarea id="chat_textarea" name="chat_message" cols="auto" rows="auto" @keydown="handleEnter"></textarea>
+        <button @click="addMessageToChat">send</button>
+    </div>
+</template>
+
 <style scoped>
-@import "../assets/base.css";
-
-
-div.chat {
-    height: 80vh;
-    width: 100%;
-    border: 0.2px solid lightgray;
-    position: relative;
-    right: 0;
-    top: 0;
-    margin-top: 2vh;
-    margin-right: 30px;
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: 80px auto 80px;
-    grid-column-gap: 0px;
-    grid-row-gap: 10px
-}
-
-h3 {
-    padding: 10px 10px 10px 10px;
-    border-radius: 6px;
-    height: 2rem;
-    width: auto;
-    margin: 10px 10px 10px 10px;
-}
+@import "../../../assets/base.css";
 
 .messages_container {
     margin: 0px 10px;

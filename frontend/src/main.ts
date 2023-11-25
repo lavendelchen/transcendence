@@ -4,11 +4,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { createApp } from 'vue'
 import App from './App.vue'
 import StartPage from './components/StartPage.vue'
-import PlayPage from './components/PlayPage.vue'
+import PlayPage from './components/playPage/PlayPage.vue'
 import LeaderboardPage from './components/LeaderboardPage.vue'
 import Prompt from './components/Prompt.vue'
 import OTP from './components/OTP.vue'
-import RouteGuard from './components/RouteGuard.vue'
+import RouteGuard from './components/errorPages/RouteGuard.vue'
+import NotFound from './components/errorPages/NotFound.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -19,7 +20,9 @@ const router = createRouter({
 		{ path: '/prompt', component: Prompt },
 		{ path: '/OTP', component: OTP },
 		{ path: '/not-allowed', component: RouteGuard },
-        { path: '/', redirect: '/start'} 
+        { path: '/', redirect: '/start'} ,
+		{ path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
+		{ path: '/:pathMatch(.*)', name: 'bad-not-found', component: NotFound },
     ]
 })
 

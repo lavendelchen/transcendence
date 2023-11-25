@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { onMounted } from 'vue';
+import { onBeforeMount } from 'vue';
 
 const router = useRouter();
 
-onMounted(() => {
+onBeforeMount(() => {
 	checkIfRedirect();
 })
 
 async function checkIfRedirect() {
 	try {
-		const response = await fetch("http://localhost:3000/auth/isAuthenticated");
+		const response = await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/isAuthenticated', {
+        method: 'GET',
+        credentials: 'include',
+    });
 		const data = await response.text();
 		console.log(data);
 		if (data == 'true') {
@@ -25,7 +28,7 @@ async function checkIfRedirect() {
 
 async function startAuth() {
 	try {
-		const response = await fetch('http://localhost:3000/auth/init');
+		const response = await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/init');
 		const data = await response.text();
 		console.log(data);
 		window.location.href = data;

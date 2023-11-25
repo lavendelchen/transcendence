@@ -1,5 +1,5 @@
 <script setup lang=ts>
-import { store } from '../store/store.ts';
+import { store } from '../../store/store.ts';
 
     function chatButtonClicked() {
         console.log('button clicked')
@@ -34,13 +34,13 @@ import { store } from '../store/store.ts';
 <template>
     <div class="menue">
         <div @click="chatButtonClicked()" class="button">
-            <img src="../assets/img/chat.svg" alt="CHAT">
+            <img src="../../assets/img/chat.svg" alt="CHAT">
         </div>
         <div @click="profileButtonClicked()" class="button">
-            <img src="../assets/img/profile.svg" alt="PROFILE">
+            <img src="../../assets/img/profile.svg" alt="PROFILE">
         </div>
         <div @click="logoutButtonClicked()" class="button">
-            <img src="../assets/img/logout.svg" alt="LOGOUT">
+            <img src="../../assets/img/logout.svg" alt="LOGOUT">
         </div>
     </div>
 </template>
