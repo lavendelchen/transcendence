@@ -24,6 +24,9 @@ export class User {
     @Column({ length: 255, nullable: true })
     avatar?: string;
 
+	@Column({ type: 'boolean', default: false })
+    isAuthenticated: boolean;
+
     @Column({ type: 'boolean', default: false })
     is2FActive: boolean;
 

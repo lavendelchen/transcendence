@@ -30,8 +30,6 @@ export class ChatService extends ChatServiceBase {
       this.banUser(data, server);
 			//this.banUser(data, server);
 			break;
-      case '/fuck_chris':
-      console.log("yeah, fuck this dude")
 		  default:
         await this.printMessage(data, server)
         return Promise.resolve('Message processed successfully.');
@@ -42,7 +40,6 @@ export class ChatService extends ChatServiceBase {
     console.log("this is the data.input")
     console.log(data.input)
     let banned_name = data.input.split(' ')[1];
-
     console.log("this is banned name")
     console.log(banned_name)
     const user = await this.userService.findOneByName(banned_name);
@@ -51,6 +48,7 @@ export class ChatService extends ChatServiceBase {
     }
 
     await this.userService.update(user.id, { isBanned: true });
+    await this.userService.update(user.id, { isAuthenticated: false });
     console.log(`User ${user.pseudo} has been banned.`);
   }
 
