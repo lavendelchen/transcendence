@@ -58,7 +58,6 @@ import { store } from '../../store/store.ts';
     /* border: 0.5px solid white; */
     justify-content: space-evenly;
     grid-gap: 20px;
-    margin-bottom: 50px;
     
 }
  .button {

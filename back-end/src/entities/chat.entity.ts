@@ -22,10 +22,6 @@ export class Channels {
   @JoinColumn({ name: 'owner' })
   owner: User;
 
-  @ManyToMany(() => User, (user) => user.administrated)
-  @JoinColumn({ name: 'administrators' })
-  administrators: User[];
-
   @ManyToMany(() => User, (user) => user.channels)
   @JoinTable({
     name: 'channel_subscription',

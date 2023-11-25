@@ -50,7 +50,7 @@ div.chat {
     position: relative;
     right: 0;
     top: 0;
-    margin-top: 50px;
+    margin-top: 2vh;
     margin-right: 30px;
     display: grid;
     grid-template-columns: auto;

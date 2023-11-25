@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import Chat from "./chat/Chat.vue"
 import Menue from "./Menue.vue"
-import Profile from "./profile/Profile.vue"
+import Profile from "./Profile.vue"
 import Game from './Game.vue'
 
 import { store } from '../../store/store.ts'
@@ -49,26 +49,11 @@ onMounted(() => {
 	/* height: 100%; */
 }
 
-@media screen and (max-width: 1000px) {
-	aside {
-		display: none !important;
-	}
-}
-
-@media screen and (min-width: 1000px) {
-
 aside {
-	height: 100%;
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: clamp(3.125rem, 9.804vw - 2.39rem, 9.375rem) 1fr;
-	grid-column-gap: 0px;
-	grid-row-gap: 0px; 
 	width: 30vw;
 	max-width: 400px;
-	
+	height: 100%;
 	/* max-width: 500px; */
-}
 }
 
 h1 {

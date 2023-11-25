@@ -24,16 +24,10 @@ export class ChatService extends ChatServiceBase {
 		  check = data.input.substring(0, data.input.indexOf(' '));
 		switch (check) {
 		  case '/ban':
-				this.banUser(data, server);
-				break;
-			case '/kick':
-				this.kickUser(data);
-				break;
-			case '/promote':
-				this.promoteUser(data);
-				break;
+      this.banUser(data, server);
+			break;
 		  default:
-        await this.printMessage(data)
+        await this.printMessage(data, server)
         return Promise.resolve('Message processed successfully.');
 		}
   }
@@ -56,53 +50,11 @@ export class ChatService extends ChatServiceBase {
     return this.chatDao.getRawChannelMessages(channelId);
   }
 
-  private async printMessage(data: IMessage) {
+  private async printMessage( data: IMessage, server: Server ) {
     try {
       const msg = `${data.user.name}:${data.input}`;
       this.broadcastToRoom(data, msg)
       await this.chatDao.saveMessageToChannel(data);
-    } catch (error) {
-      console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
-    }
-  }
-
-  private async kickUser(data: IMessage) {
-    try {
-      const name = data.input.substring(data.input.indexOf(' ') + 1);
-      // only channel admin or owner can kick
-      if (
-        !(this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
-        !(this.chatDao.isChannelOwner(data.room, data.user.name)))
-        return;
-      // channel owner can't be kicked
-      if (this.chatDao.isChannelOwner(data.room, name))
-        return;
-      // you can't kick yourself
-      if (name === data.user.name)
-        return;
-      await this.chatDao.removeUserFromChannel(data.room, name);
-      this.broadcastToRoom(data, `${name}: got kicked`);
-    } catch (error) {
-      console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
-    }
-  }
-
-  private async promoteUser(data: IMessage) {
-    try {
-      const name = data.input.substring(data.input.indexOf(' ') + 1);
-      // only channel admin or owner can promote
-      if (
-        !(this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
-        !(this.chatDao.isChannelOwner(data.room, data.user.name)))
-        return;
-      // channel owner can't be promoted
-      if (this.chatDao.isChannelOwner(data.room, name))
-        return;
-      // you can't promote yourself
-      if (name === data.user.name)
-        return;
-      await this.chatDao.promoteUsertoChannelAdmin(data.room, name);
-      this.broadcastToRoom(data, `${name}: got promoted to admin`);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
     }
@@ -121,7 +73,7 @@ export class ChatService extends ChatServiceBase {
 
     for (const user of usersInRoom) {
       const connection = currentConnections.find(connection => connection.id === user.id);
-      if (connection && connection.id !== data.user.id) {
+      if (connection) {
         try {
           connection.socket.send(JSON.stringify(msg_to_client));
           console.log('message send succesfully');
