@@ -3,6 +3,7 @@ import { ChatService } from 'src/chat/chat.service';
 import { Inject } from '@nestjs/common';
 import { Injectable, forwardRef } from '@nestjs/common';
 import { IMessage, IChannel, IChatUser } from 'src/chat/properties';
+import { UserService } from 'src/user/user.service';
 import {
   ConnectedSocket, //wird spaeter fuer join un dque gebraucht
   MessageBody,
@@ -18,6 +19,7 @@ export class WSocketGateway implements OnGatewayInit {
   constructor(
     @Inject(forwardRef(() => ChatService))
     private chatService: ChatService,
+	public userService: UserService,
   ) { }
 
   private currentConnections: IChatUser[] = [];
@@ -39,13 +41,21 @@ export class WSocketGateway implements OnGatewayInit {
 
   @SubscribeMessage('connect')
   addChatUser(client: Socket, data: IChatUser) {
-    console.log('Client connected: ', (client as any)._socket.remoteAddress);
-    const newChatUser: IChatUser = {
-      id: data.id,
-      socket: client,
-    }
-    this.currentConnections.push(newChatUser);
-    console.log(this.currentConnections);
+	  console.log('Client connected: ', (client as any)._socket.remoteAddress);
+
+	  this.userService.findOne(data.id).then(user => {
+		  if (user && user.isBanned) {
+			  console.log("FUUUUCK YOUUUU, YOU ARE BANNED");
+		  } else {
+			  const newChatUser: IChatUser = {
+				  id: data.id,
+				  socket: client,
+			  };
+			  this.currentConnections.push(newChatUser);
+		  }
+	  }).catch(error => {
+		  console.error('Error finding user:', error);
+	  });
   }
 
   @SubscribeMessage('message')
