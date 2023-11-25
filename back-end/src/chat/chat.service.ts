@@ -8,7 +8,7 @@ import { ChatServiceBase } from './chat.servicebase';
 @Injectable()
 export class ChatService extends ChatServiceBase {
 
-  public async processMessage(data: IMessage, server: Server) {
+  public async processMessage(data: IMessage, server: Server): Promise<string> {
     let check = data.input;
     if (data.input.indexOf(' ') != -1)
       check = data.input.substring(0, data.input.indexOf(' '));
@@ -24,7 +24,13 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
-  private async printMessage(data: IMessage) {
+  public async getChatHistory(data: string): Promise<string[]> {
+    const channelInfo = await this.chatDao.getChannelByTitle(data);
+    const channelId = channelInfo.id;
+    return this.chatDao.getRawChannelMessages(channelId);
+  }
+
+  private async printMessage(data: IMessage, server: Server) {
     try {
       const msg = `${data.user.name}:${data.input}`;
       this.broadcastToRoom(data, msg)
@@ -34,7 +40,7 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
-  private async kickUser(data: IMessage) {
+  private async kickUser(data: IMessage, server: Server) {
     try {
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       // only channel admin or owner can kick
@@ -55,7 +61,7 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
-  private async promoteUser(data: IMessage) {
+  private async promoteUser(data: IMessage, server: Server) {
     try {
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       // only channel admin or owner can promote
