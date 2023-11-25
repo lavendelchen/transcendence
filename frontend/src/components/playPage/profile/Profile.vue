@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount } from 'vue'
-import { whoIam, User } from '../../utils/whoIam.ts'
+import { whoIam, User } from '../../../utils/whoIam.ts'
 import Settings from './Settings.vue'
+import MatchHistory from './MatchHistory.vue'
 
 const user = ref<User>({
 	id: 0,
@@ -29,6 +30,7 @@ async function getCurrUser() {
 }
 
 const settingsActive = ref(false);
+const matchHistoryActive = ref(false);
 
 </script>
 
@@ -41,17 +43,21 @@ const settingsActive = ref(false);
                 <p id="name">{{ user.pseudo }}</p>
             </div>
         </div>
-		<div class="settings">
-			<button id="settings-button" @click="settingsActive = !settingsActive">settings</button>
+		<div class="profile-component">
+			<button class="profile-button" @click="matchHistoryActive = !matchHistoryActive">match history</button>
+			<MatchHistory v-if="matchHistoryActive"/>
+		</div>
+		<div class="profile-component">
+			<button class="profile-button" @click="settingsActive = !settingsActive">settings</button>
 			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
 		</div>
-		
     </div>
 </template>
 
 <style scoped>
 
     .profile {
+		margin-top: 50px;
         padding: 10px;
         border: 1px solid white;
 
@@ -80,16 +86,16 @@ const settingsActive = ref(false);
 		/* border: 1px solid white; */
 	}
 
-	.settings {
+	.profile-component {
 		border-top: 1px solid white;
 	}
 
-	#settings-button {
+	.profile-button {
 		width: 90%;
 		font-size: var(--font-size-tiny);
 		border-width: 1px;
 		/* border: 0px; */
-		margin-top: 25px;
+		margin-top: 20px;
 		margin-bottom: 20px;
 		margin-left: auto;
 		margin-right: auto;

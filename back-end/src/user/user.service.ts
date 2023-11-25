@@ -56,21 +56,28 @@ export class UserService {
 		});
 	}
 
-	// 	async getWonMatches(userId: number): Promise<Match[]> {
-	//     // Find the user by ID along with the wonMatches relationship
-	//     const user = await this.userRepository.findOne({
-	// 		where: { id: userId },
-	// 		relations: ['wonMatches'],
-	// 	});
+	async getMatches(userId: number): Promise<User> {
+	    // Find the user by ID along with the wonMatches relationship
+	    const user = await this.userRepository.findOne({
+			where: { id: userId },
+			relations: [
+				'player1Matches',
+				'player2Matches',
+				'player1Matches.winner',
+				'player2Matches.winner',
+				'player1Matches.player2',
+				'player2Matches.player1',
+			],
+		});
 
-	//     if (!user) {
-	//       // Handle the case where the user is not found
-	//       // You can throw an exception or handle it according to your application's logic
-	//       throw new Error('User not found');
-	//     }
+	    if (!user) {
+	      // Handle the case where the user is not found
+	      // You can throw an exception or handle it according to your application's logic
+	      throw new Error('User not found');
+	    }
 
-	//     return user.wonMatches;
-	//   }
+	    return user;
+	}
 
 	create(userData: Partial<User>): Promise<User> {
 		const user = this.userRepository.create(userData);

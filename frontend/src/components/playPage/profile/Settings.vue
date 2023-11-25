@@ -25,8 +25,8 @@
 	</template>
 	
 	<script setup lang="ts">
-	import TFAModal from '../TFAModal.vue'
-	import { whoIam, User } from '../../utils/whoIam.ts'
+	import TFAModal from '../../TFAModal.vue'
+	import { whoIam, User } from '../../../utils/whoIam.ts'
 	import { useRouter } from 'vue-router';
 	import { ref, computed, onBeforeMount } from 'vue'
 	
@@ -34,7 +34,7 @@
 
 	let user: User | null
 	
-	const router = useRouter();
+	const router = useRouter()
 	
 	let formData = ref({
 		pseudo: "",

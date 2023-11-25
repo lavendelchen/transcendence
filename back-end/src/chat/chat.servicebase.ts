@@ -26,6 +26,4 @@ export class ChatServiceBase {
       return res;
     }
   }
-
-
 }

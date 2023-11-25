@@ -30,7 +30,7 @@ export class User {
     @Column({ type: 'boolean', default: false })
     is2FActive: boolean;
 
-	@Column({ type: 'boolean', default: false })
+    @Column({ type: 'boolean', default: false })
     is2FAuthenticated: boolean;
 
     @Column({ length: 60, nullable: true })
@@ -58,6 +58,9 @@ export class User {
 
     @OneToMany(() => Channels, channel => channel.owner)
     owned: Channels[];
+
+    @ManyToMany(() => Channels, channel => channel.administrators)
+    administrated: Channels[];
 
     @OneToMany(() => Match, match => match.player1)
     player1Matches: Match[];
