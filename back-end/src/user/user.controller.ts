@@ -63,8 +63,8 @@ export class UserController {
         return this.userService.findBlockedUser(id);
     }
 
-    @Put (':id/block/:idUserBlock')
-    async addBlockedUser(@Param('id') id: number, @Param('idUserBlock') idUserBlock: number) {
-        const 
-    }
+    // @Put (':id/block/:idUserBlock')
+    // async addBlockedUser(@Param('id') id: number, @Param('idUserBlock') idUserBlock: number) {
+    //     const 
+    // }
 }
