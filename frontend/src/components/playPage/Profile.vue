@@ -52,6 +52,7 @@ const settingsActive = ref(false);
 <style scoped>
 
     .profile {
+		margin-top: 50px;
         padding: 10px;
         border: 1px solid white;
 
