@@ -8,11 +8,12 @@ export class AuthMiddleware implements NestMiddleware {
 		private userService: UserService,
 	) { }
 	async checkAuthentication(req: Request) {
-		if (req.session && req.session.dataAuthenticated) {
+		const isAuth = (await this.userService.findOne(req.session.userID)).isAuthenticated;
+		if (req.session && isAuth) {
 			// Fetch user details from the database
 			const userId = req.session.userID;
 			const user = await this.userService.findOne(userId);
-	  
+
 			if (!user) {
 			  console.log('User not found');
 			  return false;
