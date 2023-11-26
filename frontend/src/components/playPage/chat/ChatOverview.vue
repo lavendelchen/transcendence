@@ -5,9 +5,9 @@
 		</div>
 	</div>
 	<div class="controls">
-		<button @click="showModal = true">Create new chat (not working yet)</button>
+		<button @click="newChannel()">Create Channel</button>
 		<div class="commands">
-			<p>input commands (nothing happening yet)</p>
+			<p>New channel name </p>
 			<!-- input NOT WORKING YET -->
 			<input> 
 		</div>
@@ -25,33 +25,23 @@ let user: User | null
 
 let showModal = ref(false);
 
+
 let channels = ref([
 	{ id: 1, name: 'channel_1' },
-	{ id: 2, name: 'yjyj' },
-	{ id: 3, name: 'svdsvdsv' },
-	{ id: 4, name: 'sdvdsvdsv' },
-	{ id: 5, name: 'sdvsdeygvuwygvewygvewygvewyvuewygvuewygvewyvuyguyv' },
-	{ id: 6, name: 'sdvdsv' },
-	{ id: 7, name: 'sdvdsv' },
-	{ id: 8, name: 'sdvdsv' },
-	{ id: 9, name: 'sdvdsvs' },
-	{ id: 10, name: 'sdvdsv' },
-	{ id: 11, name: '11' },
-	{ id: 12, name: 'sdvdsv' },
-	{ id: 13, name: 'sdvdsv' },
-	{ id: 14, name: 'sdvdsv' },
-	{ id: 15, name: 'sdvdsv' },
-	{ id: 16, name: 'sdvdsv' },
-	{ id: 17, name: 'sdvdsv' },
-	{ id: 18, name: 'sdvdsv' },
-
 ])
 
 async function getCurrUser() {
 	user = await whoIam()
 }
 
-onBeforeMount(() => {
+
+async function newChannel() {
+// 	const newChannel = 
+
+// 	createChannelOnServer(newChannel)
+}
+
+onMounted(() => {
 	getCurrUser().then( () => 
 		fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/chat/channels/' + user?.id, {
 			method: 'GET',
@@ -62,7 +52,27 @@ onBeforeMount(() => {
 	.then(data => {
 		console.log("channels:")
 		console.log(data)
-		// assign the received data to channels array (i haven't done it yet since i can't create channels yet so i can't really test -svenja)
+	
+		let id = 0
+		for (let channel in data){
+			channels.value.push({id: id, name: data[channel]})
+			// console.log("channel :", channel)
+			// console.log("data.channel :", data.channel)
+			// console.log("data[channel] :", data[channel])
+			// console.log("data[id] :", data[id])
+			// console.log("id :", id)
+			id++;
+		}
+		
+		const directMessageUser = fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user', {
+				method: 'GET',
+				credentials: 'include'
+		})
+		
+		// for ( let i in directMessageUser) {
+		// 	channels.value.push({ id: directMessageUser[i + id]., name: data[id + i] })
+		// }
+		
 	})
 	.catch(error => console.error("ChatOverview Error:" + error.message))
 })

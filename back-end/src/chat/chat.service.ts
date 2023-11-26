@@ -23,8 +23,7 @@ export class ChatService extends ChatServiceBase {
     let check = data.input;
     if (data.input.indexOf(' ') != -1)
       check = data.input.substring(0, data.input.indexOf(' '));
-    check = check.toLowerCase();
-    switch (check) {
+    switch (check.toLowerCase()) {
       case '/kick':
         this.kickUser(data);
         break;
@@ -39,16 +38,20 @@ export class ChatService extends ChatServiceBase {
 			case '/ban':
 				this.banUser(data, server);
         break;
+      // case '/add':
+      //   this.addUserToChannel(data);
+      //   break;
       default:
         this.printMessage(data);
     }
   }
 
+
   private async sendServerMessageToClient(user: User, message: string) {
     const resolvedUser = await user;
     const currentConnections = this.wSocketGateway.getCurrentConnections();
     const connection = currentConnections.find(connection => connection.id === resolvedUser.id);
-    const msg = `"server":${message}`;
+    const msg = `server:${message}`;
     const msg_to_client = {
       event: "message",
       data: msg
@@ -71,7 +74,7 @@ export class ChatService extends ChatServiceBase {
       } catch (error) {
         console.log('user does not exist')
         this.sendServerMessageToClient(user, "Could not find User " + splitedMessage[i])
-
+        return
       }
       console.log(blockedUser.id)
       if (!user.blockedUser){
