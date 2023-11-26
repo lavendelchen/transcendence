@@ -75,7 +75,7 @@ const matchHistoryActive = ref(false);
 		text-overflow: ellipsis;
 		overflow: hidden;
 	}
-
+  
     .profile {
 		margin-top: 50px;
         padding: 10px;

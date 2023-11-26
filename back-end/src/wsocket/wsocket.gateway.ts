@@ -52,6 +52,7 @@ export class WSocketGateway implements OnGatewayInit {
 				  socket: client,
 			  };
 			  this.currentConnections.push(newChatUser);
+        console.log(this.currentConnections);
 		  }
 	  }).catch(error => {
 		  console.error('Error finding user:', error);

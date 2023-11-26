@@ -73,6 +73,14 @@ main {
 	width: 100%;
 }
 
+@media screen and (max-width: 1000px) {
+	aside {
+		display: none !important;
+	}
+}
+
+@media screen and (min-width: 1000px) {
+
 aside {
 	position:absolute;
 	top: 10px;
@@ -94,6 +102,7 @@ aside {
 
 		/* max-width: 500px; */
 	}
+}
 }
 
 h1 {

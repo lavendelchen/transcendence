@@ -16,13 +16,19 @@ export class ChatController {
     return 'Connection successful!';
   }
 
-  @Get('history/:channelName')
-  async getChatHistory(@Param('channelName') channelName: string): Promise<string[]> {
-    return await this.chatService.getChatHistory(channelName);
-  }
+  // @Get('history/:channelName')
+  // async getChatHistory(@Param('channelName') channelName: string): Promise<string[]> {
+  //   // return await this.chatService.getChatHistory(channelName);
+  // }
 
   @Get('channels/:userId')
   async getUserChannels(@Param('userId') userId: number): Promise<string[]> {
     return await this.chatDao.getRawUserChannels(userId);
+  }
+
+  @Put('block/:userId')
+  async blockUser(@Param('userId') userId: number): Promise<string[]> {
+    
+    return
   }
 }

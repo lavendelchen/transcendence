@@ -36,7 +36,7 @@ export class UserService {
 	findOne(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
-			select: ['id', 'fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches', 'is2FAuthenticated', 'isAuthenticated', 'isBanned']
+			select: ['id', 'fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches', 'is2FAuthenticated', 'isAuthenticated', 'isBanned', 'blockedUser']
 		});
 	}
 
@@ -130,5 +130,10 @@ export class UserService {
 		}
 	}
 
-	// async updateUserSoc
+	async findBlockedUser(id: number): Promise<User> {
+		return this.userRepository.findOne({
+			where: { id },
+			select: ['blockedUser']
+		})
+	}
 }

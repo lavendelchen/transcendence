@@ -72,4 +72,14 @@ export class UserController {
     delete(@Param('id') id: number): Promise<void> {
         return this.userService.delete(id);
     }
+
+    @Get(':id/block')
+    findBlockedUser(@Param('id') id: number): Promise<User> {
+        return this.userService.findBlockedUser(id);
+    }
+
+    // @Put (':id/block/:idUserBlock')
+    // async addBlockedUser(@Param('id') id: number, @Param('idUserBlock') idUserBlock: number) {
+    //     const 
+    // }
 }
