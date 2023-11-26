@@ -15,7 +15,12 @@ const user = ref({
 	email: "unkown",
 	avatar: "https://as2.ftcdn.net/v2/jpg/05/41/19/11/1000_F_541191198_O3s9TihGlfU58XP5oJXYaQ5y4rvuy7AK.jpg",
 	is2FActive: false,
-	is2FAuthenticated: false
+	is2FAuthenticated: false,
+	wonMatchesCount: 0,
+	lostMatchesCount: 0,
+	matchesCount: 0,
+	pointsMade: 0,
+	pointsLost: 0
 })
 
 onMounted(() => {
@@ -50,17 +55,26 @@ async function getUser(user_id: number) {
                 <p id="name">{{ user.pseudo }}</p>
             </div>
         </div>
-		<!-- <div class="profile-component">
-			<button class="profile-button" @click="matchHistoryActive = !matchHistoryActive">match history</button>
-			<MatchHistory v-if="matchHistoryActive"/>
-		</div>
 		<div class="profile-component">
-			<button class="profile-button" id="leaderboard" @click="goToLeaderboard">leaderboard <span>⤴</span></button>
+			<p>
+				<span class="statHeader">Wins</span>
+				<span class="statHeader">Losses</span>
+				<span class="statHeader">Total Games</span>
+			</p>
+			<p>
+				<span class="stats" id="wonGames">{{ user.wonMatchesCount }}</span>
+				<span class="stats" id="lostGames">{{ user.lostMatchesCount }}</span>
+				<span class="stats" id="playedGames">{{ user.matchesCount }}</span>
+			</p>
+			<p>
+				<span class="statHeader">Points made</span>
+				<span class="statHeader">Points lost</span>
+			</p>
+			<p>
+				<span class="stats" id="pointsMade">{{ user.pointsMade }}</span>
+				<span class="stats" id="pointsLost">{{ user.pointsLost }}</span>
+			</p>
 		</div>
-		<div class="profile-component">
-			<button class="profile-button" @click="settingsActive = !settingsActive">settings</button>
-			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
-		</div> -->
     </div>
 </template>
 
@@ -119,17 +133,40 @@ async function getUser(user_id: number) {
 		margin-right: auto;
 	}
 
-	#leaderboard {
-		/* color: rgb(185, 185, 185); */
-		font-weight: 900;
+	.statHeader {
+		display: inline-block;
+		font-size: var(--font-size-tiny);
+		width: 80px;
+		margin-left: 5px;
+		margin-right: 5px;
+		margin-bottom: 0px;
 	}
-	#leaderboard:hover {
-		/* color: rgb(53, 53, 53); */
+	.stats {
+		display: inline-block;
+		margin-left: 5px;
+		margin-right: 5px;
+		margin-bottom: 5px;
+		width: 80px;
 	}
-	span {
-		top: 443px;
-		position: absolute;
-		font-size: var(--font-size-sm);
+
+	#wonGames {
+		color:rgb(41, 155, 33);
+	}
+
+	#lostGames {
+		color:rgb(205, 31, 31);
+	}
+
+	#playedGames {
+		color:white;
+	}
+
+	#pointsMade {
+		color:rgb(78, 132, 75);
+	}
+
+	#pointsLost {
+		color:rgb(197, 81, 81);
 	}
 
 </style>
