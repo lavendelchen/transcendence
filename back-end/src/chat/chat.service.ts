@@ -42,12 +42,14 @@ export class ChatService extends ChatServiceBase {
         !(this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
         !(this.chatDao.isChannelOwner(data.room, data.user.name)))
         return;
-      // channel owner can't be kicked
-      if (this.chatDao.isChannelOwner(data.room, name))
+      if (this.chatDao.isChannelOwner(data.room, name)) {
+        console.log('you can\'t kick the owner');
         return;
-      // you can't kick yourself
-      if (name === data.user.name)
+      }
+      if (name === data.user.name) {
+        console.log('you can\'t kick yourself');
         return;
+      }
       await this.chatDao.removeUserFromChannel(data.room, name);
       this.broadcastToRoom(data, `${name}: got kicked`);
     } catch (error) {
@@ -63,12 +65,14 @@ export class ChatService extends ChatServiceBase {
         !(this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
         !(this.chatDao.isChannelOwner(data.room, data.user.name)))
         return;
-      // channel owner can't be promoted
-      if (this.chatDao.isChannelOwner(data.room, name))
+      if (this.chatDao.isChannelOwner(data.room, name)) {
+        console.log('you can\'t promote the owner');
         return;
-      // you can't promote yourself
-      if (name === data.user.name)
+      }
+      if (name === data.user.name) {
+        console.log('you can\'t promote yourself');
         return;
+      }
       await this.chatDao.promoteUsertoChannelAdmin(data.room, name);
       this.broadcastToRoom(data, `${name}: got promoted to admin`);
     } catch (error) {
