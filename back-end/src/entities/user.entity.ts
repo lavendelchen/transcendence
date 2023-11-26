@@ -24,6 +24,9 @@ export class User {
     @Column({ length: 255, nullable: true })
     avatar?: string;
 
+	@Column({ type: 'boolean', default: false })
+    isAuthenticated: boolean;
+
     @Column({ type: 'boolean', default: false })
     is2FActive: boolean;
 
@@ -32,6 +35,9 @@ export class User {
 
     @Column({ length: 60, nullable: true })
     secretOf2FA?: string;
+
+	@Column({ type: 'boolean', default: false })
+	isBanned: boolean;
 
     @Column({ type: 'int', default: 0 })
     matchesCount: number;

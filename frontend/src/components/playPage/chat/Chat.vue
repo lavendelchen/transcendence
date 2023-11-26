@@ -16,7 +16,7 @@ import ActiveChat from './ActiveChat.vue'
 import ChatOverview from './ChatOverview.vue'
 import { ref, onMounted } from 'vue'
 
-let chatHeader = ref("Chat")
+let chatHeader = ref("chats")
 
 let chatActive = ref(false)
 
@@ -33,7 +33,7 @@ function joinChannel(channel: any) {
 }
 
 function leaveChannel() {
-	chatHeader.value = "Chat"
+	chatHeader.value = "Chats"
 	chatActive.value = false
 }
 

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { Match } from '../entities/match.entity';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,7 @@ export class UserService {
 	findOne(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
-			select: ['id', 'fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches', 'is2FAuthenticated', 'blockedUser']
+			select: ['id', 'fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches', 'is2FAuthenticated', 'isAuthenticated', 'isBanned', 'blockedUser']
 		});
 	}
 
@@ -120,7 +121,14 @@ export class UserService {
 		return user;
 	}
 
-	// async updateUserSoc
+	async isImageLoadable(url: string): Promise<boolean> {
+		try {
+			const response = await fetch(url);
+			return response.ok;
+		} catch (error) {
+			return false;
+		}
+	}
 
 	async findBlockedUser(id: number): Promise<User> {
 		return this.userRepository.findOne({
