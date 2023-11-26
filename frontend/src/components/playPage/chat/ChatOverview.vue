@@ -25,6 +25,7 @@ let user: User | null
 
 let showModal = ref(false);
 
+
 let channels = ref([
 	{ id: 1, name: 'channel_1' },
 	{ id: 2, name: 'yjyj' },
