@@ -86,20 +86,22 @@ export class ChatService extends ChatServiceBase {
 
   async banUser(data: IMessage, server: Server) {
     let banned_name = data.input.split(' ')[1];
-    const user = await this.userService.findOneByName(banned_name);
-    if (!user) {
-      throw new Error('User not found');
+    const userToBeBanned = await this.userService.findOneByName(banned_name);
+    const user = await this.userService.findOne(data.user.id);
+    if (!userToBeBanned) {
+      await this.sendServerMessageToClient(user, 'User not found');
+      return;
     }
 
     await this.userService.update(user.id, { isBanned: true });
     await this.userService.update(user.id, { isAuthenticated: false });
-    console.log(`User ${user.pseudo} has been banned.`);
+    await this.broadcastToRoom(data, `User ${user.pseudo} has been banned.`);
   }
 
   private async printMessage(data: IMessage) {
     try {
       const msg = `${data.user.name}:${data.input}`;
-      this.broadcastToRoom(data, msg)
+      await this.broadcastToRoom(data, msg)
       await this.chatDao.saveMessageToChannel(data);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
@@ -109,9 +111,10 @@ export class ChatService extends ChatServiceBase {
   private async addUserToChannel(data: IMessage) {
     try {
       const name = data.input.substring(data.input.indexOf(' ') + 1);
-      const user = await this.userService.findOneByName(name);
-      if (!user) {
-        console.log('user not found');
+      const user = await this.userService.findOne(data.user.id);
+      const userToBeAdded = await this.userService.findOneByName(name);
+      if (!userToBeAdded) {
+        await this.sendServerMessageToClient(user, 'user not found');
         return;
       }
       await this.chatDao.addUserToChannel(data.room, name);
@@ -131,22 +134,21 @@ export class ChatService extends ChatServiceBase {
   }
 
   private async kickUser(data: IMessage) {
-    console.log('kick user');
     try {
+      const user = await this.userService.findOne(data.user.id);
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       if (
         !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
         !(await this.chatDao.isChannelOwner(data.room, data.user.name))) {
-        console.log('you are not admin or owner');
+        this.sendServerMessageToClient(user, 'you are not admin or owner');
         return;
       }
       if (!(await this.chatDao.isUserInChannel(data.room, name))) {
-        console.log('user is not in channel');
+        this.sendServerMessageToClient(user, 'user is not in channel');
         return;
       }
-      console.log('is channel owner: ', this.chatDao.isChannelOwner(data.room, name));
       if (await this.chatDao.isChannelOwner(data.room, name)) {
-        console.log('you can\'t kick the owner: ');
+        this.sendServerMessageToClient(user, 'you can\'t kick the owner: ');
         return;
       }
       if (name === data.user.name)
@@ -161,23 +163,24 @@ export class ChatService extends ChatServiceBase {
 
   private async promoteUser(data: IMessage) {
     try {
+      const user = await this.userService.findOne(data.user.id);
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       if (
         !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
         !await (this.chatDao.isChannelOwner(data.room, data.user.name))) {
-        console.log('you are not admin or owner');
+        this.sendServerMessageToClient(user, 'you are not admin or owner');
         return;
       }
       if (!(await this.chatDao.isUserInChannel(data.room, name))) {
-        console.log('user is not in channel');
+        this.sendServerMessageToClient(user, 'user is not in channel');
         return;
       }
       if (await this.chatDao.isChannelOwner(data.room, name)) {
-        console.log('you can\'t promote the owner');
+        this.sendServerMessageToClient(user, 'you can\'t promote the owner');
         return;
       }
       if (name === data.user.name) {
-        console.log('you can\'t promote yourself');
+        this.sendServerMessageToClient(user, 'you can\'t promote yourself');
         return;
       }
       await this.chatDao.promoteUsertoChannelAdmin(data.room, name);
@@ -201,7 +204,9 @@ export class ChatService extends ChatServiceBase {
     for (const user of usersInRoom) {
       const connection = currentConnections.find(connection => connection.id === user.id);
       if (connection) {
-        if (connection.id === data.user.id && !this.checkUserBlocked(data.user.id, connection.id) && isCommandNotice)
+        if (connection.id === data.user.id && !isCommandNotice)
+          continue;
+        if (this.checkUserBlocked(data.user.id, connection.id) && !isCommandNotice)
           continue;
         try {
           connection.socket.send(JSON.stringify(msg_to_client));
