@@ -5,20 +5,31 @@ import Chat from "./chat/Chat.vue"
 import Menue from "./Menue.vue"
 import Profile from "./profile/Profile.vue"
 import Game from './Game.vue'
+import NoConnectModal from "../errorPages/NoConnectModal.vue"
 
 import { store } from '../../store/store.ts'
 import { authGuard } from '../../utils/authGuard.ts'
-import { onMounted, onBeforeMount } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-onBeforeMount(() => {
-	authGuard(router)
-})
+const connectError = ref(false);
 
 onMounted(() => {
+	checkConnectError()
+	.then(() => 
+	authGuard(router))
 })
+
+async function checkConnectError() {
+	try {
+		await fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/auth/isAuthenticated')
+	} catch (error) {
+		console.error("checking session storage failed: ", error);
+		connectError.value = true;
+	}
+}
 
 </script>
 
@@ -26,8 +37,7 @@ onMounted(() => {
 	<h1>ping pang pong</h1>
 	<div class="appbody">
 		<main>
-			<!-- <ChatTest/> -->
-			<Game />
+			<Game @connectError="connectError = true"/>
 		</main>
 		<aside>
 			<Menue />
@@ -35,6 +45,7 @@ onMounted(() => {
 			<Profile v-if="store.profileActive" />
 		</aside>
 	</div>
+	<NoConnectModal v-if="connectError"/>
 </template>
 
 

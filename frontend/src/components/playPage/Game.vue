@@ -32,6 +32,7 @@ import { onMounted, ref, Ref, computed } from 'vue';
 import fontUrl from '/fonts/Pixeled.ttf';
 import { whoIam, User } from '../../utils/whoIam.ts'
 
+const emit = defineEmits(['connectError'])
 let canvasFont: FontFace;
 
 /*
@@ -234,7 +235,9 @@ async function connectToServer() {
 
 	const user = await whoIam();
 	if (!user) {
-		waitingButtonText.value = "There was a problem with you user authentication";
+		emit('connectError')
+		gameResult = DISCONNECT
+		gameEnd()
 		return Promise<void>;
 	}
 	playerName = user.pseudo;
@@ -406,7 +409,8 @@ async function gameEnd(): Promise<void> {
 	notYet.value = true;
 	gameState.value = GAME_END;
 
-	webSocket.close();
+	if (webSocket)
+		webSocket.close();
 
 	const oldElementColor = elementColor;
 	elementColor = backgroundColor;

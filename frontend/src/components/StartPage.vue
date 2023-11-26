@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { onBeforeMount } from 'vue';
+import { onBeforeMount, ref } from 'vue';
+import NoConnectModal from './errorPages/NoConnectModal.vue';
 
 const router = useRouter();
+
+const connectError = ref(false);
 
 onBeforeMount(() => {
 	checkIfRedirect();
@@ -22,7 +25,8 @@ async function checkIfRedirect() {
 			return;
 		}
 	} catch (error) {
-		console.error("checking session storage failed", error);
+		console.error("checking session storage failed: ", error);
+		connectError.value = true;
 	}
 };
 
@@ -34,48 +38,23 @@ async function startAuth() {
 		window.location.href = data;
 	} catch (error) {
 		console.error("Init Authentication failed");
+		connectError.value = true;
 	}
 }
-
-// async function handleAuthCallback(code) {
-//   const response = await fetch ('/auth?code${code}');
-//   const data = await
-// }
 
 </script>
 
 <template>
-	<!-- <p id="score">
-			Score: 3000p
-			</p> -->
 	<section class="logo">
 		Ping&#160;&#160;&#160;&#160;&#160;&#160;&#160; <br>
 		Pang <br>
 		&#160;&#160;&#160;&#160;&#160;&#160;&#160;Pong
 	</section>
-	<!-- <a href="https://api."> -->
 	<button @click="startAuth" class="buttonLogin">
 		Log in
 	</button>
-	<!-- </a> -->
+	<NoConnectModal v-if="connectError" @close="connectError = false"/>
 </template>
-
-<script lang="ts">
-
-export default {
-	data() {
-		return {
-			score: -1
-		}
-	},
-	methods: {
-	},
-	mounted() {
-		this.score = 3000; // FETCH from backend
-	}
-}
-
-</script>
 
 <style scoped>
 a:link {
