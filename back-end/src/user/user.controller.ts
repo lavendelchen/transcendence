@@ -26,27 +26,42 @@ export class UserController {
         return this.userService.findSecret(id);
     }
 
-	// @Get(':id/won-matches')
-  	// async getWonMatches(@Param('id') id: number) {
-  	//   const user = await this.userService.findOne(id);
-	//   console.log(user);
-  	// 	return this.userService.getWonMatches(user.id);
-  	// }
+	@Get(':id/matchHistory')
+  	async getMatches(@Param('id') id: number) {
+  	  const user = await this.userService.findOne(id);
+	  console.log(user);
+  		return this.userService.getMatches(user.id);
+  	}
 
     @Post()
-    create(@Body() userData: Partial<User>): Promise<User> {
+    async create(@Body() userData: Partial<User>): Promise< User | { message: string} > {
+		if ('avatar' in userData) {
+			var imageLoadable = await this.userService.isImageLoadable(userData.avatar);
+			if (!imageLoadable)
+				return { message: 'Please provide a loadable image.' };
+		}
         return this.userService.create(userData);
     }
 
     @Post(':id')
-    updateOrCreate(@Param('id') id: number, @Body() userData: Partial<User>): Promise<User> {
+    async updateOrCreate(@Param('id') id: number, @Body() userData: Partial<User>): Promise< User | { message: string} > {
         console.log(userData);
+		if ('avatar' in userData) {
+			var imageLoadable = await this.userService.isImageLoadable(userData.avatar);
+			if (!imageLoadable)
+				return { message: 'Please provide a loadable image.' };
+		}
 		return this.userService.updateOrCreate(id, userData);
     }
 
     @Put(':id')
-    async update(@Param('id') id: number, @Body() userData: Partial<User>): Promise<User> {
-        const updatedUser = await this.userService.update(id, userData);
+    async update(@Param('id') id: number, @Body() userData: Partial<User>): Promise< User | { message: string} > {
+        if ('avatar' in userData) {
+			var imageLoadable = await this.userService.isImageLoadable(userData.avatar);
+			if (!imageLoadable)
+				return { message: 'Please provide a loadable image.' };
+		}
+		const updatedUser = await this.userService.update(id, userData);
         if (!updatedUser) {
             throw new NotFoundException(`User with ID ${id} not found`);
         }
@@ -57,4 +72,14 @@ export class UserController {
     delete(@Param('id') id: number): Promise<void> {
         return this.userService.delete(id);
     }
+
+    @Get(':id/block')
+    findBlockedUser(@Param('id') id: number): Promise<User> {
+        return this.userService.findBlockedUser(id);
+    }
+
+    // @Put (':id/block/:idUserBlock')
+    // async addBlockedUser(@Param('id') id: number, @Param('idUserBlock') idUserBlock: number) {
+    //     const 
+    // }
 }

@@ -16,7 +16,7 @@ import ActiveChat from './ActiveChat.vue'
 import ChatOverview from './ChatOverview.vue'
 import { ref, onMounted } from 'vue'
 
-let chatHeader = ref("Chat")
+let chatHeader = ref("chats")
 
 let chatActive = ref(false)
 
@@ -33,7 +33,7 @@ function joinChannel(channel: any) {
 }
 
 function leaveChannel() {
-	chatHeader.value = "Chat"
+	chatHeader.value = "Chats"
 	chatActive.value = false
 }
 
@@ -50,7 +50,7 @@ div.chat {
     position: relative;
     right: 0;
     top: 0;
-    margin-top: 2vh;
+    margin-top: 50px;
     margin-right: 30px;
     display: grid;
     grid-template-columns: auto;

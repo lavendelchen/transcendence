@@ -24,6 +24,7 @@ export class ChatServiceBase {
     } catch (error) {
       console.log(`SYSTEM: ${error.message}`);
       return res;
+
     }
   }
 }

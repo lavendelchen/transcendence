@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { Match } from '../entities/match.entity';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,25 @@ export class UserService {
 	findOne(id: number): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id },
-			select: ['id', 'fortytwo_id', 'pseudo', 'email', 'avatar', 'is2FActive', 'player1Matches', 'player2Matches', 'is2FAuthenticated']
+			select: [
+				'id',
+				'fortytwo_id', 
+				'pseudo', 
+				'email', 
+				'avatar', 
+				'is2FActive', 
+				'player1Matches', 
+				'player2Matches', 
+				'is2FAuthenticated', 
+				'isAuthenticated', 
+				'isBanned', 
+				'blockedUser',
+				'wonMatchesCount',
+				'lostMatchesCount',
+				'matchesCount',
+				'pointsMade',
+				'pointsLost'
+			]
 		});
 	}
 
@@ -56,21 +75,28 @@ export class UserService {
 		});
 	}
 
-	// 	async getWonMatches(userId: number): Promise<Match[]> {
-	//     // Find the user by ID along with the wonMatches relationship
-	//     const user = await this.userRepository.findOne({
-	// 		where: { id: userId },
-	// 		relations: ['wonMatches'],
-	// 	});
+	async getMatches(userId: number): Promise<User> {
+	    // Find the user by ID along with the wonMatches relationship
+	    const user = await this.userRepository.findOne({
+			where: { id: userId },
+			relations: [
+				'player1Matches',
+				'player2Matches',
+				'player1Matches.winner',
+				'player2Matches.winner',
+				'player1Matches.player2',
+				'player2Matches.player1',
+			],
+		});
 
-	//     if (!user) {
-	//       // Handle the case where the user is not found
-	//       // You can throw an exception or handle it according to your application's logic
-	//       throw new Error('User not found');
-	//     }
+	    if (!user) {
+	      // Handle the case where the user is not found
+	      // You can throw an exception or handle it according to your application's logic
+	      throw new Error('User not found');
+	    }
 
-	//     return user.wonMatches;
-	//   }
+	    return user;
+	}
 
 	create(userData: Partial<User>): Promise<User> {
 		const user = this.userRepository.create(userData);
@@ -113,6 +139,19 @@ export class UserService {
 		return user;
 	}
 
-	// async updateUserSoc
+	async isImageLoadable(url: string): Promise<boolean> {
+		try {
+			const response = await fetch(url);
+			return response.ok;
+		} catch (error) {
+			return false;
+		}
+	}
 
+	async findBlockedUser(id: number): Promise<User> {
+		return this.userRepository.findOne({
+			where: { id },
+			select: ['blockedUser']
+		})
+	}
 }
