@@ -93,7 +93,8 @@ export class GameserverGateway {
 	private gameInfoMsg = {
 		event: "gameInfo",
 		data: {
-			opponentName: ''
+			opponentName: '',
+			opponentID: 0
 		}
 	};
 	private countdownMsg = {
@@ -237,8 +238,10 @@ export class GameserverGateway {
 
 		let gameInfoMsg = JSON.parse(JSON.stringify(this.gameInfoMsg));
 		gameInfoMsg.data.opponentName = player1.name;
+		gameInfoMsg.data.opponentID = player1.ID;
 		newMatch.sendToPlayer2(gameInfoMsg);
 		gameInfoMsg.data.opponentName = player2.name;
+		gameInfoMsg.data.opponentID = player2.ID;
 		newMatch.sendToPlayer1(gameInfoMsg);
 		this.doCountdown(newMatch);
 	};

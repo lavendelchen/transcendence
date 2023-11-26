@@ -7,7 +7,7 @@
 	</p>
 	<div class="matchesBox" v-if="player1Matches.length > 0">
 		<p class="match" v-for="match in player1Matches" :key="match.id"		>
-			<span class="opponent">{{ match.player2.pseudo}}</span>
+			<span class="opponent name" @click="goToOpponentProfile(match.player2.id)">{{ match.player2.pseudo}}</span>
 			<span class="yourScore" 
 				:style="{ 'color': match.player1Score > match.player2Score ? 'rgb(41, 155, 33)' : 'rgb(205, 31, 31)' }"
 			>{{ match.player1Score }}</span>
@@ -16,15 +16,15 @@
 			>{{ match.player2Score }}</span>
 		</p>
 	</div>
-	<h3 v-if="player1Matches.length > 0">Accepted matches</h3>
-	<p v-if="player1Matches.length > 0" class="header">
+	<h3 v-if="player2Matches.length > 0">Accepted matches</h3>
+	<p v-if="player2Matches.length > 0" class="header">
 		<span class="opponent">Opponent</span>
 		<span class="yourScore">Your Score</span>
 		<span class="opponentScore">Opponent score</span>
 	</p>
 	<div class="matchesBox" v-if="player2Matches.length > 0">
 		<p class="match" v-for="match in player2Matches" :key="match.id">
-			<span class="opponent">{{ match.player1.pseudo}}</span>
+			<span class="opponent name" @click="goToOpponentProfile(match.player1.id)">{{ match.player1.pseudo}}</span>
 			<span class="yourScore" 
 				:style="{ 'color': match.player1Score < match.player2Score ? 'rgb(41, 155, 33)' : 'rgb(205, 31, 31)' }"
 			>{{ match.player2Score }}</span>
@@ -40,14 +40,7 @@
 
 <script lang="ts">
 	import { whoIam, User } from '../../../utils/whoIam.ts'
-	import { useRouter } from 'vue-router';
-
-	interface Match {
-	  id: number;
-	  player1Score: number;
-	  player2Score: number;
-	  winner: User;
-	}
+	import { store } from '../../../store/store.ts'
 
 	export default {
 		data() {
@@ -88,6 +81,12 @@
 					console.error('huh? no user?')
 				console.log("user: ")
 				console.log(this.user as User)
+			},
+			goToOpponentProfile(opponent_id: number) {
+				store.foreignProfileID = opponent_id;
+				store.chatActive = false;
+				store.profileActive = false;
+				store.foreignProfileActive = true;
 			}
 		}
 	}
@@ -119,6 +118,15 @@ span {
 	width: 50%;
 	overflow-x: hidden;
 	text-overflow: ellipsis;
+}
+
+.name {
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+.name:hover {
+	color: rgb(124, 124, 124);
 }
 
 .yourScore {

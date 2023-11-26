@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { whoIam, User } from '../../../utils/whoIam.ts'
-import Settings from './Settings.vue'
-import MatchHistory from './MatchHistory.vue'
+import { whoIam } from '../../utils/whoIam.ts'
+import { authGuard } from '../../utils/authGuard.ts'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const user = ref<any>({
+const props = defineProps(['user_id'])
+
+const user = ref({
 	id: 0,
 	fortytwo_id: 0,
 	pseudo: "unknown",
@@ -23,32 +24,30 @@ const user = ref<any>({
 })
 
 onMounted(() => {
-	getCurrUser()
+	authGuard(router)
+	getUser(props.user_id)
 })
 
-async function getCurrUser() {
-	const receive = await whoIam()
-	if (!receive)
-		return
-	user.value = receive
-	if (user.value.pseudo.length > 15) {
-		user.value.pseudo = user.value.pseudo.slice(0, 14)
-		user.value.pseudo += "..."
-	}
+async function getUser(user_id: number) {
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/' + user_id, {
+		method: 'GET',
+		credentials: 'include'
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log("user:")
+		console.log(data)
+		user.value = data;
+		console.log(user.value)
+	})
+	.catch(error => console.error("ForeignProfile Error:" + error.message))
 }
-
-function goToLeaderboard() {
-	router.push('/leaderboard')
-}
-
-const settingsActive = ref(false);
-const matchHistoryActive = ref(false);
 
 </script>
 
 <template>
     <div class="profile">
-		<h3> profile </h3>
+		<h3> Player </h3>
         <div class="hero">
             <!-- <img src="../../assets/img/profileCircle.svg" alt="PROFILE PICTURE"> -->
             <img :src="user.avatar" alt="PROFILE PICTURE">
@@ -75,17 +74,6 @@ const matchHistoryActive = ref(false);
 				<span class="stats" id="pointsMade">{{ user.pointsMade }}</span>
 				<span class="stats" id="pointsLost">{{ user.pointsLost }}</span>
 			</p>
-		</div>
-		<div class="profile-component">
-			<button class="profile-button" @click="matchHistoryActive = !matchHistoryActive">match history</button>
-			<MatchHistory v-if="matchHistoryActive"/>
-		</div>
-		<div class="profile-component">
-			<button class="profile-button" id="leaderboard" @click="goToLeaderboard">leaderboard <span id="arrow" v-if="!matchHistoryActive">⤴</span></button>
-		</div>
-		<div class="profile-component">
-			<button class="profile-button" @click="settingsActive = !settingsActive">settings</button>
-			<Settings v-if="settingsActive" @userDataChanged="getCurrUser"/>
 		</div>
     </div>
 </template>
@@ -145,14 +133,6 @@ const matchHistoryActive = ref(false);
 		margin-right: auto;
 	}
 
-	#leaderboard {
-		/* color: rgb(185, 185, 185); */
-		font-weight: 900;
-	}
-	#leaderboard:hover {
-		/* color: rgb(53, 53, 53); */
-	}
-
 	.statHeader {
 		display: inline-block;
 		font-size: var(--font-size-tiny);
@@ -167,12 +147,6 @@ const matchHistoryActive = ref(false);
 		margin-right: 5px;
 		margin-bottom: 5px;
 		width: 80px;
-	}
-
-	span #arrow {
-		top: 443px;
-		position: absolute;
-		font-size: var(--font-size-sm);
 	}
 
 	#wonGames {

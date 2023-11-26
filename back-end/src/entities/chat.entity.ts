@@ -23,7 +23,17 @@ export class Channels {
   owner: User;
 
   @ManyToMany(() => User, (user) => user.administrated)
-  @JoinColumn({ name: 'administrators' })
+  @JoinTable({
+    name: "administrators",
+    joinColumn: {
+      name: "channel",
+      referencedColumnName: "id"
+    },
+    inverseJoinColumn: {
+      name: "user",
+      referencedColumnName: "id"
+    }
+  })
   administrators: User[];
 
   @ManyToMany(() => User, (user) => user.channels)

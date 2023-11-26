@@ -5,9 +5,11 @@ import { store } from '../../store/store.ts';
         console.log('button clicked')
 		if (store.chatActive == false) {
         	store.profileActive = false;
+        	store.foreignProfileActive = false;
         	store.chatActive = true;
 		}
 		else {
+			store.foreignProfileActive = false;
 			store.profileActive = false;
         	store.chatActive = false;
 		}
@@ -16,17 +18,15 @@ import { store } from '../../store/store.ts';
     function profileButtonClicked() {
         console.log('button clicked')
         if (store.profileActive == false) {
+			store.foreignProfileActive = false;
         	store.profileActive = true;
         	store.chatActive = false;
 		}
 		else {
+			store.foreignProfileActive = false;
 			store.profileActive = false;
         	store.chatActive = false;
 		}
-    }
-    
-    function logoutButtonClicked() {
-        console.log('button clicked')
     }
 
 </script>
@@ -39,9 +39,6 @@ import { store } from '../../store/store.ts';
         <div @click="profileButtonClicked()" class="button profile">
             <img src="../../assets/img/profile.svg" alt="PROFILE">
         </div>
-        <!-- <div @click="logoutButtonClicked()" class="button">
-            <img src="../../assets/img/logout.svg" alt="LOGOUT">
-        </div> -->
     </div>
 </template>
 
