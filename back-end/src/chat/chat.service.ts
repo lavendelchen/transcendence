@@ -38,9 +38,6 @@ export class ChatService extends ChatServiceBase {
       case '/ban':
         this.banUser(data, server);
         break;
-      // case '/add':
-      //   this.addUserToChannel(data);
-      //   break;
       default:
         this.printMessage(data);
     }
