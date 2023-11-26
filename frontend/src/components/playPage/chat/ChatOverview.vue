@@ -27,7 +27,7 @@ let showModal = ref(false);
 
 
 let channels = ref([
-	{ id: 1, name: 'channel_1' },
+	{ id: 1, name: 'dummy_channel' },
 ])
 
 async function getCurrUser() {
@@ -36,7 +36,7 @@ async function getCurrUser() {
 
 
 async function newChannel() {
-// 	const newChannel = 
+	// const newChannel = 
 
 // 	createChannelOnServer(newChannel)
 }
@@ -54,6 +54,7 @@ onMounted(() => {
 		console.log(data)
 	
 		let id = 0
+		channels.value.pop()
 		for (let channel in data){
 			channels.value.push({id: id, name: data[channel]})
 			// console.log("channel :", channel)
