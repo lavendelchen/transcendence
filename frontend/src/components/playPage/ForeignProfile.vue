@@ -8,6 +8,10 @@ const router = useRouter()
 
 const props = defineProps(['user_id'])
 
+const friendMsg = ref("Add as friend")
+const errorMsg = ref("")
+let friendshipID = 0;
+
 const user = ref({
 	id: 0,
 	fortytwo_id: 0,
@@ -20,12 +24,17 @@ const user = ref({
 	lostMatchesCount: 0,
 	matchesCount: 0,
 	pointsMade: 0,
-	pointsLost: 0
+	pointsLost: 0,
+	friends: []
 })
+
+const currUser = ref<any>(null as any)
 
 onMounted(() => {
 	authGuard(router)
-	getUser(props.user_id)
+	getUser(props.user_id).then(() => 
+	getCurrUser())
+	
 })
 
 async function getUser(user_id: number) {
@@ -41,6 +50,75 @@ async function getUser(user_id: number) {
 		console.log(user.value)
 	})
 	.catch(error => console.error("ForeignProfile Error:" + error.message))
+}
+
+async function getCurrUser() {
+	currUser.value = await whoIam()
+	if (!currUser.value)
+		router.push('/not-allowed')
+	console.log(currUser.value)
+	console.log(currUser.value.friends)
+	currUser.value.friends.forEach((friend: any, index: number) => {
+		if (friend.followedUser.id == user.value.id) {
+			friendMsg.value = "added as friend ✅"
+			friendshipID = friend.id;
+		}
+	});
+}
+
+function addFriend() {
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/friend/', {
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			user: currUser.value.id,
+			followedUser: user.value.id,
+			isPending: false
+		})
+	})
+	.then(response => response.json())
+	.then(data => {
+		if ('statusCode' in data) {
+			if (data.statusCode == 500) {
+				errorMsg.value = "Couldn't add as friend"
+				return;
+			}
+		}
+		console.log("data: ")
+		console.log(data)
+		friendshipID = data.id
+		friendMsg.value = 'added as friend ✅'
+		errorMsg.value = ""
+	})
+	.catch(error => {
+		console.error(error)
+		errorMsg.value = "Couldn't add as friend"
+		return;
+	});
+}
+
+function removeFriend() {
+	fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/friend/' + friendshipID, {
+		method: 'DELETE',
+		credentials: 'include'
+	})
+	.then(response => {
+		console.log(response)
+		if (response.status != 200) {
+			errorMsg.value = "Couldn't remove friend"
+			return;
+		}
+		friendMsg.value = 'Add as friend'
+		errorMsg.value = ""
+	})
+	.catch(error => {
+		console.error(error)
+		errorMsg.value = "Couldn't remove friend"
+		return;
+	});
 }
 
 </script>
@@ -75,6 +153,10 @@ async function getUser(user_id: number) {
 				<span class="stats" id="pointsLost">{{ user.pointsLost }}</span>
 			</p>
 		</div>
+		<div class="profile-component">
+			<button class="profile-button" @click="friendMsg == 'Add as friend' ? addFriend() : removeFriend()">{{ friendMsg }}</button>
+		</div>
+		<p v-if="errorMsg" id="errorMsg"> {{ errorMsg }}</p>
     </div>
 </template>
 
@@ -167,6 +249,10 @@ async function getUser(user_id: number) {
 
 	#pointsLost {
 		color:rgb(197, 81, 81);
+	}
+
+	#errorMsg {
+		color: red;
 	}
 
 </style>

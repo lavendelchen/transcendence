@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { whoIam, User } from '../../../utils/whoIam.ts'
+import Stats from './Stats.vue'
+import Friends from './Friends.vue'
 import Settings from './Settings.vue'
 import MatchHistory from './MatchHistory.vue'
 import { useRouter } from 'vue-router'
@@ -31,6 +33,7 @@ async function getCurrUser() {
 	if (!receive)
 		return
 	user.value = receive
+	console.log(user.value)
 	if (user.value.pseudo.length > 15) {
 		user.value.pseudo = user.value.pseudo.slice(0, 14)
 		user.value.pseudo += "..."
@@ -41,8 +44,10 @@ function goToLeaderboard() {
 	router.push('/leaderboard')
 }
 
-const settingsActive = ref(false);
+const statsActive = ref(false);
 const matchHistoryActive = ref(false);
+const friendsActive = ref(false);
+const settingsActive = ref(false);
 
 </script>
 
@@ -57,28 +62,22 @@ const matchHistoryActive = ref(false);
             </div>
         </div>
 		<div class="profile-component">
-			<p>
-				<span class="statHeader">Wins</span>
-				<span class="statHeader">Losses</span>
-				<span class="statHeader">Total Games</span>
-			</p>
-			<p>
-				<span class="stats" id="wonGames">{{ user.wonMatchesCount }}</span>
-				<span class="stats" id="lostGames">{{ user.lostMatchesCount }}</span>
-				<span class="stats" id="playedGames">{{ user.matchesCount }}</span>
-			</p>
-			<p>
-				<span class="statHeader">Points made</span>
-				<span class="statHeader">Points lost</span>
-			</p>
-			<p>
-				<span class="stats" id="pointsMade">{{ user.pointsMade }}</span>
-				<span class="stats" id="pointsLost">{{ user.pointsLost }}</span>
-			</p>
+			<button class="profile-button" @click="statsActive = !statsActive">stats</button>
+			<Stats v-if="statsActive"
+				:wonMatches="user.wonMatchesCount"
+				:lostMatches="user.lostMatchesCount"
+				:matchesCount="user.matchesCount"
+				:pointsMade="user.pointsMade"
+				:pointsLost="user.pointsLost"
+			/>
 		</div>
 		<div class="profile-component">
 			<button class="profile-button" @click="matchHistoryActive = !matchHistoryActive">match history</button>
 			<MatchHistory v-if="matchHistoryActive"/>
+		</div>
+		<div class="profile-component">
+			<button class="profile-button" @click="friendsActive = !friendsActive">friends</button>
+			<Friends v-if="friendsActive" :friends="user.friends"/>
 		</div>
 		<div class="profile-component">
 			<button class="profile-button" id="leaderboard" @click="goToLeaderboard">leaderboard <span id="arrow" v-if="!matchHistoryActive">⤴</span></button>
@@ -153,46 +152,10 @@ const matchHistoryActive = ref(false);
 		/* color: rgb(53, 53, 53); */
 	}
 
-	.statHeader {
-		display: inline-block;
-		font-size: var(--font-size-tiny);
-		width: 80px;
-		margin-left: 5px;
-		margin-right: 5px;
-		margin-bottom: 0px;
-	}
-	.stats {
-		display: inline-block;
-		margin-left: 5px;
-		margin-right: 5px;
-		margin-bottom: 5px;
-		width: 80px;
-	}
-
 	span #arrow {
 		top: 443px;
 		position: absolute;
 		font-size: var(--font-size-sm);
-	}
-
-	#wonGames {
-		color:rgb(41, 155, 33);
-	}
-
-	#lostGames {
-		color:rgb(205, 31, 31);
-	}
-
-	#playedGames {
-		color:white;
-	}
-
-	#pointsMade {
-		color:rgb(78, 132, 75);
-	}
-
-	#pointsLost {
-		color:rgb(197, 81, 81);
 	}
 
 </style>
