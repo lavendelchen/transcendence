@@ -106,16 +106,11 @@ export class ChatDAO {
   }
 
   public async isChannelOwner(title: string, name: string): Promise<Boolean> {
-    const channel = await this.channelRepo.createQueryBuilder('channel')
-      .leftJoinAndSelect('channel.owner', 'owner')
-      .where('channel.title = :title', { title })
-      .getOne();
-
-    if (!channel) {
-      throw new Error('Channel not found');
-    }
-
-    return channel.owner.pseudo === name;
+    const channel_owner = (await this.channelRepo.findOne({
+      where: { title: title },
+      relations: ['owner'],
+    })).owner;
+    return (channel_owner.pseudo === name).valueOf();
   }
 
   public async isChannelAdmin(title: string, name: string): Promise<Boolean> {
@@ -141,8 +136,23 @@ export class ChatDAO {
   public async promoteUsertoChannelAdmin(title: string, userId: string): Promise<void> {
     const channel: Channels = await this.getChannelByTitle(title);
     const user: User = await this.userService.findOneByName(userId);
-    channel.administrators.push(user);
-    this.channelRepo.save(channel);
+
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+
+    try {
+      await queryRunner.manager.query(
+        `INSERT INTO channel_subscription (channel, "user")
+          VALUES (${channel.id}, ${user.id})
+          ON CONFLICT (channel, "user") DO NOTHING;`,
+      );
+    } catch (error) {
+      console.error('Error adding user to channel:', error.message.split('\n')[0]);
+    } finally {
+      await queryRunner.release();
+    }
+    // channel.administrators.push(user);
+    // this.channelRepo.save(channel);
   }
 
   public async getUsersInChannel(title: string): Promise<User[]> {
@@ -155,5 +165,18 @@ export class ChatDAO {
       throw new Error('Channel not found');
     }
     return channel.users;
+  }
+
+  public async isUserInChannel(title: string, name: string): Promise<Boolean> {
+    const channel = await this.channelRepo.createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.users', 'users')
+      .where('channel.title = :title', { title })
+      .getOne();
+
+    if (!channel) {
+      throw new Error('Channel not found');
+    }
+
+    return channel.users.some((user) => user.pseudo === name);
   }
 }
