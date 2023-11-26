@@ -147,7 +147,8 @@ export class ChatService extends ChatServiceBase {
         this.sendServerMessageToClient(user, 'user is not in channel');
         return;
       }
-      if (await this.chatDao.isChannelOwner(data.room, name)) {
+      if (await this.chatDao.isChannelOwner(data.room, name) &&
+        !await this.chatDao.isChannelOwner(data.room, data.user.name)) {
         this.sendServerMessageToClient(user, 'you can\'t kick the owner: ');
         return;
       }
