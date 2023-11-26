@@ -142,17 +142,15 @@ export class ChatDAO {
 
     try {
       await queryRunner.manager.query(
-        `INSERT INTO channel_subscription (channel, "user")
+        `INSERT INTO administrators (channel, "user")
           VALUES (${channel.id}, ${user.id})
           ON CONFLICT (channel, "user") DO NOTHING;`,
       );
     } catch (error) {
-      console.error('Error adding user to channel:', error.message.split('\n')[0]);
+      console.error('Error promoting user to admin in channel:', error.message.split('\n')[0]);
     } finally {
       await queryRunner.release();
     }
-    // channel.administrators.push(user);
-    // this.channelRepo.save(channel);
   }
 
   public async getUsersInChannel(title: string): Promise<User[]> {

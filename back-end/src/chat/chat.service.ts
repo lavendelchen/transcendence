@@ -11,13 +11,13 @@ import { WSocketGateway } from 'src/wsocket/wsocket.gateway';
 
 @Injectable()
 export class ChatService extends ChatServiceBase {
-    constructor(
-        public userService: UserService,
-        protected chatDao: ChatDAO,
-        protected wSocketGateway: WSocketGateway,
-    ) {
-        super(userService, chatDao, wSocketGateway);
-    }
+  constructor(
+    public userService: UserService,
+    protected chatDao: ChatDAO,
+    protected wSocketGateway: WSocketGateway,
+  ) {
+    super(userService, chatDao, wSocketGateway);
+  }
 
   public async processMessage(data: IMessage, server: Server) {
     let check = data.input;
@@ -35,19 +35,15 @@ export class ChatService extends ChatServiceBase {
       case '/mute':
         this.muteUser(data)
         break;
-			case '/ban':
-				this.banUser(data, server);
+      case '/ban':
+        this.banUser(data, server);
         break;
-      // case '/add':
-      //   this.addUserToChannel(data);
-      //   break;
       default:
         this.printMessage(data);
     }
   }
 
-
-  private async sendServerMessageToClient(user: User, message: string) {
+  public async sendServerMessageToClient(user: User, message: string) {
     const resolvedUser = await user;
     const currentConnections = this.wSocketGateway.getCurrentConnections();
     const connection = currentConnections.find(connection => connection.id === resolvedUser.id);
@@ -59,7 +55,7 @@ export class ChatService extends ChatServiceBase {
     if (connection) {
       connection.socket.send(JSON.stringify(msg_to_client));
     }
-}
+  }
 
   private async muteUser(data: IMessage) {
     const user = await this.userService.findOne(data.user.id);
@@ -70,39 +66,78 @@ export class ChatService extends ChatServiceBase {
     splitedMessage.shift()
     for (let i in splitedMessage) {
       try {
-      var blockedUser = await this.userService.findOneByName(splitedMessage[i])
+        var blockedUser = await this.userService.findOneByName(splitedMessage[i])
+        if (
+          !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
+          !(await this.chatDao.isChannelOwner(data.room, data.user.name))) {
+          this.sendServerMessageToClient(user, 'you are not admin or owner');
+          return;
+        }
+        if (await this.chatDao.isChannelOwner(data.room, splitedMessage[i]) &&
+          !await this.chatDao.isChannelOwner(data.room, data.user.name)) {
+          this.sendServerMessageToClient(user, 'you can\'t mute the owner: ');
+          return;
+        }
+        if (splitedMessage[i] === data.user.name) {
+          this.sendServerMessageToClient(user, 'you can\'t mute yourself');
+          return;
+        }
       } catch (error) {
         console.log('user does not exist')
         this.sendServerMessageToClient(user, "Could not find User " + splitedMessage[i])
         return
       }
       console.log(blockedUser.id)
-      if (!user.blockedUser){
-      user.blockedUser = [blockedUser.id]
+      if (!user.blockedUser) {
+        user.blockedUser = [blockedUser.id]
       } else if (!this.checkUserBlocked(user.id, blockedUser.id)) {
         user.blockedUser.push(blockedUser.id)
       }
       this.userService.update(user.id, user)
-      this.sendServerMessageToClient(user, splitedMessage[i] + " is muted")
+      // this.sendServerMessageToClient(user, splitedMessage[i] + " is muted")
     }
   }
 
-	async banUser(data: IMessage, server: Server) {
+  private async banUser(data: IMessage, server: Server) {
     let banned_name = data.input.split(' ')[1];
-    const user = await this.userService.findOneByName(banned_name);
-    if (!user) {
-        throw new Error('User not found');
+    const userToBeBanned = await this.userService.findOneByName(banned_name);
+    const user = await this.userService.findOne(data.user.id);
+    if (!userToBeBanned) {
+      await this.sendServerMessageToClient(user, 'user not found');
+      return;
     }
-
-    await this.userService.update(user.id, { isBanned: true });
-    await this.userService.update(user.id, { isAuthenticated: false });
-    console.log(`User ${user.pseudo} has been banned.`);
+    if (
+      !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
+      !(await this.chatDao.isChannelOwner(data.room, data.user.name))) {
+      this.sendServerMessageToClient(user, 'you are not admin or owner');
+      return;
+    }
+    if (await this.chatDao.isChannelOwner(data.room, banned_name) &&
+      !await this.chatDao.isChannelOwner(data.room, data.user.name)) {
+      this.sendServerMessageToClient(user, 'you can\'t ban the owner: ');
+      return;
+    }
+    if (banned_name === data.user.name) {
+      this.sendServerMessageToClient(user, 'you can\'t ban yourself');
+      return;
+    }
+    await this.userService.update(userToBeBanned.id, { isBanned: true });
+    await this.userService.update(userToBeBanned.id, { isAuthenticated: false });
+    await this.broadcastToRoom(data, `"server":${banned_name} got banned.`);
   }
-	
+
   private async printMessage(data: IMessage) {
+    console.log('room: ', data.room);
     try {
+      const user = await this.userService.findOne(data.user.id);
+      if (await this.chatDao.isUserInChannel(data.room, data.user.name) === false) {
+        this.sendServerMessageToClient(user, 'RIP! it looks like you are not part of this channel anymore :( sorry bro');
+        return;
+      }
+      if (user.isBanned)
+        this.sendServerMessageToClient(user, "FUUUUCK YOUUUU, YOU ARE BANNED");
       const msg = `${data.user.name}:${data.input}`;
-      this.broadcastToRoom(data, msg)
+      await this.broadcastToRoom(data, msg)
       await this.chatDao.saveMessageToChannel(data);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
@@ -112,13 +147,18 @@ export class ChatService extends ChatServiceBase {
   private async addUserToChannel(data: IMessage) {
     try {
       const name = data.input.substring(data.input.indexOf(' ') + 1);
-      const user = await this.userService.findOneByName(name);
-      if (!user) {
-        console.log('user not found');
+      const user = await this.userService.findOne(data.user.id);
+      const userToBeAdded = await this.userService.findOneByName(name);
+      if (!userToBeAdded) {
+        await this.sendServerMessageToClient(user, 'user not found');
+        return;
+      }
+      if (await this.chatDao.isUserInChannel(data.room, name)) {
+        await this.sendServerMessageToClient(user, 'user already in channel');
         return;
       }
       await this.chatDao.addUserToChannel(data.room, name);
-      await this.broadcastToRoom(data, `${name} got added`);
+      await this.broadcastToRoom(data, `"server":${name} got added`, true);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
     }
@@ -126,38 +166,39 @@ export class ChatService extends ChatServiceBase {
 
   private async checkUserBlocked(id: number, potentialBlockedUser: number) {
     const data = await this.userService.findBlockedUser(id);
-    for (let i = 0; i < data.blockedUser.length; i++) {
-      if (data.blockedUser[i] === potentialBlockedUser)
-        return true;
+    if (data.blockedUser) {
+      for (let i = 0; i < data.blockedUser.length; i++) {
+        if (data.blockedUser[i] === potentialBlockedUser)
+          return true;
+      }
     }
     return false;
   }
 
   private async kickUser(data: IMessage) {
-    console.log('kick user');
     try {
+      const user = await this.userService.findOne(data.user.id);
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       if (
         !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
         !(await this.chatDao.isChannelOwner(data.room, data.user.name))) {
-        console.log('you are not admin or owner');
+        this.sendServerMessageToClient(user, 'you are not admin or owner');
         return;
       }
       if (!(await this.chatDao.isUserInChannel(data.room, name))) {
-        console.log('user is not in channel');
+        this.sendServerMessageToClient(user, 'user is not in channel');
         return;
       }
-      console.log('is channel owner: ', this.chatDao.isChannelOwner(data.room, name));
-      if (await this.chatDao.isChannelOwner(data.room, name)) {
-        console.log('you can\'t kick the owner: ');
+      if (await this.chatDao.isChannelOwner(data.room, name) &&
+        !await this.chatDao.isChannelOwner(data.room, data.user.name)) {
+        this.sendServerMessageToClient(user, 'you can\'t kick the owner: ');
         return;
       }
-      if (name === data.user.name) {
-        console.log('you can\'t kick yourself');
-        return;
-      }
+      if (name === data.user.name)
+        await this.broadcastToRoom(data, `"server":${name} left the channel`, true);
+      else
+        await this.broadcastToRoom(data, `"server":${name} got kicked`, true);
       await this.chatDao.removeUserFromChannel(data.room, name);
-      await this.broadcastToRoom(data, `${name} got kicked`);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
     }
@@ -165,34 +206,39 @@ export class ChatService extends ChatServiceBase {
 
   private async promoteUser(data: IMessage) {
     try {
+      const user = await this.userService.findOne(data.user.id);
       const name = data.input.substring(data.input.indexOf(' ') + 1);
       if (
         !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
         !await (this.chatDao.isChannelOwner(data.room, data.user.name))) {
-        console.log('you are not admin or owner');
+        this.sendServerMessageToClient(user, 'you are not admin or owner');
         return;
       }
       if (!(await this.chatDao.isUserInChannel(data.room, name))) {
-        console.log('user is not in channel');
+        this.sendServerMessageToClient(user, 'user is not in channel');
+        return;
+      }
+      if (await this.chatDao.isChannelAdmin(data.room, name)) {
+        this.sendServerMessageToClient(user, 'user is already admin');
         return;
       }
       if (await this.chatDao.isChannelOwner(data.room, name)) {
-        console.log('you can\'t promote the owner');
+        this.sendServerMessageToClient(user, 'you can\'t promote the owner');
         return;
       }
       if (name === data.user.name) {
-        console.log('you can\'t promote yourself');
+        this.sendServerMessageToClient(user, 'you can\'t promote yourself');
         return;
       }
       await this.chatDao.promoteUsertoChannelAdmin(data.room, name);
-      await this.broadcastToRoom(data, `${name} got promoted to admin`);
+      await this.broadcastToRoom(data, `"server":${name} got promoted to admin`, true);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
     }
   }
 
   // UTILS
-  private async broadcastToRoom(data: IMessage, msg: string) {
+  private async broadcastToRoom(data: IMessage, msg: string, isCommandNotice: boolean = false) {
     console.log('broodcat to room: ', msg)
     const usersInRoom = await this.chatDao.getUsersInChannel(data.room);
     const currentConnections = this.wSocketGateway.getCurrentConnections();
@@ -204,7 +250,13 @@ export class ChatService extends ChatServiceBase {
 
     for (const user of usersInRoom) {
       const connection = currentConnections.find(connection => connection.id === user.id);
-      if (connection && connection.id !== data.user.id && !this.checkUserBlocked(data.user.id, connection.id)) {
+      if (connection) {
+        if (connection.id === data.user.id && !isCommandNotice) {
+          continue;
+        }
+        if (this.checkUserBlocked(data.user.id, connection.id) && !isCommandNotice) {
+          continue;
+        }
         try {
           connection.socket.send(JSON.stringify(msg_to_client));
           console.log('message send succesfully');
