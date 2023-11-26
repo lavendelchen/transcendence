@@ -44,15 +44,11 @@ export class WSocketGateway implements OnGatewayInit {
     console.log('Client connected: ', (client as any)._socket.remoteAddress);
 
     this.userService.findOne(data.id).then(user => {
-      if (user && user.isBanned) {
-        this.chatService.sendServerMessageToClient(user, "FUUUUCK YOUUUU, YOU ARE BANNED");
-      } else {
-        const newChatUser: IChatUser = {
-          id: data.id,
-          socket: client,
-        };
-        this.currentConnections.push(newChatUser);
-      }
+      const newChatUser: IChatUser = {
+        id: data.id,
+        socket: client,
+      };
+      this.currentConnections.push(newChatUser);
     }).catch(error => {
       console.error('Error finding user:', error);
     });

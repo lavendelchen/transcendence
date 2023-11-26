@@ -70,6 +70,21 @@ export class ChatService extends ChatServiceBase {
     for (let i in splitedMessage) {
       try {
         var blockedUser = await this.userService.findOneByName(splitedMessage[i])
+        if (
+          !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
+          !(await this.chatDao.isChannelOwner(data.room, data.user.name))) {
+          this.sendServerMessageToClient(user, 'you are not admin or owner');
+          return;
+        }
+        if (await this.chatDao.isChannelOwner(data.room, splitedMessage[i]) &&
+          !await this.chatDao.isChannelOwner(data.room, data.user.name)) {
+          this.sendServerMessageToClient(user, 'you can\'t mute the owner: ');
+          return;
+        }
+        if (splitedMessage[i] === data.user.name) {
+          this.sendServerMessageToClient(user, 'you can\'t mute yourself');
+          return;
+        }
       } catch (error) {
         console.log('user does not exist')
         this.sendServerMessageToClient(user, "Could not find User " + splitedMessage[i])
@@ -82,7 +97,7 @@ export class ChatService extends ChatServiceBase {
         user.blockedUser.push(blockedUser.id)
       }
       this.userService.update(user.id, user)
-      this.sendServerMessageToClient(user, splitedMessage[i] + " is muted")
+      // this.sendServerMessageToClient(user, splitedMessage[i] + " is muted")
     }
   }
 
@@ -94,10 +109,24 @@ export class ChatService extends ChatServiceBase {
       await this.sendServerMessageToClient(user, 'user not found');
       return;
     }
-
-    await this.userService.update(user.id, { isBanned: true });
-    await this.userService.update(user.id, { isAuthenticated: false });
-    await this.broadcastToRoom(data, `"server":${user.pseudo} got banned.`);
+    if (
+      !(await this.chatDao.isChannelAdmin(data.room, data.user.name)) &&
+      !(await this.chatDao.isChannelOwner(data.room, data.user.name))) {
+      this.sendServerMessageToClient(user, 'you are not admin or owner');
+      return;
+    }
+    if (await this.chatDao.isChannelOwner(data.room, banned_name) &&
+      !await this.chatDao.isChannelOwner(data.room, data.user.name)) {
+      this.sendServerMessageToClient(user, 'you can\'t ban the owner: ');
+      return;
+    }
+    if (banned_name === data.user.name) {
+      this.sendServerMessageToClient(user, 'you can\'t ban yourself');
+      return;
+    }
+    await this.userService.update(userToBeBanned.id, { isBanned: true });
+    await this.userService.update(userToBeBanned.id, { isAuthenticated: false });
+    await this.broadcastToRoom(data, `"server":${banned_name} got banned.`);
   }
 
   private async printMessage(data: IMessage) {
@@ -108,6 +137,8 @@ export class ChatService extends ChatServiceBase {
         this.sendServerMessageToClient(user, 'RIP! it looks like you are not part of this channel anymore :( sorry bro');
         return;
       }
+      if (user.isBanned)
+        this.sendServerMessageToClient(user, "FUUUUCK YOUUUU, YOU ARE BANNED");
       const msg = `${data.user.name}:${data.input}`;
       await this.broadcastToRoom(data, msg)
       await this.chatDao.saveMessageToChannel(data);
@@ -138,9 +169,11 @@ export class ChatService extends ChatServiceBase {
 
   private async checkUserBlocked(id: number, potentialBlockedUser: number) {
     const data = await this.userService.findBlockedUser(id);
-    for (let i = 0; i < data.blockedUser.length; i++) {
-      if (data.blockedUser[i] === potentialBlockedUser)
-        return true;
+    if (data.blockedUser) {
+      for (let i = 0; i < data.blockedUser.length; i++) {
+        if (data.blockedUser[i] === potentialBlockedUser)
+          return true;
+      }
     }
     return false;
   }
@@ -188,6 +221,10 @@ export class ChatService extends ChatServiceBase {
         this.sendServerMessageToClient(user, 'user is not in channel');
         return;
       }
+      if (await this.chatDao.isChannelAdmin(data.room, name)) {
+        this.sendServerMessageToClient(user, 'user is already admin');
+        return;
+      }
       if (await this.chatDao.isChannelOwner(data.room, name)) {
         this.sendServerMessageToClient(user, 'you can\'t promote the owner');
         return;
@@ -217,10 +254,12 @@ export class ChatService extends ChatServiceBase {
     for (const user of usersInRoom) {
       const connection = currentConnections.find(connection => connection.id === user.id);
       if (connection) {
-        if (connection.id === data.user.id && !isCommandNotice)
+        if (connection.id === data.user.id && !isCommandNotice) {
           continue;
-        if (this.checkUserBlocked(data.user.id, connection.id) && !isCommandNotice)
+        }
+        if (this.checkUserBlocked(data.user.id, connection.id) && !isCommandNotice) {
           continue;
+        }
         try {
           connection.socket.send(JSON.stringify(msg_to_client));
           console.log('message send succesfully');
