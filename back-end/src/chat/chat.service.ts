@@ -89,13 +89,13 @@ export class ChatService extends ChatServiceBase {
     const userToBeBanned = await this.userService.findOneByName(banned_name);
     const user = await this.userService.findOne(data.user.id);
     if (!userToBeBanned) {
-      await this.sendServerMessageToClient(user, 'User not found');
+      await this.sendServerMessageToClient(user, 'user not found');
       return;
     }
 
     await this.userService.update(user.id, { isBanned: true });
     await this.userService.update(user.id, { isAuthenticated: false });
-    await this.broadcastToRoom(data, `User ${user.pseudo} has been banned.`);
+    await this.broadcastToRoom(data, `"server":${user.pseudo} got banned.`);
   }
 
   private async printMessage(data: IMessage) {
@@ -118,7 +118,7 @@ export class ChatService extends ChatServiceBase {
         return;
       }
       await this.chatDao.addUserToChannel(data.room, name);
-      await this.broadcastToRoom(data, `${name} got added`, true);
+      await this.broadcastToRoom(data, `"server":${name} got added`, true);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
     }
@@ -152,9 +152,9 @@ export class ChatService extends ChatServiceBase {
         return;
       }
       if (name === data.user.name)
-        await this.broadcastToRoom(data, `${name} left the channel`, true);
+        await this.broadcastToRoom(data, `"server":${name} left the channel`, true);
       else
-        await this.broadcastToRoom(data, `${name} got kicked`, true);
+        await this.broadcastToRoom(data, `"server":${name} got kicked`, true);
       await this.chatDao.removeUserFromChannel(data.room, name);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
@@ -184,7 +184,7 @@ export class ChatService extends ChatServiceBase {
         return;
       }
       await this.chatDao.promoteUsertoChannelAdmin(data.room, name);
-      await this.broadcastToRoom(data, `${name} got promoted to admin`, true);
+      await this.broadcastToRoom(data, `"server":${name} got promoted to admin`, true);
     } catch (error) {
       console.log(`SYSTEM: ${error.message.split('\n')[0]}`);
     }
