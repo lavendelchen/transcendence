@@ -2,7 +2,6 @@
 import { store } from '../../store/store.ts';
 
     function chatButtonClicked() {
-        console.log('button clicked')
 		if (store.chatActive == false) {
         	store.profileActive = false;
         	store.foreignProfileActive = false;
@@ -16,7 +15,6 @@ import { store } from '../../store/store.ts';
     }
     
     function profileButtonClicked() {
-        console.log('button clicked')
         if (store.profileActive == false) {
 			store.foreignProfileActive = false;
         	store.profileActive = true;

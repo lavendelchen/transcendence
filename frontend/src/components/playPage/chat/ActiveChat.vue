@@ -158,6 +158,14 @@ function createIMessage(newChatMessage: HTMLTextAreaElement, userData: any) {
     return newItem;
 }
 
+function createChannelOnServer(newItem: IChannel) {
+    const msg = {
+        event: "create",
+        data: newItem
+    }
+    socket.send(JSON.stringify(msg));
+}
+
 function sendMessageToServer(newItem: IMessage) {
     const msg = {
         event: "message",

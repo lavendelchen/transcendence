@@ -1,8 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Match } from './match.entity';
 import { Channels } from './chat.entity';
-
-
+import { Friend } from './friend.entity';
 
 @Entity()
 export class User {
@@ -92,6 +91,11 @@ export class User {
     })
     channels: Channels[];
 
+	@OneToMany(() => Friend, (friend) => friend.user)
+	friends: Friend[];
+
+	@OneToMany(() => Friend, (friend) => friend.followedUser)
+	followers: Friend[];
 
     // @OneToMany(() => ChannelAdmin, channelAdmin => channelAdmin.user)
     // adminChannels: ChannelAdmin[];

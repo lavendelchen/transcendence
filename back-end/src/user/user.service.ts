@@ -53,7 +53,12 @@ export class UserService {
 				'lostMatchesCount',
 				'matchesCount',
 				'pointsMade',
-				'pointsLost'
+				'pointsLost',
+			],
+			relations: [
+				'friends',
+				'friends.user',
+				'friends.followedUser',
 			]
 		});
 	}
