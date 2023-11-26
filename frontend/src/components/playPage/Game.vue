@@ -23,7 +23,7 @@
 		<canvas id="gameCanvas" :width="gameWidth" :height="gameHeight"></canvas>
 	</div>
 	<p id="opponentMsg" v-if="opponentName" :style="{ 'visibility': visibility, 'width': gameWidth + 'px' }">
-		Opponent: <span>{{ opponentName }}</span>
+		Opponent: <span @click="goToOpponentProfile(opponentID)">{{ opponentName }}</span>
 	</p>
 </template>
 
@@ -31,6 +31,7 @@
 import { onMounted, ref, Ref, computed } from 'vue';
 import fontUrl from '/fonts/Pixeled.ttf';
 import { whoIam, User } from '../../utils/whoIam.ts'
+import { store } from '../../store/store.ts'
 
 const emit = defineEmits(['connectError'])
 let canvasFont: FontFace;
@@ -101,6 +102,7 @@ let gameMode = ref(CLASSIC_MODE);
 let waitingButtonText = ref("");
 
 let opponentName = ref("");
+let opponentID = ref(0);
 let visibility = computed(() => {
 	return opponentName.value ? 'visible' : 'hidden'
 });
@@ -283,6 +285,7 @@ function handleMessages(event: MessageEvent<any>) {
 
 		case 'gameInfo':
 			opponentName.value = message.data.opponentName;
+			opponentID.value = message.data.opponentID;
 			resetGame();
 			renderElements();
 			break;
@@ -519,13 +522,12 @@ function drawText(text: string, xOffset: number, yOffset: number): void {
 	context.fillText(text, xOffset, yOffset);
 };
 
-function resetBall(): void {
-/* 	console.log("resetBall()");
- */	ball.x = gameWidth.value / 2;
-	ball.y = gameHeight.value / 2;
-	ball.velocityX = 0;
-	ball.velocityY = 0;
-};
+function goToOpponentProfile(opponent_id: number) {
+	store.foreignProfileID = opponent_id;
+	store.chatActive = false;
+	store.profileActive = false;
+	store.foreignProfileActive = true;
+}
 
 </script>
 
@@ -633,5 +635,12 @@ canvas {
 
 span {
 	color: white;
+	cursor: pointer;
+	transition: 0.3s;
 }
+
+span:hover {
+	color: rgb(124, 124, 124);
+}
+
 </style>

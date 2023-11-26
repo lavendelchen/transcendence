@@ -4,6 +4,7 @@
 import Chat from "./chat/Chat.vue"
 import Menue from "./Menue.vue"
 import Profile from "./profile/Profile.vue"
+import ForeignProfile from "./ForeignProfile.vue"
 import Game from './Game.vue'
 import NoConnectModal from "../errorPages/NoConnectModal.vue"
 
@@ -15,6 +16,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const connectError = ref(false);
+const foreignUserId = ref(0);
 
 onMounted(() => {
 	checkConnectError()
@@ -43,6 +45,7 @@ async function checkConnectError() {
 			<Menue />
 			<Chat v-if="store.chatActive" />
 			<Profile v-if="store.profileActive" />
+			<ForeignProfile v-if="store.foreignProfileActive" :user_id="store.foreignProfileID"/>
 		</aside>
 	</div>
 	<NoConnectModal v-if="connectError"/>

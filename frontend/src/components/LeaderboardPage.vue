@@ -13,8 +13,8 @@
 	<div id="leaderboardBox" v-if="players.length > 0">
 		<p v-for="player in players" :key="player.rank" class="leaderboardEntries">
 			<span id="rank">{{ player.rank }}</span>
-			<span id="pseudo">{{ player.pseudo }}</span>
-			<img id="img" :src="player.avatar" alt="Player Avatar"> <!-- make hyperlink? -->
+			<span id="pseudo" class="name" @click="goToOpponentProfile(player.id)">{{ player.pseudo }}</span>
+			<img id="img" class="name" @click="goToOpponentProfile(player.id)" :src="player.avatar" alt="Player Avatar">
 			<span id="wonGames">{{ player.wonMatchesCount }}</span>
 			<span id="lostGames">{{ player.lostMatchesCount }}</span>
 			<span id="playedGames">{{ player.matchesCount }}</span>
@@ -28,6 +28,10 @@
 </template>
 
 <script lang="ts">
+	import { store } from '../store/store.ts'
+	import { whoIam, User } from '../utils/whoIam.ts'
+	import { useRouter } from 'vue-router';
+
 	interface Player {
 	  avatar: string;
 	  id: number;
@@ -43,10 +47,14 @@
 	export default {
 		data() {
 			return {
-				players: [] as Player[]
+				players: [] as Player[],
+				router: null as any,
+				myID: 0
 			}
 		},
 		mounted() {
+			this.router = useRouter()
+			this.getCurrUser()
 			fetch('http://' + import.meta.env.VITE_CURRENT_HOST + ':3000/user/leaderboard')
 				.then(response => response.json())
 				.then(data => {
@@ -64,6 +72,25 @@
 			        });
 				})
 				.catch(error => console.log(error.message))
+		},
+		methods: {
+			getCurrUser: async function() {
+				const user = await whoIam()
+				if (!user)
+					return
+				this.myID = user.id
+				console.log(user as User)
+			},
+			goToOpponentProfile(opponent_id: number) {
+				if (opponent_id == this.myID)
+					return;
+				console.log("hello?" + opponent_id)
+				store.foreignProfileID = opponent_id;
+				store.chatActive = false;
+				store.profileActive = false;
+				store.foreignProfileActive = true;
+				this.router.push("/play");
+			}
 		}
 	}
 </script>
@@ -110,6 +137,15 @@ span {
 
 #pseudo {
 	width: 25vw;
+}
+
+.name {
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+.name:hover {
+	color: rgb(124, 124, 124);
 }
 
 #wonGames {
