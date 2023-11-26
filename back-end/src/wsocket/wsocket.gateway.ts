@@ -19,7 +19,7 @@ export class WSocketGateway implements OnGatewayInit {
   constructor(
     @Inject(forwardRef(() => ChatService))
     private chatService: ChatService,
-	public userService: UserService,
+    public userService: UserService,
   ) { }
 
   private currentConnections: IChatUser[] = [];
@@ -41,22 +41,21 @@ export class WSocketGateway implements OnGatewayInit {
 
   @SubscribeMessage('connect')
   addChatUser(client: Socket, data: IChatUser) {
-	  console.log('Client connected: ', (client as any)._socket.remoteAddress);
+    console.log('Client connected: ', (client as any)._socket.remoteAddress);
 
-	  this.userService.findOne(data.id).then(user => {
-		  if (user && user.isBanned) {
-			  console.log("FUUUUCK YOUUUU, YOU ARE BANNED");
-		  } else {
-			  const newChatUser: IChatUser = {
-				  id: data.id,
-				  socket: client,
-			  };
-			  this.currentConnections.push(newChatUser);
-        console.log(this.currentConnections);
-		  }
-	  }).catch(error => {
-		  console.error('Error finding user:', error);
-	  });
+    this.userService.findOne(data.id).then(user => {
+      if (user && user.isBanned) {
+        this.chatService.sendServerMessageToClient(user, "FUUUUCK YOUUUU, YOU ARE BANNED");
+      } else {
+        const newChatUser: IChatUser = {
+          id: data.id,
+          socket: client,
+        };
+        this.currentConnections.push(newChatUser);
+      }
+    }).catch(error => {
+      console.error('Error finding user:', error);
+    });
   }
 
   @SubscribeMessage('message')

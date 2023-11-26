@@ -44,7 +44,7 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
-  private async sendServerMessageToClient(user: User, message: string) {
+  public async sendServerMessageToClient(user: User, message: string) {
     const resolvedUser = await user;
     const currentConnections = this.wSocketGateway.getCurrentConnections();
     const connection = currentConnections.find(connection => connection.id === resolvedUser.id);
@@ -84,7 +84,7 @@ export class ChatService extends ChatServiceBase {
     }
   }
 
-  async banUser(data: IMessage, server: Server) {
+  private async banUser(data: IMessage, server: Server) {
     let banned_name = data.input.split(' ')[1];
     const userToBeBanned = await this.userService.findOneByName(banned_name);
     const user = await this.userService.findOne(data.user.id);
@@ -99,7 +99,13 @@ export class ChatService extends ChatServiceBase {
   }
 
   private async printMessage(data: IMessage) {
+    console.log('room: ', data.room);
     try {
+      const user = await this.userService.findOne(data.user.id);
+      if (await this.chatDao.isUserInChannel(data.room, data.user.name) === false) {
+        this.sendServerMessageToClient(user, 'RIP! it looks like you are not part of this channel anymore :( sorry bro');
+        return;
+      }
       const msg = `${data.user.name}:${data.input}`;
       await this.broadcastToRoom(data, msg)
       await this.chatDao.saveMessageToChannel(data);
@@ -115,6 +121,10 @@ export class ChatService extends ChatServiceBase {
       const userToBeAdded = await this.userService.findOneByName(name);
       if (!userToBeAdded) {
         await this.sendServerMessageToClient(user, 'user not found');
+        return;
+      }
+      if (await this.chatDao.isUserInChannel(data.room, name)) {
+        await this.sendServerMessageToClient(user, 'user already in channel');
         return;
       }
       await this.chatDao.addUserToChannel(data.room, name);
