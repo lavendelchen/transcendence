@@ -149,7 +149,6 @@ export class GameserverGateway {
 	};
 
 	handleConnection(client: Socket) {
-		console.log('New player connected');
 	}
 	
 	handleDisconnect(client: Socket) {
@@ -174,13 +173,39 @@ export class GameserverGateway {
 				return;
 			}
 		});
-		console.log('Player disconnected');
 	}
 
 	handleError(client: Socket, ...args: any[]) {
 		console.error(args);
 	}
 	
+	@SubscribeMessage('getStatuses')
+	sendStatuses(client: Socket,
+		message: {
+			friendships: any[] // mit oder ohne object?
+		}) {
+
+		let playing = [] as number[]
+		let in_queue = [] as number[]
+
+		message.friendships.forEach((friendship, index) => {
+			if (this.isInQueue(friendship.followedUser.id))
+				in_queue.push(friendship.followedUser.id)
+			else if (this.isPlaying(friendship.followedUser.id))
+				playing.push(friendship.followedUser.id)
+		})
+
+		const sendStatusesMsg = {
+			event: "sendStatuses",
+			data: {
+				playing: playing,
+				in_queue: in_queue
+			}
+		}
+		client.send(JSON.stringify(sendStatusesMsg))
+		client.close()
+	}
+
 	@SubscribeMessage('authenticate')
 	authenticatePlayer(client: Socket,
 		message: {
@@ -476,15 +501,29 @@ export class GameserverGateway {
 	};
 
 	isPlayerAlreadyPlaying(playerID: number) {
+		if (this.isInQueue(playerID))
+			return true;
+		
+		if (this.isPlaying(playerID))
+		  return true;
+
+		return false;
+	}
+
+	isInQueue(playerID: number) {
 		if (this.queue.some(player => player.ID === playerID)) {
 			return true;
-		  }
-		
-		  if (this.ongoingMatches.some(match =>
+		}
+
+		return false;
+	}
+
+	isPlaying(playerID: number) {
+		if (this.ongoingMatches.some(match =>
 				match.player1.ID === playerID
 			||	match.player2.ID === playerID)) {
 			return true;
-		  }
+		}
 
 		return false;
 	}
