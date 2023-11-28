@@ -1,4 +1,4 @@
 # transcendence
 ping pang pong 
 
-start with ```docker compose up``` (```--build```)
+start with ```docker compose up --build```
