@@ -15,7 +15,7 @@ services:
 
   backend-container:
     container_name: backend-container
-    build: ./back-end
+    build: ./backend
     depends_on:
       - db-container
     env_file:
@@ -25,7 +25,7 @@ services:
       - "5174:5174" # game server
       - "9000:9000" # chat server
     volumes:
-      - ./back-end:/app
+      - ./backend:/app
       - /app/node_modules
     networks:
       - transcendence-net
