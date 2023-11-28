@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}" #svenja: does the database have to communicate with anything else but the backend? if anyone knows, lemme know
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
