@@ -25,12 +25,3 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	overflow: hidden;
 }
-
-@font-face {
-  font-family: textfont;
-  src: url('~@/assets/fonts/Pixeled.ttf');
-}
-@font-face {
-font-family: logofont;
-src: url('~@/assets/fonts/8-bit-Out.ttf');
-}

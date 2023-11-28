@@ -73,7 +73,7 @@ section {
 }
 
 .logo {
-	font-family: 'Logofont';
+	font-family: 'logofont';
 }
 
 body {
