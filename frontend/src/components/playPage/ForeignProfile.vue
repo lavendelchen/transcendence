@@ -133,22 +133,22 @@ function removeFriend() {
                 <p id="name">{{ user.pseudo }}</p>
             </div>
         </div>
-		<div class="profile-component">
-			<p>
+		<div class="profile-component statsFullContainer">
+			<p class="statHeaderContainer">
 				<span class="statHeader">Wins</span>
 				<span class="statHeader">Losses</span>
 				<span class="statHeader">Total Games</span>
 			</p>
-			<p>
+			<p class="statsContainer">
 				<span class="stats" id="wonGames">{{ user.wonMatchesCount }}</span>
 				<span class="stats" id="lostGames">{{ user.lostMatchesCount }}</span>
 				<span class="stats" id="playedGames">{{ user.matchesCount }}</span>
 			</p>
-			<p>
+			<p class="statHeaderContainer">
 				<span class="statHeader">Points made</span>
 				<span class="statHeader">Points lost</span>
 			</p>
-			<p>
+			<p class="statsContainer">
 				<span class="stats" id="pointsMade">{{ user.pointsMade }}</span>
 				<span class="stats" id="pointsLost">{{ user.pointsLost }}</span>
 			</p>
@@ -175,6 +175,8 @@ function removeFriend() {
 		margin-top: 50px;
         padding: 10px;
         border: 1px solid white;
+		max-height: 70vh;
+		overflow-y: scroll;
     }
     .hero {
         display: grid;
@@ -215,6 +217,13 @@ function removeFriend() {
 		margin-right: auto;
 	}
 
+	.statsFullContainer {
+		padding-top: 8px;
+	}
+
+	.statHeaderContainer {
+		margin-bottom: 7px;
+	}
 	.statHeader {
 		display: inline-block;
 		font-size: var(--font-size-tiny);
@@ -222,6 +231,10 @@ function removeFriend() {
 		margin-left: 5px;
 		margin-right: 5px;
 		margin-bottom: 0px;
+	}
+
+	.statsContainer {
+		margin-top: 0px;
 	}
 	.stats {
 		display: inline-block;

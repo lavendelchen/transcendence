@@ -14,7 +14,7 @@
 		<p v-for="player in players" :key="player.rank" class="leaderboardEntries">
 			<span id="rank">{{ player.rank }}</span>
 			<span id="pseudo" class="name" @click="goToOpponentProfile(player.id)">{{ player.pseudo }}</span>
-			<img id="img" class="name" @click="goToOpponentProfile(player.id)" :src="player.avatar" alt="Player Avatar">
+			<img  id="img" class="name" @click="goToOpponentProfile(player.id)" :src="player.avatar" alt="Player Avatar">
 			<span id="wonGames">{{ player.wonMatchesCount }}</span>
 			<span id="lostGames">{{ player.lostMatchesCount }}</span>
 			<span id="playedGames">{{ player.matchesCount }}</span>

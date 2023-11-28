@@ -1,5 +1,3 @@
-
-
 <script setup lang="ts">
 import Chat from "./chat/Chat.vue"
 import Menue from "./Menue.vue"

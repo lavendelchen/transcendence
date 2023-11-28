@@ -1,4 +1,4 @@
-<template class="chat">
+<template>
     <div class="chat" :style="{ 'grid-row-gap': chatActive ? '10px' : '0px' }">
 		<img v-if="chatActive" src="https://static.thenounproject.com/png/1507912-200.png" alt="leave"
 			@click="leaveChannel">
@@ -58,7 +58,9 @@ div.chat {
 	grid-template-rows: 80px auto 80px;
     grid-column-gap: 0px;
     grid-row-gap: 10px;
-	overflow: hidden;
+	overflow-x: hidden;
+	max-height: 70vh;
+	overflow-y: scroll;
 }
 
 h3 {

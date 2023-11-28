@@ -269,11 +269,12 @@
 	
 	form label {
 	  display: block; /* Make labels block elements to stack them vertically */
-	  margin-bottom: 1vh; /* Add spacing below labels */
+	  margin-bottom: 10px; /* Add spacing below labels */
 	}
 	
 	input {
 		padding: 6px;
+		margin-bottom: 20px;
 	}
 
 	

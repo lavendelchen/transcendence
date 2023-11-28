@@ -4,10 +4,13 @@
 			{{ channel.name }}
 		</div>
 	</div>
+	<p v-else class="emptyMsg">
+		you're not part of any chats yet
+	</p>
 	<div class="controls">
-		<button @click="newChannel()">Create Channel</button>
+		<button @click="newChannel()">Create Chat</button>
 		<div class="commands">
-			<p>New channel name </p>
+			<p>New chat name</p>
 			<!-- input NOT WORKING YET -->
 			<input> 
 		</div>
@@ -53,8 +56,8 @@ onMounted(() => {
 		console.log("channels:")
 		console.log(data)
 	
-		let id = 0
 		channels.value.pop()
+		let id = 0
 		for (let channel in data){
 			channels.value.push({id: id, name: data[channel]})
 			// console.log("channel :", channel)
@@ -114,6 +117,10 @@ onMounted(() => {
 	background-color: white;
 }
 
+.emptyMsg {
+	padding: 10px;
+	text-align: center;
+}
 .controls {
 	display: flex;
 	margin: 0;

@@ -1,19 +1,19 @@
 <template>
-	<p>
+	<p class="statHeaderContainer">
 		<span class="statHeader">Wins</span>
 		<span class="statHeader">Losses</span>
 		<span class="statHeader">Total Games</span>
 	</p>
-	<p>
+	<p class="statsContainer">
 		<span class="stats" id="wonGames">{{ wonMatches }}</span>
 		<span class="stats" id="lostGames">{{ lostMatches }}</span>
 		<span class="stats" id="playedGames">{{ matchesCount }}</span>
 	</p>
-	<p>
+	<p class="statHeaderContainer">
 		<span class="statHeader">Points made</span>
 		<span class="statHeader">Points lost</span>
 	</p>
-	<p>
+	<p class="statsContainer">
 		<span class="stats" id="pointsMade">{{ pointsMade }}</span>
 		<span class="stats" id="pointsLost">{{ pointsLost }}</span>
 	</p>
@@ -32,6 +32,10 @@ export default {
 </script>
 
 <style scoped>
+
+	.statHeaderContainer {
+		margin-bottom: 7px;
+	}
 	.statHeader {
 		display: inline-block;
 		font-size: var(--font-size-tiny);
@@ -40,8 +44,13 @@ export default {
 		margin-right: 5px;
 		margin-bottom: 0px;
 	}
+
+	.statsContainer {
+		margin-top: 0px;
+	}
 	.stats {
 		display: inline-block;
+		padding-top: 0px;
 		margin-left: 5px;
 		margin-right: 5px;
 		margin-bottom: 5px;

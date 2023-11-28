@@ -1,10 +1,13 @@
 <template>
 
-<p v-for="friendship in friends" :key="friendship.id" class="friend">
-	<img @click="goToFriendProfile(friendship.followedUser.id)" :src="friendship.followedUser.avatar" alt="profile picture">
-	<span @click="goToFriendProfile(friendship.followedUser.id)">{{ friendship.followedUser.pseudo }}</span>
-	<span id="status" @click="goToFriendProfile(friendship.followedUser.id)">{{ showStatus(friendship.followedUser) }}</span>
-	<button @click="removeFriend(friendship.id)">remove</button>
+<p  @click="goToFriendProfile(friendship.followedUser.id)" v-if="friends.length > 0" v-for="friendship in friends" :key="friendship.id" class="friend">
+	<img :src="friendship.followedUser.avatar" alt="profile picture">
+	<span>{{ friendship.followedUser.pseudo }}</span>
+	<span id="status">{{ showStatus(friendship.followedUser) }}</span>
+	<button @click.stop="removeFriend(friendship.id)">remove</button>
+</p>
+<p v-else>
+	nothing to see here :[
 </p>
 <p v-if="errorMsg" id="errorMsg"> {{ errorMsg }}</p>
 
@@ -124,12 +127,12 @@ p {
 .friend {
 	display: flex;
 	align-items: center;
+	cursor: pointer;
 	transition: 0.3s;
 }
 
 .friend:hover {
-	color: black;
-	background-color: white;
+	background-color: rgb(65, 65, 65);
 }
 
 img {
@@ -143,16 +146,12 @@ img {
 	margin-left: 30px;
 	margin-top: 7px;	
 	margin-bottom: 7px;
-
-	cursor: pointer;
 }
 
 span {
 	margin: 0;
 	text-overflow: ellipsis;
 	overflow: hidden;
-
-	cursor: pointer;
 }
 
 #status {
@@ -167,6 +166,7 @@ span {
 button {
 	font-size: var(--font-size-tiny);
 	padding-left: auto;
+	cursor: pointer;
 }
 
 #errorMsg {

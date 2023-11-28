@@ -13,7 +13,7 @@ const user = ref<any>({
 	id: 0,
 	fortytwo_id: 0,
 	pseudo: "unknown",
-	email: "unkown",
+	email: "unknown",
 	avatar: "https://as2.ftcdn.net/v2/jpg/05/41/19/11/1000_F_541191198_O3s9TihGlfU58XP5oJXYaQ5y4rvuy7AK.jpg",
 	is2FActive: false,
 	is2FAuthenticated: false,
@@ -21,7 +21,8 @@ const user = ref<any>({
 	lostMatchesCount: 0,
 	matchesCount: 0,
 	pointsMade: 0,
-	pointsLost: 0
+	pointsLost: 0,
+	friends: []
 })
 
 onMounted(() => {
@@ -104,6 +105,8 @@ const settingsActive = ref(false);
 		margin-top: 50px;
         padding: 10px;
         border: 1px solid white;
+		max-height: 70vh;
+		overflow-y: scroll;
     }
     .hero {
         display: grid;
