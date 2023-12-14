@@ -1,5 +1,5 @@
 # transcendence
-ping pang pong 
+> *ping pang pong*
 
 start with ```docker compose up --build```
 
