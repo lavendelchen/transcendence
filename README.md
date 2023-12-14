@@ -4,10 +4,11 @@
 start with ```docker compose up --build```
 
 ## Game
-![img](./showcase/play.gif)
+<img src="./showcase/play.gif" title="play" alt="play" width="300"/>
 
 ## Login
 ![img](./showcase/login_page.png)
+<br>
 ![img](./showcase/account_setup.png)
 
 ## Game Page
