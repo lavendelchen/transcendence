@@ -8,7 +8,7 @@ start with ```docker compose up --build```
 
 ## Login
 ![img](./showcase/login_page.png)
-<br>
+<br> <br>
 ![img](./showcase/account_setup.png)
 
 ## Game Page
